@@ -1,0 +1,460 @@
+/* ===== UNIVERSAL ===== */
+* {
+	box-sizing: border-box;
+}
+
+/* ===== BODY ===== */
+body {
+	margin: 0;
+	padding: 0;
+
+	font-family: Tahoma, Arial, sans-serif;
+	color: #2b2d2e;
+
+	background-color: #b8c5a8;
+}
+
+/* ===== HEADER ===== */
+header {
+	height: 128px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-left: 105px;
+
+	color: #2b2d2e;
+
+	background-color: #b8c5a8;
+	background-image: url("./images/boba_logo.png");
+	background-repeat: no-repeat;
+	background-position: 15px center; /* positions the logo */
+	background-size: 120px auto;
+
+	text-align: center; /* Center the text */
+	display: flex;
+	align-items: center; /* Vertically center */
+	justify-content: center; /* Horizontally center */
+}
+
+/* header link states */
+header a:link {
+	color: #2b2d2e;
+	text-decoration: none;
+}
+
+header a:visited {
+	color: #2b2d2e;
+	text-decoration: none;
+}
+
+header a:hover {
+	color: #f5f3e8;
+	text-decoration: none;
+}
+
+/* ===== NAVIGATION ===== */
+nav {
+	font-size: 1.5em;
+	text-align: center;
+}
+
+/* nav link states */
+nav a:link {
+	color: #f5f3e8;
+}
+
+nav a:visited {
+	color: #b8c5a8;
+}
+
+nav a:hover {
+	color: #d1a35e;
+}
+
+nav ul {
+	display: flex;
+	flex-direction: column;
+
+	margin: 0;
+	padding: 0;
+
+	font-size: 1.25em;
+	list-style-type: none;
+}
+
+nav li {
+	width: 100%;
+	padding: 0.5em 1em;
+	border-bottom: 1px solid #b8c5a8;
+}
+
+/* ===== GLOBAL ANCHORS ===== */
+a {
+	text-decoration: none;
+}
+
+/* ===== TYPOGRAPHY ===== */
+h1 {
+	font-size: 2em;
+}
+
+h2 {
+	color: #2d5016;
+}
+
+h3 {
+	color: #2d5016;
+}
+
+h4 {
+	clear: left;
+
+	padding-bottom: 0;
+	padding-left: 0;
+	border-bottom: #2b2d2e 2px solid;
+
+	font-size: 1.2em;
+	text-transform: uppercase;
+
+	background-color: #b8c5a8;
+}
+
+dt {
+	color: #2d5016;
+}
+
+/* ===== MAIN CONTENT ===== */
+main {
+	display: block;
+	padding: 0 0 2em;
+	background-color: #f5f3e8;
+}
+
+/* inner content spacing */
+main h2,
+main h3,
+main h4,
+main p,
+main div,
+main ul,
+main dl {
+	padding-right: 1em;
+	padding-left: 1em;
+}
+
+main p {
+	padding-left: 2em;
+}
+
+main ul {
+	padding-left: 3em;
+}
+
+/* ===== WRAPPER ===== */
+#wrapper {
+	padding: 0;
+	background-color: #2b2d2e;
+}
+
+/* ===== HERO SECTIONS ===== */
+#homehero {
+	height: 300px;
+	background-image: url("./images/boba_homehero_1.avif");
+	background-repeat: no-repeat;
+	/* background-size: 100% 100%; */
+	background-size: cover;
+	background-position: center 25%;
+}
+
+#heromugs {
+	height: 300px;
+	background-image: url("./images/boba_heromugs_2.webp");
+	background-repeat: no-repeat;
+	/* background-size: 100% 100%; */
+	background-size: cover;
+	background-position: center 5%;
+}
+
+#heroguitar {
+	height: 300px;
+	background-image: url("./images/music_hero.jpg");
+	background-repeat: no-repeat;
+	/* background-size: 100% 100%; */
+	background-size: cover;
+	background-position: center 45%;
+	filter: sepia(0.5) hue-rotate(60deg) saturate(1.2);
+}
+
+#herojobs {
+	height: 300px;
+	background-image: url("./images/boba_jobs.jpg");
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+	background-size: cover;
+	background-position: center 25%;
+}
+
+#herocouch {
+	height: 300px;
+	background-image: url("./images/boba_merch_banner.webp");
+	background-repeat: no-repeat;
+	/* background-size: 100% 100%; */
+	background-size: cover;
+	background-position: center 25%;
+}
+
+/* ===== FOOTER ===== */
+footer {
+	padding: 1em;
+	border-top: 2px solid #2d5016;
+
+	font-size: small;
+	font-style: italic;
+	text-align: center;
+
+	background-color: #b8c5a8;
+}
+
+/* ===== MISC ===== */
+.details {
+	display: flex;
+	flex-flow: row wrap;
+	align-items: center; /* Add this - vertically centers items */
+	padding-right: 20%;
+	padding-left: 20%;
+}
+
+.details img {
+	flex-shrink: 0; /* Prevents image from shrinking */
+}
+
+.details p {
+	margin: 0; /* Remove default paragraph margins */
+}
+
+.details audio {
+	width: 100%;
+	min-width: 250px; /* Add this - ensures a minimum width */
+	max-width: 250px; /* Add this - limits the maximum width */
+	margin-top: 1em;
+}
+
+@media (width >=1300px) {
+	/* or 800px, test to see what looks best */
+	.details {
+		flex-flow: row;
+		align-items: center;
+	}
+}
+
+img {
+	padding-right: 10px;
+	padding-left: 10px;
+}
+
+.floatleft {
+}
+
+.onethird {
+}
+
+#mobile {
+	display: inline;
+}
+
+#desktop {
+	display: none;
+}
+
+form {
+	display: flex;
+	flex-direction: column;
+	width: 80%;
+	padding-left: 3em;
+}
+
+input,
+textarea {
+	margin-bottom: 0.5em;
+}
+
+/* ===== AUDIO SELECTOR ===== */
+audio {
+	display: block;
+	margin-top: 1em;
+}
+
+/* ===== ITEMS ===== */
+.item {
+	overflow: auto;
+	margin: 1em;
+	padding: 1em;
+	/* background-color: #fdfbf7; */
+}
+
+.item p {
+	padding-left: 1.2em;
+}
+
+.item form {
+	padding-left: 1.2em;
+}
+
+.item img {
+	float: right;
+	max-width: 300px; /* Won't exceed this width */
+	width: 100%; /* Scales down on smaller screens */
+	height: auto;
+}
+
+/* Merch page - Add to Cart buttons */
+.item input[type="submit"],
+.item button[type="submit"] {
+	width: 150px;
+	padding: 0.5em 1.5em;
+	font-size: 0.95em;
+}
+
+/* Center images on mobile/small screens */
+@media (width < 600px) {
+	.item img {
+		float: none;
+		display: block;
+		margin: 0 auto 1em auto;
+		max-width: 400px;
+	}
+}
+
+/* ===== TABLES ===== */
+
+table {
+	border-spacing: 0;
+	width: 100%;
+	margin: 0;
+}
+
+td,
+th {
+	padding: 10px;
+}
+
+tr:nth-child(odd) {
+	background-color: #d4e0c8;
+}
+
+/* ===== MEDIA QUERIES ===== */
+@media (width >= 600px) {
+	header {
+		padding-left: 0;
+		text-align: center;
+		background-size: 150px auto;
+	}
+
+	h1 {
+		font-size: 3em;
+	}
+
+	nav ul {
+		flex-flow: row nowrap;
+		justify-content: space-around;
+	}
+
+	nav li {
+		border-bottom: none;
+	}
+
+	#homehero {
+		height: 50vh;
+		background-image: url("./images/boba_homehero_1.avif");
+	}
+
+	#heromugs {
+		height: 50vh;
+		background-image: url("./images/boba_heromugs_2.webp");
+	}
+
+	#heroguitar {
+		height: 50vh;
+		background-image: url("./images/music_hero.jpg");
+	}
+
+	#herojobs {
+		height: 50vh;
+		background-image: url("./images/boba_jobs.jpg");
+	}
+
+	#herocouch {
+		height: 50vh;
+		background-image: url("./images/boba_merch_banner.webp");
+	}
+
+	#flow {
+		display: flex;
+		flex-flow: row;
+	}
+
+	#mobile {
+		display: none;
+	}
+
+	#desktop {
+		display: inline;
+	}
+
+	/* .details {
+		display: flex;
+		flex-flow: row;
+	} */
+
+	h4 {
+		margin-right: 10%;
+		margin-left: 10%;
+	}
+
+	form {
+		display: grid;
+		grid-template-columns: 6em 1fr;
+		gap: 1em;
+		width: 40%;
+	}
+
+	/* Only apply grid to regular forms, not merch items */
+	form:not(.item form) input[type="submit"],
+	form:not(.item form) button[type="submit"] {
+		grid-column: 2;
+		width: 9em;
+	}
+}
+
+/* DESKTOP LAYOUT */
+@media (width >= 1024px) {
+	header {
+		grid-area: header;
+		background-image: url("./images/boba_logo.png");
+	}
+
+	nav {
+		grid-area: nav;
+		width: 200px;
+	}
+
+	main {
+		grid-area: main;
+	}
+
+	footer {
+		grid-area: footer;
+	}
+
+	#wrapper {
+		display: grid;
+		grid-template:
+			"header header"
+			"nav main"
+			"footer footer"
+			/ 200px;
+	}
+
+	nav ul {
+		flex-direction: column;
+	}
+}

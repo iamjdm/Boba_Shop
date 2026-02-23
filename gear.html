@@ -1,0 +1,1206 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>TeaZen Boba Bar — Order</title>
+		<link rel="stylesheet" href="teazen.css" />
+		<style>
+			/* ===== ORDER PAGE STYLES ===== */
+
+			/* Category tabs */
+			.order-tabs {
+				display: flex;
+				gap: 0;
+				padding: 1em 1em 0;
+				border-bottom: 2px solid #2d5016;
+				overflow-x: auto;
+			}
+
+			.tab-btn {
+				background: none;
+				border: 2px solid #2d5016;
+				border-bottom: none;
+				border-radius: 6px 6px 0 0;
+				padding: 0.5em 1.2em;
+				font-size: 0.95em;
+				font-family: Tahoma, Arial, sans-serif;
+				color: #2d5016;
+				cursor: pointer;
+				white-space: nowrap;
+				margin-right: 4px;
+				transition:
+					background 0.2s,
+					color 0.2s;
+			}
+
+			.tab-btn.active,
+			.tab-btn:hover {
+				background: #2d5016;
+				color: #f5f3e8;
+			}
+
+			/* Order grid */
+			.order-grid {
+				display: grid;
+				grid-template-columns: 1fr;
+				gap: 1em;
+				padding: 1em;
+			}
+
+			@media (min-width: 600px) {
+				.order-grid {
+					grid-template-columns: repeat(2, 1fr);
+				}
+			}
+
+			@media (min-width: 1100px) {
+				.order-grid {
+					grid-template-columns: repeat(3, 1fr);
+				}
+			}
+
+			/* Product card */
+			.product-card {
+				background: #fdfbf7;
+				border-radius: 10px;
+				border: 1px solid #d4e0c8;
+				overflow: hidden;
+				display: flex;
+				flex-direction: column;
+				transition: box-shadow 0.2s;
+			}
+
+			.product-card:hover {
+				box-shadow: 0 4px 16px rgba(45, 80, 22, 0.13);
+			}
+
+			.card-image {
+				width: 100%;
+				height: 160px;
+				object-fit: cover;
+				background: #d4e0c8;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 3em;
+				color: #b8c5a8;
+			}
+
+			.card-image img {
+				width: 100%;
+				height: 160px;
+				object-fit: cover;
+				padding: 0;
+			}
+
+			.card-body {
+				padding: 0.85em 1em;
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+			}
+
+			.card-name {
+				font-size: 1.05em;
+				font-weight: bold;
+				color: #2d5016;
+				margin: 0 0 0.3em;
+			}
+
+			.card-desc {
+				font-size: 0.85em;
+				color: #555;
+				margin: 0 0 0.6em;
+				flex: 1;
+			}
+
+			.card-price {
+				font-size: 1em;
+				font-weight: bold;
+				color: #2b2d2e;
+				margin-bottom: 0.5em;
+			}
+
+			/* Size selector */
+			.size-options {
+				display: flex;
+				gap: 0.4em;
+				margin-bottom: 0.65em;
+				flex-wrap: wrap;
+			}
+
+			.size-btn {
+				background: #e8f0e0;
+				border: 1.5px solid #b8c5a8;
+				border-radius: 4px;
+				padding: 0.2em 0.6em;
+				font-size: 0.8em;
+				cursor: pointer;
+				font-family: Tahoma, Arial, sans-serif;
+				color: #2d5016;
+				transition:
+					background 0.15s,
+					border-color 0.15s;
+			}
+
+			.size-btn.selected {
+				background: #2d5016;
+				color: #f5f3e8;
+				border-color: #2d5016;
+			}
+
+			/* Custom request field */
+			.custom-request {
+				width: 100%;
+				font-family: Tahoma, Arial, sans-serif;
+				font-size: 0.8em;
+				padding: 0.35em 0.5em;
+				border: 1px solid #b8c5a8;
+				border-radius: 4px;
+				background: #f5f3e8;
+				margin-bottom: 0.65em;
+				resize: vertical;
+				min-height: 36px;
+				color: #2b2d2e;
+				box-sizing: border-box;
+			}
+
+			.custom-request:focus {
+				outline: 2px solid #2d5016;
+				border-color: #2d5016;
+			}
+
+			/* Quantity + Add row */
+			.card-actions {
+				display: flex;
+				align-items: center;
+				gap: 0.5em;
+			}
+
+			.qty-control {
+				display: flex;
+				align-items: center;
+				border: 1.5px solid #b8c5a8;
+				border-radius: 5px;
+				overflow: hidden;
+			}
+
+			.qty-btn {
+				background: #e8f0e0;
+				border: none;
+				width: 28px;
+				height: 28px;
+				font-size: 1.1em;
+				cursor: pointer;
+				color: #2d5016;
+				font-weight: bold;
+				transition: background 0.15s;
+			}
+
+			.qty-btn:hover {
+				background: #b8c5a8;
+			}
+
+			.qty-num {
+				width: 32px;
+				text-align: center;
+				font-size: 0.95em;
+				font-weight: bold;
+				background: #fdfbf7;
+				border: none;
+				color: #2b2d2e;
+			}
+
+			.add-btn {
+				flex: 1;
+				background: #2d5016;
+				color: #f5f3e8;
+				border: none;
+				border-radius: 5px;
+				padding: 0.45em 1em;
+				font-size: 0.9em;
+				font-family: Tahoma, Arial, sans-serif;
+				cursor: pointer;
+				transition: background 0.2s;
+				font-weight: bold;
+				letter-spacing: 0.03em;
+			}
+
+			.add-btn:hover {
+				background: #3d6b1f;
+			}
+
+			.add-btn.added {
+				background: #d1a35e;
+				color: #2b2d2e;
+			}
+
+			/* Hidden category panels */
+			.category-panel {
+				display: none;
+			}
+
+			.category-panel.active {
+				display: block;
+			}
+
+			/* ===== CART SIDEBAR ===== */
+			#cart-overlay {
+				display: none;
+				position: fixed;
+				inset: 0;
+				background: rgba(43, 45, 46, 0.45);
+				z-index: 100;
+				transition: opacity 0.2s;
+			}
+
+			#cart-overlay.open {
+				display: block;
+			}
+
+			#cart-sidebar {
+				position: fixed;
+				top: 0;
+				right: -400px;
+				width: min(400px, 100vw);
+				height: 100vh;
+				background: #f5f3e8;
+				z-index: 200;
+				display: flex;
+				flex-direction: column;
+				box-shadow: -4px 0 24px rgba(43, 45, 46, 0.18);
+				transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+				border-left: 3px solid #2d5016;
+			}
+
+			#cart-sidebar.open {
+				right: 0;
+			}
+
+			.cart-header {
+				background: #2d5016;
+				color: #f5f3e8;
+				padding: 1em 1.2em;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+
+			.cart-header h3 {
+				margin: 0;
+				font-size: 1.2em;
+				color: #f5f3e8;
+			}
+
+			#close-cart {
+				background: none;
+				border: none;
+				color: #f5f3e8;
+				font-size: 1.5em;
+				cursor: pointer;
+				padding: 0 0.2em;
+				line-height: 1;
+			}
+
+			.cart-items {
+				flex: 1;
+				overflow-y: auto;
+				padding: 0.8em;
+			}
+
+			.cart-empty {
+				text-align: center;
+				color: #888;
+				margin-top: 3em;
+				font-style: italic;
+			}
+
+			.cart-item {
+				background: #fdfbf7;
+				border: 1px solid #d4e0c8;
+				border-radius: 7px;
+				padding: 0.7em 0.9em;
+				margin-bottom: 0.6em;
+				position: relative;
+			}
+
+			.cart-item-name {
+				font-weight: bold;
+				color: #2d5016;
+				font-size: 0.95em;
+			}
+
+			.cart-item-meta {
+				font-size: 0.78em;
+				color: #666;
+				margin: 0.15em 0;
+			}
+
+			.cart-item-custom {
+				font-size: 0.78em;
+				color: #888;
+				font-style: italic;
+				margin-top: 0.15em;
+			}
+
+			.cart-item-row {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				margin-top: 0.4em;
+			}
+
+			.cart-item-qty {
+				display: flex;
+				align-items: center;
+				gap: 0.3em;
+			}
+
+			.cart-qty-btn {
+				background: #e8f0e0;
+				border: 1px solid #b8c5a8;
+				width: 24px;
+				height: 24px;
+				border-radius: 4px;
+				cursor: pointer;
+				font-size: 1em;
+				color: #2d5016;
+				font-weight: bold;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.cart-qty-num {
+				min-width: 20px;
+				text-align: center;
+				font-weight: bold;
+			}
+
+			.cart-item-price {
+				font-weight: bold;
+				color: #2b2d2e;
+			}
+
+			.remove-item {
+				position: absolute;
+				top: 0.4em;
+				right: 0.5em;
+				background: none;
+				border: none;
+				color: #aaa;
+				cursor: pointer;
+				font-size: 1em;
+				padding: 0;
+				line-height: 1;
+			}
+
+			.remove-item:hover {
+				color: #c0392b;
+			}
+
+			/* Cart footer */
+			.cart-footer {
+				padding: 1em;
+				border-top: 2px solid #d4e0c8;
+				background: #fdfbf7;
+			}
+
+			.cart-subtotal {
+				display: flex;
+				justify-content: space-between;
+				font-size: 1.1em;
+				font-weight: bold;
+				margin-bottom: 0.8em;
+				color: #2d5016;
+			}
+
+			/* Order notes */
+			.cart-notes-label {
+				font-size: 0.82em;
+				color: #555;
+				margin-bottom: 0.25em;
+				display: block;
+			}
+
+			#order-notes {
+				width: 100%;
+				min-height: 48px;
+				font-family: Tahoma, Arial, sans-serif;
+				font-size: 0.82em;
+				padding: 0.4em 0.5em;
+				border: 1px solid #b8c5a8;
+				border-radius: 5px;
+				background: #f5f3e8;
+				color: #2b2d2e;
+				margin-bottom: 0.8em;
+				resize: vertical;
+				box-sizing: border-box;
+			}
+
+			.checkout-btn {
+				width: 100%;
+				background: #2d5016;
+				color: #f5f3e8;
+				border: none;
+				border-radius: 6px;
+				padding: 0.75em;
+				font-size: 1em;
+				font-family: Tahoma, Arial, sans-serif;
+				font-weight: bold;
+				cursor: pointer;
+				letter-spacing: 0.05em;
+				transition: background 0.2s;
+			}
+
+			.checkout-btn:hover {
+				background: #3d6b1f;
+			}
+
+			.checkout-btn:disabled {
+				background: #b8c5a8;
+				cursor: not-allowed;
+			}
+
+			/* Export / LM button */
+			.export-btn {
+				width: 100%;
+				background: #d1a35e;
+				color: #2b2d2e;
+				border: none;
+				border-radius: 6px;
+				padding: 0.55em;
+				font-size: 0.85em;
+				font-family: Tahoma, Arial, sans-serif;
+				font-weight: bold;
+				cursor: pointer;
+				letter-spacing: 0.04em;
+				margin-top: 0.5em;
+				transition: background 0.2s;
+			}
+
+			.export-btn:hover {
+				background: #c49345;
+			}
+
+			/* Cart button (floating) */
+			#cart-toggle {
+				position: fixed;
+				bottom: 1.5em;
+				right: 1.5em;
+				background: #2d5016;
+				color: #f5f3e8;
+				border: none;
+				border-radius: 50px;
+				padding: 0.7em 1.3em;
+				font-size: 1em;
+				font-family: Tahoma, Arial, sans-serif;
+				font-weight: bold;
+				cursor: pointer;
+				z-index: 90;
+				box-shadow: 0 4px 16px rgba(45, 80, 22, 0.25);
+				display: flex;
+				align-items: center;
+				gap: 0.5em;
+				transition:
+					background 0.2s,
+					transform 0.15s;
+			}
+
+			#cart-toggle:hover {
+				background: #3d6b1f;
+				transform: translateY(-2px);
+			}
+
+			#cart-count {
+				background: #d1a35e;
+				color: #2b2d2e;
+				border-radius: 50px;
+				padding: 0.1em 0.55em;
+				font-size: 0.85em;
+				font-weight: bold;
+				min-width: 1.5em;
+				text-align: center;
+			}
+
+			/* Toast notification */
+			#toast {
+				position: fixed;
+				bottom: 5em;
+				right: 1.5em;
+				background: #2d5016;
+				color: #f5f3e8;
+				border-radius: 6px;
+				padding: 0.6em 1.2em;
+				font-size: 0.9em;
+				font-family: Tahoma, Arial, sans-serif;
+				z-index: 300;
+				opacity: 0;
+				transform: translateY(10px);
+				transition:
+					opacity 0.2s,
+					transform 0.2s;
+				pointer-events: none;
+			}
+
+			#toast.show {
+				opacity: 1;
+				transform: translateY(0);
+			}
+
+			/* LM payload modal */
+			#lm-modal {
+				display: none;
+				position: fixed;
+				inset: 0;
+				background: rgba(43, 45, 46, 0.6);
+				z-index: 500;
+				align-items: center;
+				justify-content: center;
+			}
+
+			#lm-modal.open {
+				display: flex;
+			}
+
+			.lm-modal-box {
+				background: #f5f3e8;
+				border-radius: 10px;
+				padding: 1.5em;
+				max-width: 560px;
+				width: 90vw;
+				max-height: 80vh;
+				overflow-y: auto;
+				box-shadow: 0 8px 32px rgba(43, 45, 46, 0.25);
+			}
+
+			.lm-modal-box h3 {
+				color: #2d5016;
+				margin-top: 0;
+			}
+
+			.lm-modal-box pre {
+				background: #2b2d2e;
+				color: #b8c5a8;
+				border-radius: 6px;
+				padding: 1em;
+				overflow-x: auto;
+				font-size: 0.78em;
+				white-space: pre-wrap;
+				word-break: break-all;
+			}
+
+			.lm-modal-actions {
+				display: flex;
+				gap: 0.7em;
+				margin-top: 1em;
+			}
+
+			.lm-copy-btn {
+				background: #2d5016;
+				color: #f5f3e8;
+				border: none;
+				border-radius: 5px;
+				padding: 0.5em 1.2em;
+				cursor: pointer;
+				font-family: Tahoma, Arial, sans-serif;
+				font-weight: bold;
+			}
+
+			.lm-close-btn {
+				background: #b8c5a8;
+				color: #2b2d2e;
+				border: none;
+				border-radius: 5px;
+				padding: 0.5em 1.2em;
+				cursor: pointer;
+				font-family: Tahoma, Arial, sans-serif;
+			}
+
+			.lm-hint {
+				font-size: 0.78em;
+				color: #888;
+				margin-top: 0.5em;
+				font-style: italic;
+			}
+		</style>
+	</head>
+
+	<body>
+		<!-- wrapper -->
+		<div id="wrapper">
+			<!-- header -->
+			<header>
+				<h1><a href="index.html">TeaZen Boba Bar</a></h1>
+			</header>
+
+			<!-- nav -->
+			<nav>
+				<ul>
+					<li><a href="index.html">Home</a></li>
+					<li><a href="menu.html">Menu</a></li>
+					<li><a href="music.html">Events</a></li>
+					<li><a href="jobs.html">Jobs</a></li>
+					<li><a href="gear.html">Order</a></li>
+				</ul>
+			</nav>
+
+			<!-- main -->
+			<main>
+				<div id="herocouch"></div>
+				<h2>Order Online</h2>
+				<p>
+					Build your order below — drinks, snacks, and merch all in one place.
+					Add special requests per item, and we'll take care of the rest!
+				</p>
+
+				<!-- Category tabs -->
+				<div class="order-tabs">
+					<button class="tab-btn active" data-tab="drinks">
+						🧋 Boba & Tea
+					</button>
+					<button class="tab-btn" data-tab="snacks">🍡 Snacks</button>
+					<button class="tab-btn" data-tab="merch">👕 Merch</button>
+				</div>
+
+				<!-- Boba & Tea -->
+				<div class="category-panel active" id="tab-drinks">
+					<div class="order-grid" id="drinks-grid"></div>
+				</div>
+
+				<!-- Snacks -->
+				<div class="category-panel" id="tab-snacks">
+					<div class="order-grid" id="snacks-grid"></div>
+				</div>
+
+				<!-- Merch -->
+				<div class="category-panel" id="tab-merch">
+					<div class="order-grid" id="merch-grid"></div>
+				</div>
+			</main>
+
+			<!-- footer -->
+			<footer>
+				Copyright &copy; TeaZen Boba Bar<br />
+				<a href="mailto:info@teazenboba.com">info@teazenboba.com</a>
+			</footer>
+		</div>
+
+		<!-- Cart toggle button -->
+		<button id="cart-toggle" onclick="openCart()">
+			🛒 Cart <span id="cart-count">0</span>
+		</button>
+
+		<!-- Cart overlay -->
+		<div id="cart-overlay" onclick="closeCart()"></div>
+
+		<!-- Cart sidebar -->
+		<div id="cart-sidebar">
+			<div class="cart-header">
+				<h3>🛒 Your Order</h3>
+				<button id="close-cart" onclick="closeCart()" aria-label="Close cart">
+					✕
+				</button>
+			</div>
+			<div class="cart-items" id="cart-items">
+				<div class="cart-empty">
+					Your cart is empty.<br />Add something delicious!
+				</div>
+			</div>
+			<div class="cart-footer">
+				<div class="cart-subtotal">
+					<span>Subtotal</span>
+					<span id="cart-total">$0.00</span>
+				</div>
+				<label class="cart-notes-label" for="order-notes"
+					>Order notes / special requests:</label
+				>
+				<textarea
+					id="order-notes"
+					placeholder="e.g. Extra ice, no sugar, pickup at 5pm..."
+				></textarea>
+				<button
+					class="checkout-btn"
+					id="checkout-btn"
+					onclick="checkout()"
+					disabled
+				>
+					Place Order
+				</button>
+				<button
+					class="export-btn"
+					id="export-lm-btn"
+					onclick="showLMPayload()"
+					disabled
+					title="Export order as structured JSON for LM integration"
+				>
+					🤖 Export for AI Processing
+				</button>
+			</div>
+		</div>
+
+		<!-- Toast -->
+		<div id="toast"></div>
+
+		<!-- LM Payload Modal -->
+		<div id="lm-modal">
+			<div class="lm-modal-box">
+				<h3>🤖 AI Order Payload</h3>
+				<p style="font-size: 0.85em; color: #555">
+					This is the structured JSON payload ready to send to your language
+					model. It includes all cart items, quantities, customizations, and
+					order notes.
+				</p>
+				<pre id="lm-payload-code"></pre>
+				<p class="lm-hint">
+					Hook this payload to your LLM's <code>orderPayload</code> input — see
+					the <code>sendToLM()</code> function in the script for integration
+					instructions.
+				</p>
+				<div class="lm-modal-actions">
+					<button class="lm-copy-btn" onclick="copyPayload()">Copy JSON</button>
+					<button class="lm-close-btn" onclick="closeLMModal()">Close</button>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			// ===== PRODUCT DATA =====
+			// To integrate with a backend or LM, replace these arrays with an API fetch.
+
+			const PRODUCTS = {
+				drinks: [
+					{
+						id: "classic-milk-tea",
+						name: "Classic Milk Tea",
+						desc: "Traditional black tea with creamy milk and chewy tapioca pearls.",
+						sizes: [
+							{ label: "Regular", price: 5.5 },
+							{ label: "Large", price: 6.5 },
+						],
+						emoji: "🧋",
+						tags: ["milk tea", "classic"],
+					},
+					{
+						id: "taro-bliss",
+						name: "Taro Bliss",
+						desc: "Sweet taro root blended with milk and your choice of toppings.",
+						sizes: [
+							{ label: "Regular", price: 6.0 },
+							{ label: "Large", price: 7.0 },
+						],
+						emoji: "🫐",
+						tags: ["taro", "milk tea"],
+					},
+					{
+						id: "matcha-zen",
+						name: "Matcha Zen",
+						desc: "Premium Japanese matcha whisked to perfection with oat milk and honey boba.",
+						sizes: [
+							{ label: "Regular", price: 6.75 },
+							{ label: "Large", price: 7.75 },
+						],
+						emoji: "🍵",
+						tags: ["matcha", "green tea"],
+					},
+					{
+						id: "strawberry-cloud",
+						name: "Strawberry Cloud",
+						desc: "Fresh strawberries blended with jasmine tea, topped with sweet cheese foam.",
+						sizes: [
+							{ label: "Regular", price: 6.5 },
+							{ label: "Large", price: 7.5 },
+						],
+						emoji: "🍓",
+						tags: ["fruit", "jasmine"],
+					},
+					{
+						id: "brown-sugar-tiger",
+						name: "Brown Sugar Tiger",
+						desc: "House-made brown sugar syrup swirled with fresh milk and chewy pearls.",
+						sizes: [
+							{ label: "Regular", price: 6.25 },
+							{ label: "Large", price: 7.25 },
+						],
+						emoji: "🐯",
+						tags: ["brown sugar", "milk tea"],
+					},
+				],
+				snacks: [
+					{
+						id: "mochi-set",
+						name: "Mochi Trio",
+						desc: "Three pieces of handmade mochi in rotating seasonal flavors.",
+						sizes: [{ label: "3 pcs", price: 5.0 }],
+						emoji: "🍡",
+						tags: ["mochi", "dessert"],
+					},
+					{
+						id: "taiyaki",
+						name: "Taiyaki",
+						desc: "Fish-shaped waffle pastry filled with red bean paste, Nutella, or custard.",
+						sizes: [
+							{ label: "1 pc", price: 3.5 },
+							{ label: "3 pcs", price: 9.0 },
+						],
+						emoji: "🐟",
+						tags: ["pastry", "sweet"],
+					},
+					{
+						id: "poke-bowl",
+						name: "Poké Bowl",
+						desc: "Fresh tuna or tofu over seasoned rice with avocado, edamame, and sesame.",
+						sizes: [{ label: "Regular", price: 12.95 }],
+						emoji: "🥗",
+						tags: ["poke", "savory", "fresh"],
+					},
+					{
+						id: "summer-rolls",
+						name: "Summer Rolls",
+						desc: "Two fresh rice paper rolls filled with shrimp or tofu, herbs, and rice noodles.",
+						sizes: [{ label: "2 pcs", price: 7.5 }],
+						emoji: "🌿",
+						tags: ["rolls", "fresh", "savory"],
+					},
+				],
+				merch: [
+					{
+						id: "teazen-tee",
+						name: "TeaZen Zen Vibes Tee",
+						desc: "100% organic cotton tee. Available in S-XL. Wear it in-store for 10% off your drink!",
+						sizes: [
+							{ label: "S", price: 18.95 },
+							{ label: "M", price: 18.95 },
+							{ label: "L", price: 18.95 },
+							{ label: "XL", price: 18.95 },
+						],
+						emoji: "👕",
+						tags: ["shirt", "apparel"],
+					},
+					{
+						id: "boba-tumbler",
+						name: "TeaZen Boba Tumbler",
+						desc: "20oz tumbler with wide boba straw. Keeps drinks cold for hours. Bring it in for 10% off!",
+						sizes: [{ label: "20oz", price: 14.95 }],
+						emoji: "🥤",
+						tags: ["tumbler", "drinkware"],
+					},
+				],
+			};
+
+			// ===== CART STATE =====
+			// This is the single source of truth for cart data.
+			// Structure is LM-ready — each item has id, name, size, price, qty, and custom notes.
+			let cart = [];
+			let selectedSizes = {}; // productId -> selected size index
+			let selectedQtys = {}; // productId -> quantity
+
+			// ===== RENDER PRODUCT CARDS =====
+			function renderProducts(category) {
+				const grid = document.getElementById(`${category}-grid`);
+				const products = PRODUCTS[category];
+				grid.innerHTML = products.map((p) => renderCard(p, category)).join("");
+				// Set defaults
+				products.forEach((p) => {
+					selectedSizes[p.id] = 0;
+					selectedQtys[p.id] = 1;
+				});
+			}
+
+			function renderCard(p, category) {
+				const sizeButtons = p.sizes
+					.map(
+						(s, i) =>
+							`<button class="size-btn ${i === 0 ? "selected" : ""}" data-pid="${p.id}" data-sidx="${i}" onclick="selectSize('${p.id}', ${i})">${s.label}</button>`,
+					)
+					.join("");
+
+				const priceDisplay =
+					p.sizes.length === 1
+						? `$${p.sizes[0].price.toFixed(2)}`
+						: `$${p.sizes[0].price.toFixed(2)} – $${p.sizes[p.sizes.length - 1].price.toFixed(2)}`;
+
+				return `
+			<div class="product-card" id="card-${p.id}">
+				<div class="card-image"><span>${p.emoji}</span></div>
+				<div class="card-body">
+					<div class="card-name">${p.name}</div>
+					<div class="card-desc">${p.desc}</div>
+					<div class="card-price" id="price-${p.id}">${priceDisplay}</div>
+					${p.sizes.length > 1 ? `<div class="size-options">${sizeButtons}</div>` : ""}
+					<textarea class="custom-request" id="custom-${p.id}" placeholder="Special request (e.g. no ice, extra syrup)..." rows="2"></textarea>
+					<div class="card-actions">
+						<div class="qty-control">
+							<button class="qty-btn" onclick="changeQty('${p.id}', -1)">−</button>
+							<span class="qty-num" id="qty-${p.id}">1</span>
+							<button class="qty-btn" onclick="changeQty('${p.id}', 1)">+</button>
+						</div>
+						<button class="add-btn" id="addbtn-${p.id}" onclick="addToCart('${p.id}', '${category}')">Add to Cart</button>
+					</div>
+				</div>
+			</div>`;
+			}
+
+			function selectSize(pid, idx) {
+				selectedSizes[pid] = idx;
+				// Update button styles
+				document
+					.querySelectorAll(`.size-btn[data-pid="${pid}"]`)
+					.forEach((btn, i) => {
+						btn.classList.toggle("selected", i === idx);
+					});
+				// Update price display
+				const allProducts = [
+					...PRODUCTS.drinks,
+					...PRODUCTS.snacks,
+					...PRODUCTS.merch,
+				];
+				const p = allProducts.find((x) => x.id === pid);
+				if (p) {
+					document.getElementById(`price-${pid}`).textContent =
+						`$${p.sizes[idx].price.toFixed(2)}`;
+				}
+			}
+
+			function changeQty(pid, delta) {
+				selectedQtys[pid] = Math.max(1, (selectedQtys[pid] || 1) + delta);
+				document.getElementById(`qty-${pid}`).textContent = selectedQtys[pid];
+			}
+
+			// ===== ADD TO CART =====
+			function addToCart(pid, category) {
+				const allProducts = [
+					...PRODUCTS.drinks,
+					...PRODUCTS.snacks,
+					...PRODUCTS.merch,
+				];
+				const p = allProducts.find((x) => x.id === pid);
+				if (!p) return;
+
+				const sizeIdx = selectedSizes[pid] ?? 0;
+				const size = p.sizes[sizeIdx];
+				const qty = selectedQtys[pid] || 1;
+				const custom =
+					document.getElementById(`custom-${pid}`)?.value?.trim() || "";
+
+				// Check if identical item (same id + size + custom) is already in cart
+				const key = `${pid}::${sizeIdx}::${custom}`;
+				const existing = cart.find((item) => item._key === key);
+
+				if (existing) {
+					existing.quantity += qty;
+				} else {
+					cart.push({
+						_key: key,
+						id: pid,
+						category,
+						name: p.name,
+						size: size.label,
+						unitPrice: size.price,
+						quantity: qty,
+						customRequest: custom,
+						tags: p.tags,
+					});
+				}
+
+				updateCartUI();
+				flashAddBtn(pid);
+				showToast(`Added ${qty}× ${p.name} (${size.label})`);
+
+				// Reset qty
+				selectedQtys[pid] = 1;
+				document.getElementById(`qty-${pid}`).textContent = 1;
+			}
+
+			function flashAddBtn(pid) {
+				const btn = document.getElementById(`addbtn-${pid}`);
+				if (!btn) return;
+				btn.classList.add("added");
+				btn.textContent = "✓ Added!";
+				setTimeout(() => {
+					btn.classList.remove("added");
+					btn.textContent = "Add to Cart";
+				}, 1400);
+			}
+
+			// ===== CART UI =====
+			function updateCartUI() {
+				const totalItems = cart.reduce((s, i) => s + i.quantity, 0);
+				const totalPrice = cart.reduce(
+					(s, i) => s + i.unitPrice * i.quantity,
+					0,
+				);
+
+				document.getElementById("cart-count").textContent = totalItems;
+				document.getElementById("cart-total").textContent =
+					`$${totalPrice.toFixed(2)}`;
+
+				const cartEl = document.getElementById("cart-items");
+				const hasItems = cart.length > 0;
+
+				document.getElementById("checkout-btn").disabled = !hasItems;
+				document.getElementById("export-lm-btn").disabled = !hasItems;
+
+				if (!hasItems) {
+					cartEl.innerHTML =
+						'<div class="cart-empty">Your cart is empty.<br>Add something delicious!</div>';
+					return;
+				}
+
+				cartEl.innerHTML = cart
+					.map(
+						(item, idx) => `
+				<div class="cart-item">
+					<button class="remove-item" onclick="removeItem(${idx})" title="Remove">✕</button>
+					<div class="cart-item-name">${item.name}</div>
+					<div class="cart-item-meta">${item.size} · $${item.unitPrice.toFixed(2)} each</div>
+					${item.customRequest ? `<div class="cart-item-custom">📝 ${item.customRequest}</div>` : ""}
+					<div class="cart-item-row">
+						<div class="cart-item-qty">
+							<button class="cart-qty-btn" onclick="cartChangeQty(${idx}, -1)">−</button>
+							<span class="cart-qty-num">${item.quantity}</span>
+							<button class="cart-qty-btn" onclick="cartChangeQty(${idx}, 1)">+</button>
+						</div>
+						<span class="cart-item-price">$${(item.unitPrice * item.quantity).toFixed(2)}</span>
+					</div>
+				</div>
+			`,
+					)
+					.join("");
+			}
+
+			function removeItem(idx) {
+				cart.splice(idx, 1);
+				updateCartUI();
+			}
+
+			function cartChangeQty(idx, delta) {
+				cart[idx].quantity = Math.max(1, cart[idx].quantity + delta);
+				updateCartUI();
+			}
+
+			function openCart() {
+				document.getElementById("cart-sidebar").classList.add("open");
+				document.getElementById("cart-overlay").classList.add("open");
+			}
+
+			function closeCart() {
+				document.getElementById("cart-sidebar").classList.remove("open");
+				document.getElementById("cart-overlay").classList.remove("open");
+			}
+
+			// ===== TOAST =====
+			let toastTimer;
+			function showToast(msg) {
+				const t = document.getElementById("toast");
+				t.textContent = msg;
+				t.classList.add("show");
+				clearTimeout(toastTimer);
+				toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+			}
+
+			// ===== CHECKOUT =====
+			function checkout() {
+				if (!cart.length) return;
+				const payload = buildOrderPayload();
+				// TODO: Replace this with your actual order submission endpoint.
+				// e.g. fetch('/api/orders', { method: 'POST', body: JSON.stringify(payload) })
+				alert(
+					`Order placed! 🎉\n\nYour order total is $${payload.subtotal}.\nWe'll have it ready soon!`,
+				);
+				cart = [];
+				updateCartUI();
+				closeCart();
+			}
+
+			// ===== LM INTEGRATION =====
+			// buildOrderPayload() returns a structured object ready to send to any LLM or backend.
+			// To integrate with your closed LM:
+			//   1. Call buildOrderPayload() to get the order JSON.
+			//   2. Pass it to sendToLM(payload) — implement the fetch inside that function.
+			//   3. Handle the LM response (e.g. show confirmation, recommendations, etc.)
+
+			function buildOrderPayload() {
+				const notes = document.getElementById("order-notes").value.trim();
+				const subtotal = cart.reduce((s, i) => s + i.unitPrice * i.quantity, 0);
+				return {
+					timestamp: new Date().toISOString(),
+					location:
+						"TeaZen Boba Bar — 12010 Garret Bay Road, Ellison Bay, WI 54210",
+					orderNotes: notes,
+					items: cart.map((item) => ({
+						productId: item.id,
+						name: item.name,
+						category: item.category,
+						size: item.size,
+						quantity: item.quantity,
+						unitPrice: item.unitPrice,
+						lineTotal: parseFloat((item.unitPrice * item.quantity).toFixed(2)),
+						customRequest: item.customRequest || null,
+						tags: item.tags,
+					})),
+					itemCount: cart.reduce((s, i) => s + i.quantity, 0),
+					subtotal: parseFloat(subtotal.toFixed(2)),
+				};
+			}
+
+			// sendToLM — wire this to your closed LM endpoint
+			async function sendToLM(payload) {
+				// Example integration stub:
+				// const response = await fetch('https://your-lm-endpoint.internal/order', {
+				//   method: 'POST',
+				//   headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer YOUR_KEY' },
+				//   body: JSON.stringify({ order: payload, prompt: "Process this boba order." }),
+				// });
+				// const result = await response.json();
+				// return result;
+				console.log("[TeaZen] LM Payload:", JSON.stringify(payload, null, 2));
+			}
+
+			function showLMPayload() {
+				const payload = buildOrderPayload();
+				document.getElementById("lm-payload-code").textContent = JSON.stringify(
+					payload,
+					null,
+					2,
+				);
+				document.getElementById("lm-modal").classList.add("open");
+			}
+
+			function closeLMModal() {
+				document.getElementById("lm-modal").classList.remove("open");
+			}
+
+			function copyPayload() {
+				const code = document.getElementById("lm-payload-code").textContent;
+				navigator.clipboard.writeText(code).then(() => {
+					showToast("JSON copied to clipboard!");
+					closeLMModal();
+				});
+			}
+
+			// ===== TAB SWITCHING =====
+			document.querySelectorAll(".tab-btn").forEach((btn) => {
+				btn.addEventListener("click", () => {
+					document
+						.querySelectorAll(".tab-btn")
+						.forEach((b) => b.classList.remove("active"));
+					document
+						.querySelectorAll(".category-panel")
+						.forEach((p) => p.classList.remove("active"));
+					btn.classList.add("active");
+					document
+						.getElementById(`tab-${btn.dataset.tab}`)
+						.classList.add("active");
+				});
+			});
+
+			// ===== INIT =====
+			renderProducts("drinks");
+			renderProducts("snacks");
+			renderProducts("merch");
+			updateCartUI();
+		</script>
+	</body>
+</html>
