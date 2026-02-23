@@ -6,15 +6,96 @@
 		<title>TeaZen Boba Bar — Order</title>
 		<link rel="stylesheet" href="teazen.css" />
 		<style>
-			/* ===== ORDER PAGE STYLES ===== */
+			/* ===== STICKY TOP BAR ===== */
+			#order-topbar {
+				position: sticky;
+				top: 0;
+				z-index: 90;
+				background: #2d5016;
+				color: #f5f3e8;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 0.55em 1.2em;
+				box-shadow: 0 2px 10px rgba(43, 45, 46, 0.2);
+			}
 
-			/* Category tabs */
+			#order-topbar-label {
+				font-size: 0.85em;
+				opacity: 0.8;
+				letter-spacing: 0.04em;
+				text-transform: uppercase;
+			}
+
+			#topbar-total {
+				font-size: 0.9em;
+				font-weight: bold;
+			}
+
+			#mobile-cart-toggle {
+				background: #f5f3e8;
+				color: #2d5016;
+				border: none;
+				border-radius: 50px;
+				padding: 0.4em 1em;
+				font-size: 0.9em;
+				font-family: Tahoma, Arial, sans-serif;
+				font-weight: bold;
+				cursor: pointer;
+				display: flex;
+				align-items: center;
+				gap: 0.45em;
+				transition: background 0.2s;
+			}
+
+			#mobile-cart-toggle:hover {
+				background: #e8f0e0;
+			}
+
+			#cart-count {
+				background: #d1a35e;
+				color: #2b2d2e;
+				border-radius: 50px;
+				padding: 0.1em 0.5em;
+				font-size: 0.8em;
+				font-weight: bold;
+				min-width: 1.4em;
+				text-align: center;
+			}
+
+			/* ===== ORDER BODY ===== */
+			#order-body {
+				background: #f5f3e8;
+			}
+
+			/* ===== PRODUCTS COLUMN ===== */
+			#products-col {
+				padding-bottom: 6em;
+				transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			}
+
+			#products-col.cart-open {
+				margin-right: 294px;
+			}
+
+			#products-col h2 {
+				padding: 0.6em 1em 0;
+				margin: 0;
+			}
+
+			#products-col > p {
+				font-size: 0.92em;
+				color: #555;
+				padding: 0.3em 1em 0;
+				margin: 0;
+			}
+
 			.order-tabs {
 				display: flex;
-				gap: 0;
-				padding: 1em 1em 0;
+				padding: 0.8em 1em 0;
 				border-bottom: 2px solid #2d5016;
 				overflow-x: auto;
+				gap: 0;
 			}
 
 			.tab-btn {
@@ -22,8 +103,8 @@
 				border: 2px solid #2d5016;
 				border-bottom: none;
 				border-radius: 6px 6px 0 0;
-				padding: 0.5em 1.2em;
-				font-size: 0.95em;
+				padding: 0.45em 1.1em;
+				font-size: 0.9em;
 				font-family: Tahoma, Arial, sans-serif;
 				color: #2d5016;
 				cursor: pointer;
@@ -40,27 +121,33 @@
 				color: #f5f3e8;
 			}
 
-			/* Order grid */
 			.order-grid {
 				display: grid;
 				grid-template-columns: 1fr;
-				gap: 1em;
-				padding: 1em;
+				gap: 0.9em;
+				padding: 0.9em;
 			}
 
-			@media (min-width: 600px) {
+			@media (min-width: 500px) {
 				.order-grid {
 					grid-template-columns: repeat(2, 1fr);
 				}
 			}
 
-			@media (min-width: 1100px) {
+			@media (min-width: 1400px) {
 				.order-grid {
 					grid-template-columns: repeat(3, 1fr);
 				}
 			}
 
-			/* Product card */
+			.category-panel {
+				display: none;
+			}
+			.category-panel.active {
+				display: block;
+			}
+
+			/* Product cards */
 			.product-card {
 				background: #fdfbf7;
 				border-radius: 10px;
@@ -77,41 +164,32 @@
 
 			.card-image {
 				width: 100%;
-				height: 160px;
-				object-fit: cover;
+				height: 130px;
 				background: #d4e0c8;
 				display: flex;
 				align-items: center;
 				justify-content: center;
 				font-size: 3em;
-				color: #b8c5a8;
-			}
-
-			.card-image img {
-				width: 100%;
-				height: 160px;
-				object-fit: cover;
-				padding: 0;
 			}
 
 			.card-body {
-				padding: 0.85em 1em;
+				padding: 0.8em 0.9em;
 				flex: 1;
 				display: flex;
 				flex-direction: column;
 			}
 
 			.card-name {
-				font-size: 1.05em;
+				font-size: 1em;
 				font-weight: bold;
 				color: #2d5016;
-				margin: 0 0 0.3em;
+				margin: 0 0 0.25em;
 			}
 
 			.card-desc {
-				font-size: 0.85em;
+				font-size: 0.82em;
 				color: #555;
-				margin: 0 0 0.6em;
+				margin: 0 0 0.5em;
 				flex: 1;
 			}
 
@@ -119,14 +197,13 @@
 				font-size: 1em;
 				font-weight: bold;
 				color: #2b2d2e;
-				margin-bottom: 0.5em;
+				margin-bottom: 0.45em;
 			}
 
-			/* Size selector */
 			.size-options {
 				display: flex;
-				gap: 0.4em;
-				margin-bottom: 0.65em;
+				gap: 0.35em;
+				margin-bottom: 0.55em;
 				flex-wrap: wrap;
 			}
 
@@ -134,8 +211,8 @@
 				background: #e8f0e0;
 				border: 1.5px solid #b8c5a8;
 				border-radius: 4px;
-				padding: 0.2em 0.6em;
-				font-size: 0.8em;
+				padding: 0.18em 0.55em;
+				font-size: 0.78em;
 				cursor: pointer;
 				font-family: Tahoma, Arial, sans-serif;
 				color: #2d5016;
@@ -150,18 +227,17 @@
 				border-color: #2d5016;
 			}
 
-			/* Custom request field */
 			.custom-request {
 				width: 100%;
 				font-family: Tahoma, Arial, sans-serif;
-				font-size: 0.8em;
-				padding: 0.35em 0.5em;
+				font-size: 0.78em;
+				padding: 0.3em 0.45em;
 				border: 1px solid #b8c5a8;
 				border-radius: 4px;
 				background: #f5f3e8;
-				margin-bottom: 0.65em;
+				margin-bottom: 0.55em;
 				resize: vertical;
-				min-height: 36px;
+				min-height: 34px;
 				color: #2b2d2e;
 				box-sizing: border-box;
 			}
@@ -171,11 +247,10 @@
 				border-color: #2d5016;
 			}
 
-			/* Quantity + Add row */
 			.card-actions {
 				display: flex;
 				align-items: center;
-				gap: 0.5em;
+				gap: 0.45em;
 			}
 
 			.qty-control {
@@ -189,9 +264,9 @@
 			.qty-btn {
 				background: #e8f0e0;
 				border: none;
-				width: 28px;
-				height: 28px;
-				font-size: 1.1em;
+				width: 26px;
+				height: 26px;
+				font-size: 1em;
 				cursor: pointer;
 				color: #2d5016;
 				font-weight: bold;
@@ -203,9 +278,9 @@
 			}
 
 			.qty-num {
-				width: 32px;
+				width: 28px;
 				text-align: center;
-				font-size: 0.95em;
+				font-size: 0.9em;
 				font-weight: bold;
 				background: #fdfbf7;
 				border: none;
@@ -218,225 +293,71 @@
 				color: #f5f3e8;
 				border: none;
 				border-radius: 5px;
-				padding: 0.45em 1em;
-				font-size: 0.9em;
+				padding: 0.4em 0.8em;
+				font-size: 0.85em;
 				font-family: Tahoma, Arial, sans-serif;
 				cursor: pointer;
-				transition: background 0.2s;
 				font-weight: bold;
-				letter-spacing: 0.03em;
+				transition: background 0.2s;
 			}
 
 			.add-btn:hover {
 				background: #3d6b1f;
 			}
-
 			.add-btn.added {
 				background: #d1a35e;
 				color: #2b2d2e;
 			}
 
-			/* Hidden category panels */
-			.category-panel {
-				display: none;
-			}
-
-			.category-panel.active {
-				display: block;
-			}
-
-			/* ===== CART SIDEBAR ===== */
-			#cart-overlay {
-				display: none;
+			/* ===== PERSISTENT CART PANEL ===== */
+			#cart-panel {
 				position: fixed;
-				inset: 0;
-				background: rgba(43, 45, 46, 0.45);
-				z-index: 100;
-				transition: opacity 0.2s;
-			}
-
-			#cart-overlay.open {
-				display: block;
-			}
-
-			#cart-sidebar {
-				position: fixed;
+				/* top is set by JS to sit just below header+nav */
 				top: 0;
-				right: -400px;
-				width: min(400px, 100vw);
+				right: -300px; /* hidden by default */
+				width: 290px;
 				height: 100vh;
-				background: #f5f3e8;
-				z-index: 200;
+				background: #fdfbf7;
+				border-left: 2px solid #d4e0c8;
 				display: flex;
 				flex-direction: column;
-				box-shadow: -4px 0 24px rgba(43, 45, 46, 0.18);
+				z-index: 80;
+				overflow: hidden;
 				transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-				border-left: 3px solid #2d5016;
+				box-shadow: -4px 0 20px rgba(43, 45, 46, 0.12);
 			}
 
-			#cart-sidebar.open {
+			#cart-panel.cart-visible {
 				right: 0;
 			}
 
-			.cart-header {
-				background: #2d5016;
-				color: #f5f3e8;
-				padding: 1em 1.2em;
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-			}
-
-			.cart-header h3 {
-				margin: 0;
-				font-size: 1.2em;
-				color: #f5f3e8;
-			}
-
-			#close-cart {
-				background: none;
-				border: none;
-				color: #f5f3e8;
-				font-size: 1.5em;
-				cursor: pointer;
-				padding: 0 0.2em;
-				line-height: 1;
-			}
-
-			.cart-items {
-				flex: 1;
-				overflow-y: auto;
-				padding: 0.8em;
-			}
-
-			.cart-empty {
-				text-align: center;
-				color: #888;
-				margin-top: 3em;
-				font-style: italic;
-			}
-
-			.cart-item {
-				background: #fdfbf7;
-				border: 1px solid #d4e0c8;
-				border-radius: 7px;
-				padding: 0.7em 0.9em;
-				margin-bottom: 0.6em;
-				position: relative;
-			}
-
-			.cart-item-name {
-				font-weight: bold;
-				color: #2d5016;
-				font-size: 0.95em;
-			}
-
-			.cart-item-meta {
-				font-size: 0.78em;
-				color: #666;
-				margin: 0.15em 0;
-			}
-
-			.cart-item-custom {
-				font-size: 0.78em;
-				color: #888;
-				font-style: italic;
-				margin-top: 0.15em;
-			}
-
-			.cart-item-row {
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				margin-top: 0.4em;
-			}
-
-			.cart-item-qty {
-				display: flex;
-				align-items: center;
-				gap: 0.3em;
-			}
-
-			.cart-qty-btn {
-				background: #e8f0e0;
-				border: 1px solid #b8c5a8;
-				width: 24px;
-				height: 24px;
-				border-radius: 4px;
-				cursor: pointer;
-				font-size: 1em;
-				color: #2d5016;
-				font-weight: bold;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-			}
-
-			.cart-qty-num {
-				min-width: 20px;
-				text-align: center;
-				font-weight: bold;
-			}
-
-			.cart-item-price {
-				font-weight: bold;
-				color: #2b2d2e;
-			}
-
-			.remove-item {
-				position: absolute;
-				top: 0.4em;
-				right: 0.5em;
-				background: none;
-				border: none;
-				color: #aaa;
-				cursor: pointer;
-				font-size: 1em;
-				padding: 0;
-				line-height: 1;
-			}
-
-			.remove-item:hover {
-				color: #c0392b;
-			}
-
-			/* Cart footer */
-			.cart-footer {
-				padding: 1em;
-				border-top: 2px solid #d4e0c8;
-				background: #fdfbf7;
-			}
-
-			.cart-subtotal {
-				display: flex;
-				justify-content: space-between;
-				font-size: 1.1em;
-				font-weight: bold;
-				margin-bottom: 0.8em;
-				color: #2d5016;
-			}
-
-			/* Order notes */
-			.cart-notes-label {
-				font-size: 0.82em;
-				color: #555;
-				margin-bottom: 0.25em;
-				display: block;
-			}
-
-			#order-notes {
-				width: 100%;
-				min-height: 48px;
-				font-family: Tahoma, Arial, sans-serif;
-				font-size: 0.82em;
-				padding: 0.4em 0.5em;
-				border: 1px solid #b8c5a8;
-				border-radius: 5px;
+			/* Subtotal box — pinned at top, Amazon-style */
+			.cart-subtotal-box {
 				background: #f5f3e8;
+				border-bottom: 2px solid #d4e0c8;
+				padding: 1em 1.1em 0.9em;
+			}
+
+			.cart-subtotal-row {
+				display: flex;
+				justify-content: space-between;
+				align-items: baseline;
+				margin-bottom: 0.65em;
+			}
+
+			.subtotal-label {
+				font-size: 0.87em;
+				color: #555;
+			}
+
+			.subtotal-label strong {
 				color: #2b2d2e;
-				margin-bottom: 0.8em;
-				resize: vertical;
-				box-sizing: border-box;
+			}
+
+			.subtotal-amount {
+				font-size: 1.3em;
+				font-weight: bold;
+				color: #2d5016;
 			}
 
 			.checkout-btn {
@@ -445,103 +366,280 @@
 				color: #f5f3e8;
 				border: none;
 				border-radius: 6px;
-				padding: 0.75em;
-				font-size: 1em;
+				padding: 0.65em;
+				font-size: 0.95em;
 				font-family: Tahoma, Arial, sans-serif;
 				font-weight: bold;
 				cursor: pointer;
-				letter-spacing: 0.05em;
+				letter-spacing: 0.04em;
 				transition: background 0.2s;
+				margin-bottom: 0.4em;
 			}
 
 			.checkout-btn:hover {
 				background: #3d6b1f;
 			}
-
 			.checkout-btn:disabled {
 				background: #b8c5a8;
 				cursor: not-allowed;
 			}
 
-			/* Export / LM button */
 			.export-btn {
 				width: 100%;
-				background: #d1a35e;
-				color: #2b2d2e;
-				border: none;
+				background: transparent;
+				color: #2d5016;
+				border: 1.5px solid #2d5016;
 				border-radius: 6px;
-				padding: 0.55em;
-				font-size: 0.85em;
+				padding: 0.42em;
+				font-size: 0.78em;
 				font-family: Tahoma, Arial, sans-serif;
 				font-weight: bold;
 				cursor: pointer;
-				letter-spacing: 0.04em;
-				margin-top: 0.5em;
-				transition: background 0.2s;
+				transition:
+					background 0.2s,
+					color 0.2s;
 			}
 
 			.export-btn:hover {
-				background: #c49345;
-			}
-
-			/* Cart button (floating) */
-			#cart-toggle {
-				position: fixed;
-				bottom: 1.5em;
-				right: 1.5em;
 				background: #2d5016;
 				color: #f5f3e8;
-				border: none;
-				border-radius: 50px;
-				padding: 0.7em 1.3em;
-				font-size: 1em;
-				font-family: Tahoma, Arial, sans-serif;
+			}
+			.export-btn:disabled {
+				border-color: #b8c5a8;
+				color: #b8c5a8;
+				cursor: not-allowed;
+			}
+
+			/* Scrollable items list */
+			.cart-items-scroll {
+				flex: 1;
+				overflow-y: auto;
+				padding: 0.7em 0.9em;
+			}
+
+			.cart-panel-title {
+				font-size: 0.78em;
 				font-weight: bold;
-				cursor: pointer;
-				z-index: 90;
-				box-shadow: 0 4px 16px rgba(45, 80, 22, 0.25);
+				text-transform: uppercase;
+				letter-spacing: 0.07em;
+				color: #999;
+				margin: 0 0 0.6em;
+			}
+
+			.cart-empty {
+				text-align: center;
+				color: #bbb;
+				font-size: 0.85em;
+				margin-top: 2em;
+				font-style: italic;
+				line-height: 1.7;
+				padding: 0;
+			}
+
+			/* Cart item row */
+			.cart-item {
+				display: flex;
+				gap: 0.55em;
+				padding: 0.65em 0;
+				border-bottom: 1px solid #e8f0e0;
+				position: relative;
+				align-items: flex-start;
+			}
+
+			.cart-item:last-child {
+				border-bottom: none;
+			}
+
+			.cart-item-thumb {
+				width: 40px;
+				height: 40px;
+				border-radius: 6px;
+				background: #d4e0c8;
 				display: flex;
 				align-items: center;
-				gap: 0.5em;
-				transition:
-					background 0.2s,
-					transform 0.15s;
+				justify-content: center;
+				font-size: 1.35em;
+				flex-shrink: 0;
 			}
 
-			#cart-toggle:hover {
-				background: #3d6b1f;
-				transform: translateY(-2px);
+			.cart-item-info {
+				flex: 1;
+				min-width: 0;
 			}
 
-			#cart-count {
-				background: #d1a35e;
-				color: #2b2d2e;
-				border-radius: 50px;
-				padding: 0.1em 0.55em;
-				font-size: 0.85em;
+			.cart-item-name {
+				font-size: 0.82em;
 				font-weight: bold;
-				min-width: 1.5em;
-				text-align: center;
+				color: #2d5016;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				padding-right: 1.2em;
 			}
 
-			/* Toast notification */
+			.cart-item-meta {
+				font-size: 0.73em;
+				color: #999;
+				margin: 0.1em 0 0.3em;
+			}
+
+			.cart-item-custom {
+				font-size: 0.71em;
+				color: #aaa;
+				font-style: italic;
+				margin-bottom: 0.25em;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+
+			.cart-item-controls {
+				display: flex;
+				align-items: center;
+				gap: 0.35em;
+			}
+
+			.cart-qty-btn {
+				background: #e8f0e0;
+				border: 1px solid #b8c5a8;
+				width: 20px;
+				height: 20px;
+				border-radius: 3px;
+				cursor: pointer;
+				font-size: 0.9em;
+				color: #2d5016;
+				font-weight: bold;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				padding: 0;
+				line-height: 1;
+			}
+
+			.cart-qty-num {
+				min-width: 16px;
+				text-align: center;
+				font-size: 0.8em;
+				font-weight: bold;
+				color: #2b2d2e;
+			}
+
+			.cart-item-line {
+				font-size: 0.82em;
+				font-weight: bold;
+				color: #2b2d2e;
+				white-space: nowrap;
+				flex-shrink: 0;
+				padding-top: 2px;
+			}
+
+			.remove-item {
+				position: absolute;
+				top: 0.5em;
+				right: 0;
+				background: none;
+				border: none;
+				color: #ccc;
+				cursor: pointer;
+				font-size: 0.8em;
+				padding: 0;
+				line-height: 1;
+				transition: color 0.15s;
+			}
+
+			.remove-item:hover {
+				color: #c0392b;
+			}
+
+			/* Order notes — pinned at bottom */
+			.cart-notes-section {
+				padding: 0.65em 0.9em;
+				border-top: 2px solid #d4e0c8;
+				background: #f5f3e8;
+			}
+
+			.cart-notes-label {
+				font-size: 0.76em;
+				color: #777;
+				display: block;
+				margin-bottom: 0.25em;
+			}
+
+			#order-notes {
+				width: 100%;
+				min-height: 42px;
+				font-family: Tahoma, Arial, sans-serif;
+				font-size: 0.76em;
+				padding: 0.32em 0.42em;
+				border: 1px solid #b8c5a8;
+				border-radius: 5px;
+				background: #fdfbf7;
+				color: #2b2d2e;
+				resize: vertical;
+				box-sizing: border-box;
+			}
+
+			/* ===== MOBILE: slide-in drawer ===== */
+			#cart-overlay {
+				display: none;
+				position: fixed;
+				inset: 0;
+				background: rgba(43, 45, 46, 0.45);
+				z-index: 100;
+			}
+
+			#cart-overlay.open {
+				display: block;
+			}
+
+			@media (max-width: 900px) {
+				/* On mobile, cart always slides over content (no margin push) */
+				#products-col.cart-open {
+					margin-right: 0;
+				}
+
+				#cart-panel {
+					width: min(290px, 100vw);
+					z-index: 200;
+					box-shadow: -4px 0 24px rgba(43, 45, 46, 0.2);
+				}
+
+				#mobile-cart-toggle {
+					display: flex !important;
+				}
+				#topbar-total {
+					display: block;
+				}
+			}
+
+			@media (min-width: 901px) {
+				#mobile-cart-toggle {
+					display: none !important;
+				}
+				#topbar-total {
+					display: none;
+				}
+			}
+
+			/* ===== TOAST ===== */
 			#toast {
 				position: fixed;
-				bottom: 5em;
-				right: 1.5em;
+				top: 4.5em;
+				right: 1.2em;
 				background: #2d5016;
 				color: #f5f3e8;
 				border-radius: 6px;
-				padding: 0.6em 1.2em;
-				font-size: 0.9em;
+				padding: 0.55em 1.1em;
+				font-size: 0.88em;
 				font-family: Tahoma, Arial, sans-serif;
 				z-index: 300;
 				opacity: 0;
-				transform: translateY(10px);
+				transform: translateY(-8px);
 				transition:
 					opacity 0.2s,
 					transform 0.2s;
 				pointer-events: none;
+				box-shadow: 0 4px 12px rgba(43, 45, 46, 0.2);
 			}
 
 			#toast.show {
@@ -549,7 +647,123 @@
 				transform: translateY(0);
 			}
 
-			/* LM payload modal */
+			/* ===== CHATBOT BUBBLE ===== */
+			#chat-bubble {
+				position: fixed;
+				bottom: 1.5em;
+				right: 1.5em;
+				z-index: 90;
+				background: #d1a35e;
+				color: #2b2d2e;
+				border: none;
+				border-radius: 50%;
+				width: 54px;
+				height: 54px;
+				font-size: 1.45em;
+				cursor: pointer;
+				box-shadow: 0 4px 16px rgba(43, 45, 46, 0.22);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				transition:
+					background 0.2s,
+					transform 0.15s;
+			}
+
+			#chat-bubble:hover {
+				background: #c49345;
+				transform: translateY(-2px) scale(1.06);
+			}
+
+			.chat-tooltip {
+				position: absolute;
+				right: 62px;
+				bottom: 50%;
+				transform: translateY(50%);
+				background: #2b2d2e;
+				color: #f5f3e8;
+				font-family: Tahoma, Arial, sans-serif;
+				font-size: 0.72em;
+				white-space: nowrap;
+				padding: 0.35em 0.75em;
+				border-radius: 5px;
+				opacity: 0;
+				pointer-events: none;
+				transition: opacity 0.2s;
+			}
+
+			#chat-bubble:hover .chat-tooltip {
+				opacity: 1;
+			}
+
+			#chat-panel-float {
+				position: fixed;
+				bottom: 5em;
+				right: 1.5em;
+				width: min(320px, 92vw);
+				background: #f5f3e8;
+				border-radius: 12px;
+				border: 2px solid #d1a35e;
+				box-shadow: 0 8px 28px rgba(43, 45, 46, 0.2);
+				z-index: 95;
+				display: none;
+				flex-direction: column;
+				overflow: hidden;
+			}
+
+			#chat-panel-float.open {
+				display: flex;
+			}
+
+			.chat-panel-header {
+				background: #d1a35e;
+				color: #2b2d2e;
+				padding: 0.7em 1em;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				font-weight: bold;
+				font-family: Tahoma, Arial, sans-serif;
+				font-size: 0.92em;
+			}
+
+			#close-chat-btn {
+				background: none;
+				border: none;
+				font-size: 1.05em;
+				cursor: pointer;
+				color: #2b2d2e;
+				padding: 0;
+			}
+
+			.chat-panel-body {
+				padding: 1.1em 1em;
+				font-size: 0.83em;
+				color: #666;
+				font-family: Tahoma, Arial, sans-serif;
+				text-align: center;
+			}
+
+			.chat-panel-body p {
+				padding: 0;
+				margin: 0 0 0.5em;
+				color: #666;
+			}
+
+			.chat-connect-btn {
+				margin-top: 0.5em;
+				background: #2d5016;
+				color: #f5f3e8;
+				border: none;
+				border-radius: 5px;
+				padding: 0.45em 1em;
+				font-size: 0.82em;
+				font-family: Tahoma, Arial, sans-serif;
+				cursor: pointer;
+				font-weight: bold;
+			}
+
+			/* ===== LM MODAL ===== */
 			#lm-modal {
 				display: none;
 				position: fixed;
@@ -567,8 +781,8 @@
 			.lm-modal-box {
 				background: #f5f3e8;
 				border-radius: 10px;
-				padding: 1.5em;
-				max-width: 560px;
+				padding: 1.4em;
+				max-width: 540px;
 				width: 90vw;
 				max-height: 80vh;
 				overflow-y: auto;
@@ -586,7 +800,7 @@
 				border-radius: 6px;
 				padding: 1em;
 				overflow-x: auto;
-				font-size: 0.78em;
+				font-size: 0.76em;
 				white-space: pre-wrap;
 				word-break: break-all;
 			}
@@ -619,8 +833,8 @@
 			}
 
 			.lm-hint {
-				font-size: 0.78em;
-				color: #888;
+				font-size: 0.76em;
+				color: #999;
 				margin-top: 0.5em;
 				font-style: italic;
 			}
@@ -628,14 +842,11 @@
 	</head>
 
 	<body>
-		<!-- wrapper -->
 		<div id="wrapper">
-			<!-- header -->
 			<header>
 				<h1><a href="index.html">TeaZen Boba Bar</a></h1>
 			</header>
 
-			<!-- nav -->
 			<nav>
 				<ul>
 					<li><a href="index.html">Home</a></li>
@@ -646,117 +857,148 @@
 				</ul>
 			</nav>
 
-			<!-- main -->
-			<main>
+			<main style="padding: 0">
 				<div id="herocouch"></div>
-				<h2>Order Online</h2>
-				<p>
-					Build your order below — drinks, snacks, and merch all in one place.
-					Add special requests per item, and we'll take care of the rest!
-				</p>
 
-				<!-- Category tabs -->
-				<div class="order-tabs">
-					<button class="tab-btn active" data-tab="drinks">
-						🧋 Boba & Tea
+				<!-- Sticky top bar -->
+				<div id="order-topbar">
+					<span id="order-topbar-label">🧋 TeaZen Order</span>
+					<span id="topbar-total">$0.00</span>
+					<button id="mobile-cart-toggle" onclick="openMobileCart()">
+						🛒 Cart <span id="cart-count">0</span>
 					</button>
-					<button class="tab-btn" data-tab="snacks">🍡 Snacks</button>
-					<button class="tab-btn" data-tab="merch">👕 Merch</button>
 				</div>
 
-				<!-- Boba & Tea -->
-				<div class="category-panel active" id="tab-drinks">
-					<div class="order-grid" id="drinks-grid"></div>
-				</div>
+				<!-- Two-column order body -->
+				<div id="order-body">
+					<!-- LEFT: Products -->
+					<div id="products-col">
+						<h2>Order Online</h2>
+						<p>
+							Drinks, snacks, and merch — all in one place. Add special requests
+							per item!
+						</p>
 
-				<!-- Snacks -->
-				<div class="category-panel" id="tab-snacks">
-					<div class="order-grid" id="snacks-grid"></div>
-				</div>
+						<div class="order-tabs">
+							<button class="tab-btn active" data-tab="drinks">
+								🧋 Boba & Tea
+							</button>
+							<button class="tab-btn" data-tab="snacks">🍡 Snacks</button>
+							<button class="tab-btn" data-tab="merch">👕 Merch</button>
+						</div>
 
-				<!-- Merch -->
-				<div class="category-panel" id="tab-merch">
-					<div class="order-grid" id="merch-grid"></div>
+						<div class="category-panel active" id="tab-drinks">
+							<div class="order-grid" id="drinks-grid"></div>
+						</div>
+						<div class="category-panel" id="tab-snacks">
+							<div class="order-grid" id="snacks-grid"></div>
+						</div>
+						<div class="category-panel" id="tab-merch">
+							<div class="order-grid" id="merch-grid"></div>
+						</div>
+					</div>
+
+					<!-- RIGHT: Persistent cart panel (Amazon-style) -->
+					<div id="cart-panel">
+						<!-- Subtotal + buttons pinned at top -->
+						<div class="cart-subtotal-box">
+							<div class="cart-subtotal-row">
+								<span class="subtotal-label"
+									>Subtotal
+									<strong id="cart-item-count">(0 items)</strong></span
+								>
+								<span class="subtotal-amount" id="cart-total">$0.00</span>
+							</div>
+							<button
+								class="checkout-btn"
+								id="checkout-btn"
+								onclick="checkout()"
+								disabled
+							>
+								Place Order
+							</button>
+							<button
+								class="export-btn"
+								id="export-lm-btn"
+								onclick="showLMPayload()"
+								disabled
+							>
+								🤖 Export for AI
+							</button>
+						</div>
+
+						<!-- Scrollable cart items -->
+						<div class="cart-items-scroll" id="cart-items">
+							<p class="cart-empty">
+								Your cart is empty.<br />Add something delicious! 🧋
+							</p>
+						</div>
+
+						<!-- Order notes pinned at bottom -->
+						<div class="cart-notes-section">
+							<label class="cart-notes-label" for="order-notes"
+								>Order notes:</label
+							>
+							<textarea
+								id="order-notes"
+								placeholder="e.g. pickup at 5pm, extra ice..."
+							></textarea>
+						</div>
+					</div>
 				</div>
 			</main>
 
-			<!-- footer -->
 			<footer>
 				Copyright &copy; TeaZen Boba Bar<br />
 				<a href="mailto:info@teazenboba.com">info@teazenboba.com</a>
 			</footer>
 		</div>
 
-		<!-- Cart toggle button -->
-		<button id="cart-toggle" onclick="openCart()">
-			🛒 Cart <span id="cart-count">0</span>
-		</button>
-
-		<!-- Cart overlay -->
-		<div id="cart-overlay" onclick="closeCart()"></div>
-
-		<!-- Cart sidebar -->
-		<div id="cart-sidebar">
-			<div class="cart-header">
-				<h3>🛒 Your Order</h3>
-				<button id="close-cart" onclick="closeCart()" aria-label="Close cart">
-					✕
-				</button>
-			</div>
-			<div class="cart-items" id="cart-items">
-				<div class="cart-empty">
-					Your cart is empty.<br />Add something delicious!
-				</div>
-			</div>
-			<div class="cart-footer">
-				<div class="cart-subtotal">
-					<span>Subtotal</span>
-					<span id="cart-total">$0.00</span>
-				</div>
-				<label class="cart-notes-label" for="order-notes"
-					>Order notes / special requests:</label
-				>
-				<textarea
-					id="order-notes"
-					placeholder="e.g. Extra ice, no sugar, pickup at 5pm..."
-				></textarea>
-				<button
-					class="checkout-btn"
-					id="checkout-btn"
-					onclick="checkout()"
-					disabled
-				>
-					Place Order
-				</button>
-				<button
-					class="export-btn"
-					id="export-lm-btn"
-					onclick="showLMPayload()"
-					disabled
-					title="Export order as structured JSON for LM integration"
-				>
-					🤖 Export for AI Processing
-				</button>
-			</div>
-		</div>
+		<!-- Mobile overlay -->
+		<div id="cart-overlay" onclick="closeMobileCart()"></div>
 
 		<!-- Toast -->
 		<div id="toast"></div>
 
-		<!-- LM Payload Modal -->
+		<!-- Chatbot bubble -->
+		<button
+			id="chat-bubble"
+			onclick="toggleChat()"
+			aria-label="Open TeaZen Assistant"
+		>
+			💬
+			<span class="chat-tooltip">Ask TeaZen Assistant</span>
+		</button>
+
+		<div id="chat-panel-float">
+			<div class="chat-panel-header">
+				<span>🤖 TeaZen Assistant</span>
+				<button id="close-chat-btn" onclick="toggleChat()">✕</button>
+			</div>
+			<div class="chat-panel-body">
+				<p>Your AI assistant will appear here.</p>
+				<p style="font-size: 0.78em; color: #bbb">
+					Connect your LM endpoint to power this widget.
+				</p>
+				<button
+					class="chat-connect-btn"
+					onclick="sendToLM(buildOrderPayload())"
+				>
+					Send Current Order to LM
+				</button>
+			</div>
+		</div>
+
+		<!-- LM Modal -->
 		<div id="lm-modal">
 			<div class="lm-modal-box">
 				<h3>🤖 AI Order Payload</h3>
 				<p style="font-size: 0.85em; color: #555">
-					This is the structured JSON payload ready to send to your language
-					model. It includes all cart items, quantities, customizations, and
-					order notes.
+					Structured JSON ready to send to your language model.
 				</p>
 				<pre id="lm-payload-code"></pre>
 				<p class="lm-hint">
-					Hook this payload to your LLM's <code>orderPayload</code> input — see
-					the <code>sendToLM()</code> function in the script for integration
-					instructions.
+					Wire this to your LM via <code>sendToLM()</code> in the script.
 				</p>
 				<div class="lm-modal-actions">
 					<button class="lm-copy-btn" onclick="copyPayload()">Copy JSON</button>
@@ -766,9 +1008,6 @@
 		</div>
 
 		<script>
-			// ===== PRODUCT DATA =====
-			// To integrate with a backend or LM, replace these arrays with an API fetch.
-
 			const PRODUCTS = {
 				drinks: [
 					{
@@ -796,7 +1035,7 @@
 					{
 						id: "matcha-zen",
 						name: "Matcha Zen",
-						desc: "Premium Japanese matcha whisked to perfection with oat milk and honey boba.",
+						desc: "Premium Japanese matcha with oat milk and honey boba.",
 						sizes: [
 							{ label: "Regular", price: 6.75 },
 							{ label: "Large", price: 7.75 },
@@ -839,7 +1078,7 @@
 					{
 						id: "taiyaki",
 						name: "Taiyaki",
-						desc: "Fish-shaped waffle pastry filled with red bean paste, Nutella, or custard.",
+						desc: "Fish-shaped waffle pastry filled with red bean, Nutella, or custard.",
 						sizes: [
 							{ label: "1 pc", price: 3.5 },
 							{ label: "3 pcs", price: 9.0 },
@@ -853,22 +1092,22 @@
 						desc: "Fresh tuna or tofu over seasoned rice with avocado, edamame, and sesame.",
 						sizes: [{ label: "Regular", price: 12.95 }],
 						emoji: "🥗",
-						tags: ["poke", "savory", "fresh"],
+						tags: ["poke", "savory"],
 					},
 					{
 						id: "summer-rolls",
 						name: "Summer Rolls",
-						desc: "Two fresh rice paper rolls filled with shrimp or tofu, herbs, and rice noodles.",
+						desc: "Two rice paper rolls with shrimp or tofu, fresh herbs, and rice noodles.",
 						sizes: [{ label: "2 pcs", price: 7.5 }],
 						emoji: "🌿",
-						tags: ["rolls", "fresh", "savory"],
+						tags: ["rolls", "fresh"],
 					},
 				],
 				merch: [
 					{
 						id: "teazen-tee",
 						name: "TeaZen Zen Vibes Tee",
-						desc: "100% organic cotton tee. Available in S-XL. Wear it in-store for 10% off your drink!",
+						desc: "100% organic cotton. S–XL. Wear in-store for 10% off your drink!",
 						sizes: [
 							{ label: "S", price: 18.95 },
 							{ label: "M", price: 18.95 },
@@ -881,7 +1120,7 @@
 					{
 						id: "boba-tumbler",
 						name: "TeaZen Boba Tumbler",
-						desc: "20oz tumbler with wide boba straw. Keeps drinks cold for hours. Bring it in for 10% off!",
+						desc: "20oz tumbler with wide boba straw. Keeps drinks cold for hours. Bring in for 10% off!",
 						sizes: [{ label: "20oz", price: 14.95 }],
 						emoji: "🥤",
 						tags: ["tumbler", "drinkware"],
@@ -889,20 +1128,20 @@
 				],
 			};
 
-			// ===== CART STATE =====
-			// This is the single source of truth for cart data.
-			// Structure is LM-ready — each item has id, name, size, price, qty, and custom notes.
 			let cart = [];
-			let selectedSizes = {}; // productId -> selected size index
-			let selectedQtys = {}; // productId -> quantity
+			let selectedSizes = {};
+			let selectedQtys = {};
 
-			// ===== RENDER PRODUCT CARDS =====
+			function allProducts() {
+				return [...PRODUCTS.drinks, ...PRODUCTS.snacks, ...PRODUCTS.merch];
+			}
+
 			function renderProducts(category) {
 				const grid = document.getElementById(`${category}-grid`);
-				const products = PRODUCTS[category];
-				grid.innerHTML = products.map((p) => renderCard(p, category)).join("");
-				// Set defaults
-				products.forEach((p) => {
+				grid.innerHTML = PRODUCTS[category]
+					.map((p) => renderCard(p, category))
+					.join("");
+				PRODUCTS[category].forEach((p) => {
 					selectedSizes[p.id] = 0;
 					selectedQtys[p.id] = 1;
 				});
@@ -912,18 +1151,16 @@
 				const sizeButtons = p.sizes
 					.map(
 						(s, i) =>
-							`<button class="size-btn ${i === 0 ? "selected" : ""}" data-pid="${p.id}" data-sidx="${i}" onclick="selectSize('${p.id}', ${i})">${s.label}</button>`,
+							`<button class="size-btn ${i === 0 ? "selected" : ""}" data-pid="${p.id}" onclick="selectSize('${p.id}', ${i})">${s.label}</button>`,
 					)
 					.join("");
-
 				const priceDisplay =
 					p.sizes.length === 1
 						? `$${p.sizes[0].price.toFixed(2)}`
 						: `$${p.sizes[0].price.toFixed(2)} – $${p.sizes[p.sizes.length - 1].price.toFixed(2)}`;
-
 				return `
-			<div class="product-card" id="card-${p.id}">
-				<div class="card-image"><span>${p.emoji}</span></div>
+			<div class="product-card">
+				<div class="card-image">${p.emoji}</div>
 				<div class="card-body">
 					<div class="card-name">${p.name}</div>
 					<div class="card-desc">${p.desc}</div>
@@ -944,23 +1181,13 @@
 
 			function selectSize(pid, idx) {
 				selectedSizes[pid] = idx;
-				// Update button styles
 				document
 					.querySelectorAll(`.size-btn[data-pid="${pid}"]`)
-					.forEach((btn, i) => {
-						btn.classList.toggle("selected", i === idx);
-					});
-				// Update price display
-				const allProducts = [
-					...PRODUCTS.drinks,
-					...PRODUCTS.snacks,
-					...PRODUCTS.merch,
-				];
-				const p = allProducts.find((x) => x.id === pid);
-				if (p) {
+					.forEach((btn, i) => btn.classList.toggle("selected", i === idx));
+				const p = allProducts().find((x) => x.id === pid);
+				if (p)
 					document.getElementById(`price-${pid}`).textContent =
 						`$${p.sizes[idx].price.toFixed(2)}`;
-				}
 			}
 
 			function changeQty(pid, delta) {
@@ -968,26 +1195,16 @@
 				document.getElementById(`qty-${pid}`).textContent = selectedQtys[pid];
 			}
 
-			// ===== ADD TO CART =====
 			function addToCart(pid, category) {
-				const allProducts = [
-					...PRODUCTS.drinks,
-					...PRODUCTS.snacks,
-					...PRODUCTS.merch,
-				];
-				const p = allProducts.find((x) => x.id === pid);
+				const p = allProducts().find((x) => x.id === pid);
 				if (!p) return;
-
 				const sizeIdx = selectedSizes[pid] ?? 0;
 				const size = p.sizes[sizeIdx];
 				const qty = selectedQtys[pid] || 1;
 				const custom =
 					document.getElementById(`custom-${pid}`)?.value?.trim() || "";
-
-				// Check if identical item (same id + size + custom) is already in cart
 				const key = `${pid}::${sizeIdx}::${custom}`;
-				const existing = cart.find((item) => item._key === key);
-
+				const existing = cart.find((i) => i._key === key);
 				if (existing) {
 					existing.quantity += qty;
 				} else {
@@ -996,6 +1213,7 @@
 						id: pid,
 						category,
 						name: p.name,
+						emoji: p.emoji,
 						size: size.label,
 						unitPrice: size.price,
 						quantity: qty,
@@ -1003,12 +1221,9 @@
 						tags: p.tags,
 					});
 				}
-
 				updateCartUI();
 				flashAddBtn(pid);
 				showToast(`Added ${qty}× ${p.name} (${size.label})`);
-
-				// Reset qty
 				selectedQtys[pid] = 1;
 				document.getElementById(`qty-${pid}`).textContent = 1;
 			}
@@ -1024,7 +1239,6 @@
 				}, 1400);
 			}
 
-			// ===== CART UI =====
 			function updateCartUI() {
 				const totalItems = cart.reduce((s, i) => s + i.quantity, 0);
 				const totalPrice = cart.reduce(
@@ -1035,62 +1249,106 @@
 				document.getElementById("cart-count").textContent = totalItems;
 				document.getElementById("cart-total").textContent =
 					`$${totalPrice.toFixed(2)}`;
+				document.getElementById("topbar-total").textContent =
+					`$${totalPrice.toFixed(2)}`;
+				document.getElementById("cart-item-count").textContent =
+					`(${totalItems} item${totalItems !== 1 ? "s" : ""})`;
 
-				const cartEl = document.getElementById("cart-items");
 				const hasItems = cart.length > 0;
-
 				document.getElementById("checkout-btn").disabled = !hasItems;
 				document.getElementById("export-lm-btn").disabled = !hasItems;
 
+				// Show/hide cart panel and push products col
+				const cartPanel = document.getElementById("cart-panel");
+				const productsCol = document.getElementById("products-col");
+				if (hasItems) {
+					positionCartPanel();
+					cartPanel.classList.add("cart-visible");
+					productsCol.classList.add("cart-open");
+				} else {
+					cartPanel.classList.remove("cart-visible");
+					productsCol.classList.remove("cart-open");
+				}
+
+				const cartEl = document.getElementById("cart-items");
 				if (!hasItems) {
 					cartEl.innerHTML =
-						'<div class="cart-empty">Your cart is empty.<br>Add something delicious!</div>';
+						'<p class="cart-empty">Your cart is empty.<br>Add something delicious! 🧋</p>';
 					return;
 				}
 
-				cartEl.innerHTML = cart
-					.map(
-						(item, idx) => `
+				cartEl.innerHTML =
+					`<p class="cart-panel-title">Your items</p>` +
+					cart
+						.map(
+							(item, idx) => `
 				<div class="cart-item">
-					<button class="remove-item" onclick="removeItem(${idx})" title="Remove">✕</button>
-					<div class="cart-item-name">${item.name}</div>
-					<div class="cart-item-meta">${item.size} · $${item.unitPrice.toFixed(2)} each</div>
-					${item.customRequest ? `<div class="cart-item-custom">📝 ${item.customRequest}</div>` : ""}
-					<div class="cart-item-row">
-						<div class="cart-item-qty">
+					<div class="cart-item-thumb">${item.emoji}</div>
+					<div class="cart-item-info">
+						<div class="cart-item-name">${item.name}</div>
+						<div class="cart-item-meta">${item.size} · $${item.unitPrice.toFixed(2)} ea</div>
+						${item.customRequest ? `<div class="cart-item-custom">📝 ${item.customRequest}</div>` : ""}
+						<div class="cart-item-controls">
 							<button class="cart-qty-btn" onclick="cartChangeQty(${idx}, -1)">−</button>
 							<span class="cart-qty-num">${item.quantity}</span>
 							<button class="cart-qty-btn" onclick="cartChangeQty(${idx}, 1)">+</button>
 						</div>
-						<span class="cart-item-price">$${(item.unitPrice * item.quantity).toFixed(2)}</span>
 					</div>
+					<span class="cart-item-line">$${(item.unitPrice * item.quantity).toFixed(2)}</span>
+					<button class="remove-item" onclick="removeItem(${idx})" title="Remove">✕</button>
 				</div>
 			`,
-					)
-					.join("");
+						)
+						.join("");
 			}
+
+			// Position the cart panel's top so it sits just below the site header+nav,
+			// accounting for whatever height those elements take up.
+			function positionCartPanel() {
+				const cartPanel = document.getElementById("cart-panel");
+				const orderTopbar = document.getElementById("order-topbar");
+				if (!cartPanel || !orderTopbar) return;
+				// Use the topbar's bottom edge as the cart's top
+				const topbarBottom = orderTopbar.getBoundingClientRect().bottom;
+				cartPanel.style.top = topbarBottom + "px";
+				cartPanel.style.height = window.innerHeight - topbarBottom + "px";
+			}
+
+			// Re-position on scroll and resize so it stays below the sticky topbar
+			window.addEventListener(
+				"scroll",
+				() => {
+					if (cart.length > 0) positionCartPanel();
+				},
+				{ passive: true },
+			);
+
+			window.addEventListener("resize", () => {
+				if (cart.length > 0) positionCartPanel();
+			});
 
 			function removeItem(idx) {
 				cart.splice(idx, 1);
 				updateCartUI();
 			}
-
 			function cartChangeQty(idx, delta) {
 				cart[idx].quantity = Math.max(1, cart[idx].quantity + delta);
 				updateCartUI();
 			}
 
-			function openCart() {
-				document.getElementById("cart-sidebar").classList.add("open");
+			function openMobileCart() {
+				document.getElementById("cart-panel").classList.add("mobile-open");
 				document.getElementById("cart-overlay").classList.add("open");
 			}
-
-			function closeCart() {
-				document.getElementById("cart-sidebar").classList.remove("open");
+			function closeMobileCart() {
+				document.getElementById("cart-panel").classList.remove("mobile-open");
 				document.getElementById("cart-overlay").classList.remove("open");
 			}
 
-			// ===== TOAST =====
+			function toggleChat() {
+				document.getElementById("chat-panel-float").classList.toggle("open");
+			}
+
 			let toastTimer;
 			function showToast(msg) {
 				const t = document.getElementById("toast");
@@ -1100,26 +1358,16 @@
 				toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
 			}
 
-			// ===== CHECKOUT =====
 			function checkout() {
 				if (!cart.length) return;
 				const payload = buildOrderPayload();
-				// TODO: Replace this with your actual order submission endpoint.
-				// e.g. fetch('/api/orders', { method: 'POST', body: JSON.stringify(payload) })
 				alert(
-					`Order placed! 🎉\n\nYour order total is $${payload.subtotal}.\nWe'll have it ready soon!`,
+					`Order placed! 🎉\n\nTotal: $${payload.subtotal}\nWe'll have it ready soon!`,
 				);
 				cart = [];
 				updateCartUI();
-				closeCart();
+				closeMobileCart();
 			}
-
-			// ===== LM INTEGRATION =====
-			// buildOrderPayload() returns a structured object ready to send to any LLM or backend.
-			// To integrate with your closed LM:
-			//   1. Call buildOrderPayload() to get the order JSON.
-			//   2. Pass it to sendToLM(payload) — implement the fetch inside that function.
-			//   3. Handle the LM response (e.g. show confirmation, recommendations, etc.)
 
 			function buildOrderPayload() {
 				const notes = document.getElementById("order-notes").value.trim();
@@ -1145,42 +1393,36 @@
 				};
 			}
 
-			// sendToLM — wire this to your closed LM endpoint
+			// Wire to your closed LM endpoint here
 			async function sendToLM(payload) {
-				// Example integration stub:
 				// const response = await fetch('https://your-lm-endpoint.internal/order', {
 				//   method: 'POST',
 				//   headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer YOUR_KEY' },
 				//   body: JSON.stringify({ order: payload, prompt: "Process this boba order." }),
 				// });
-				// const result = await response.json();
-				// return result;
 				console.log("[TeaZen] LM Payload:", JSON.stringify(payload, null, 2));
 			}
 
 			function showLMPayload() {
-				const payload = buildOrderPayload();
 				document.getElementById("lm-payload-code").textContent = JSON.stringify(
-					payload,
+					buildOrderPayload(),
 					null,
 					2,
 				);
 				document.getElementById("lm-modal").classList.add("open");
 			}
-
 			function closeLMModal() {
 				document.getElementById("lm-modal").classList.remove("open");
 			}
-
 			function copyPayload() {
-				const code = document.getElementById("lm-payload-code").textContent;
-				navigator.clipboard.writeText(code).then(() => {
-					showToast("JSON copied to clipboard!");
-					closeLMModal();
-				});
+				navigator.clipboard
+					.writeText(document.getElementById("lm-payload-code").textContent)
+					.then(() => {
+						showToast("JSON copied!");
+						closeLMModal();
+					});
 			}
 
-			// ===== TAB SWITCHING =====
 			document.querySelectorAll(".tab-btn").forEach((btn) => {
 				btn.addEventListener("click", () => {
 					document
@@ -1196,7 +1438,6 @@
 				});
 			});
 
-			// ===== INIT =====
 			renderProducts("drinks");
 			renderProducts("snacks");
 			renderProducts("merch");
