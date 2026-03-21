@@ -72,30 +72,37 @@
 			</footer>
 		</div>
 
-		<!-- ✅ TEMP CHAT TEST -->
+		<!-- Chat Widget -->
 		<div style="position:fixed; bottom:20px; right:20px; background:white; padding:10px; border:1px solid #ccc;">
 			<input id="chatInput" type="text" placeholder="Ask TeaZen..." />
 			<button onclick="sendMessage()">Send</button>
 			<p id="chatReply"></p>
 		</div>
 
+		<!-- Chat Script -->
 		<script>
 			async function sendMessage() {
 				const input = document.getElementById("chatInput");
 				const reply = document.getElementById("chatReply");
 
-				const response = await fetch("http://127.0.0.1:5000/api/chat", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json"
-					},
-					body: JSON.stringify({
-						message: input.value
-					})
-				});
+				try {
+					const response = await fetch("http://127.0.0.1:5000/api/chat", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify({
+							message: input.value
+						})
+					});
 
-				const data = await response.json();
-				reply.textContent = data.reply;
+					const data = await response.json();
+					reply.textContent = data.reply;
+					console.log(data);
+				} catch (error) {
+					console.error("Fetch error:", error);
+					reply.textContent = "Error connecting to Flask backend.";
+				}
 			}
 		</script>
 
