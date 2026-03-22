@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-	<!-- head-->
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,14 +8,11 @@
 	</head>
 
 	<body>
-		<!-- wrapper -->
 		<div id="wrapper">
-			<!-- header -->
 			<header>
 				<h1><a href="index.html">TeaZen Boba Bar</a></h1>
 			</header>
 
-			<!-- nav -->
 			<nav>
 				<ul>
 					<li><a href="index.html">Home</a></li>
@@ -27,7 +23,6 @@
 				</ul>
 			</nav>
 
-			<!-- main -->
 			<main>
 				<div id="homehero"></div>
 
@@ -46,10 +41,7 @@
 
 				<h3>TeaZen Boba Bar features:</h3>
 				<ul>
-					<li>
-						Signature Boba Teas: Matcha Zen, Taro Bliss, Brown Sugar Tiger &
-						more
-					</li>
+					<li>Signature Boba Teas: Matcha Zen, Taro Bliss, Brown Sugar Tiger & more</li>
 					<li>Premium Milk Teas made with fresh ingredients</li>
 					<li>Mochi, Taiyaki & Asian Pastries</li>
 					<li>Fresh Poké Bowls & Summer Rolls</li>
@@ -65,25 +57,58 @@
 				</div>
 			</main>
 
-			<!-- footer -->
 			<footer>
 				Copyright &copy; TeaZen Boba Bar<br />
 				<a href="mailto:info@teazenboba.com">info@teazenboba.com</a>
 			</footer>
 		</div>
 
-		<!-- Chat Widget -->
-		<div style="position:fixed; bottom:20px; right:20px; background:white; padding:10px; border:1px solid #ccc;">
-			<input id="chatInput" type="text" placeholder="Ask TeaZen..." />
-			<button onclick="sendMessage()">Send</button>
-			<p id="chatReply"></p>
+		<!-- CHATBOT UI -->
+		<div id="chatbot-container">
+			<button id="chat-toggle" onclick="toggleChat()">Chat</button>
+
+			<div id="chat-window" class="hidden">
+				<div id="chat-header">TeaZen Assistant</div>
+				<div id="chat-messages"></div>
+
+				<div id="chat-input-area">
+					<input id="chatInput" type="text" placeholder="Ask TeaZen..." />
+					<button onclick="sendMessage()">Send</button>
+				</div>
+			</div>
 		</div>
 
-		<!-- Chat Script -->
+		<!-- CHAT SCRIPT -->
 		<script>
+			function toggleChat() {
+				const chatWindow = document.getElementById("chat-window");
+				chatWindow.classList.toggle("hidden");
+			}
+
+			function addMessage(text, sender) {
+				const messages = document.getElementById("chat-messages");
+				const messageDiv = document.createElement("div");
+				messageDiv.className = sender === "user" ? "user-message" : "bot-message";
+				messageDiv.textContent = text;
+				messages.appendChild(messageDiv);
+				messages.scrollTop = messages.scrollHeight;
+				return messageDiv;
+			}
+
+			function wait(ms) {
+				return new Promise(resolve => setTimeout(resolve, ms));
+			}
+
 			async function sendMessage() {
 				const input = document.getElementById("chatInput");
-				const reply = document.getElementById("chatReply");
+				const message = input.value.trim();
+
+				if (!message) return;
+
+				addMessage(message, "user");
+				input.value = "";
+
+				const typingMessage = addMessage("Thinking...", "bot");
 
 				try {
 					const response = await fetch("http://127.0.0.1:5000/api/chat", {
@@ -92,19 +117,28 @@
 							"Content-Type": "application/json"
 						},
 						body: JSON.stringify({
-							message: input.value
+							message: message
 						})
 					});
 
 					const data = await response.json();
-					reply.textContent = data.reply;
-					console.log(data);
+
+					// ⏳ Force visible typing delay
+					await wait(800);
+
+					typingMessage.textContent = data.reply;
 				} catch (error) {
-					console.error("Fetch error:", error);
-					reply.textContent = "Error connecting to Flask backend.";
+					await wait(800);
+					typingMessage.textContent = "Error connecting to Flask backend.";
+					console.error(error);
 				}
 			}
-		</script>
 
+			document.getElementById("chatInput").addEventListener("keydown", function(event) {
+				if (event.key === "Enter") {
+					sendMessage();
+				}
+			});
+		</script>
 	</body>
 </html>
