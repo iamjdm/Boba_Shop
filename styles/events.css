@@ -1,0 +1,104 @@
+/* ===== EVENTS CALENDAR ===== */
+
+#calendar-wrap {
+	padding: 1em 1em 0;
+}
+
+/* FullCalendar theme overrides */
+#calendar {
+	--fc-border-color: #c8d4bc;
+	--fc-button-bg-color: #2d5016;
+	--fc-button-border-color: #2d5016;
+	--fc-button-hover-bg-color: #1e3a0f;
+	--fc-button-hover-border-color: #1e3a0f;
+	--fc-button-active-bg-color: #1e3a0f;
+	--fc-today-bg-color: #e8f0e2;
+	--fc-page-bg-color: #f5f3e8;
+	font-family: Tahoma, Arial, sans-serif;
+	font-size: 0.95em;
+}
+
+#calendar .fc-toolbar-title {
+	color: #2d5016;
+	font-size: 1.2em;
+}
+
+#calendar .fc-col-header-cell {
+	background-color: #d4e0c8;
+	color: #2b2d2e;
+}
+
+#calendar .fc-event {
+	cursor: pointer;
+	border: none;
+	font-size: 0.85em;
+	padding: 2px 4px;
+}
+
+#calendar .fc-event:hover {
+	opacity: 0.85;
+}
+
+/* ===== EVENT DETAIL PANEL ===== */
+
+.event-detail {
+	position: relative;
+	margin: 1em 1em 0;
+	padding: 1em 1.5em 1.2em;
+	background-color: #e8f0e2;
+	border-left: 4px solid #2d5016;
+	border-radius: 4px;
+}
+
+.event-detail.hidden {
+	display: none;
+}
+
+.event-detail h3 {
+	margin-top: 0;
+}
+
+.event-date {
+	font-weight: bold;
+	color: #2d5016;
+	padding-left: 0 !important;
+}
+
+.event-host {
+	font-style: italic;
+	color: #555;
+	padding-left: 0 !important;
+}
+
+.event-detail p {
+	padding-left: 0 !important;
+	margin: 0.4em 0;
+}
+
+.event-link {
+	display: inline-block;
+	margin-top: 0.6em;
+	color: #c0427a;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+.event-link:hover {
+	color: #2d5016;
+}
+
+#close-detail {
+	position: absolute;
+	top: 0.5em;
+	right: 0.75em;
+	background: none;
+	border: none;
+	font-size: 1.4em;
+	cursor: pointer;
+	color: #2b2d2e;
+	line-height: 1;
+}
+
+#close-detail:hover {
+	color: #c0427a;
+}
