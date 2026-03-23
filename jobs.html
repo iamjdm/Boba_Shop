@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
@@ -11,7 +11,7 @@
 		<div id="wrapper">
 			<!-- header -->
 			<header>
-				<h1>TeaZen Boba Bar</h1>
+				<h1><a href="index.html">TeaZen Boba Bar</a></h1>
 			</header>
 
 			<!-- nav -->
@@ -21,7 +21,7 @@
 					<li><a href="menu.html">Menu</a></li>
 					<li><a href="music.html">Events</a></li>
 					<li><a href="jobs.html">Jobs</a></li>
-					<li><a href="gear.html">Merch</a></li>
+					<li><a href="gear.html">Order</a></li>
 				</ul>
 			</nav>
 
@@ -42,16 +42,16 @@
 					method="post"
 				>
 					<label for="name">Name:</label>
-					<input type="text" name="myName" required />
+					<input type="text" id="name" name="myName" required />
 
 					<label for="email">Email:</label>
-					<input type="email" name="myEmail" required />
+					<input type="email" id="email" name="myEmail" required />
 
 					<label for="startdate">Start Date:</label>
-					<input type="date" name="myStart" required />
+					<input type="date" id="startdate" name="myStart" required />
 
 					<label for="experience">Experience:</label>
-					<textarea name="myExperience" rows="2" cols="20" required></textarea>
+					<textarea id="experience" name="myExperience" rows="2" required></textarea>
 
 					<input type="submit" value="Apply Now" id="mySubmit" />
 				</form>

@@ -35,33 +35,43 @@ def load_training_data():
 def home():
     return "TeaZen Flask backend is running!"
 
+STOPWORDS = {"a", "an", "the", "is", "are", "do", "does", "can", "i", "you",
+             "what", "how", "tell", "me", "about", "any", "in", "on", "at",
+             "to", "of", "and", "or", "for", "with", "it", "my", "your"}
+
+def keywords(text):
+    words = text.lower().split()
+    return {w.strip("?.,!") for w in words if w.strip("?.,!") not in STOPWORDS and len(w) > 2}
+
 @app.route("/api/chat", methods=["POST"])
 def chat():
     data = request.get_json()
-    user_message = data.get("message", "").lower()
+    user_message = data.get("message", "")
 
     training_data = load_training_data()
 
     if isinstance(training_data, dict) and "error" in training_data:
-        return jsonify({
-            "reply": training_data["error"]
-        })
+        return jsonify({"reply": training_data["error"]})
+
+    user_keys = keywords(user_message)
+    best_reply = None
+    best_score = 0
 
     for example in training_data:
         messages = example.get("messages", [])
-
-        user_parts = [m["content"].lower() for m in messages if m["role"] == "user"]
+        user_parts = [m["content"] for m in messages if m["role"] == "user"]
         assistant_parts = [m["content"] for m in messages if m["role"] == "assistant"]
 
         for user_part in user_parts:
-            if user_part in user_message:
-                return jsonify({
-                    "reply": assistant_parts[0] if assistant_parts else "I'm not sure."
-                })
+            score = len(user_keys & keywords(user_part))
+            if score > best_score:
+                best_score = score
+                best_reply = assistant_parts[0] if assistant_parts else None
 
-    return jsonify({
-        "reply": "Sorry, I'm still learning. Can you rephrase that?"
-    })
+    if best_score >= 1 and best_reply:
+        return jsonify({"reply": best_reply})
+
+    return jsonify({"reply": "Sorry, I'm still learning. Can you rephrase that?"})
 
 if __name__ == "__main__":
     app.run(debug=True)

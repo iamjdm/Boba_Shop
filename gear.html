@@ -569,12 +569,12 @@
 				transform: translateY(0);
 			}
 
-			/* ===== CHAT BUBBLE — transitions right to move clear of cart ===== */
+			/* ===== CHAT BUBBLE ===== */
 			#chat-bubble {
 				position: fixed;
 				bottom: 1.5em;
 				right: 1.5em;
-				z-index: 90;
+				z-index: 210;
 				background: #d1a35e;
 				color: #2b2d2e;
 				border: none;
@@ -587,10 +587,7 @@
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				transition:
-					background 0.2s,
-					transform 0.15s,
-					right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+				transition: background 0.2s, transform 0.15s, right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 			}
 			#chat-bubble:hover {
 				background: #c49345;
@@ -624,7 +621,7 @@
 				border-radius: 12px;
 				border: 2px solid #d1a35e;
 				box-shadow: 0 8px 28px rgba(43, 45, 46, 0.2);
-				z-index: 95;
+				z-index: 210;
 				display: none;
 				flex-direction: column;
 				overflow: hidden;
@@ -632,6 +629,19 @@
 			}
 			#chat-panel-float.open {
 				display: flex;
+			}
+			@media (max-width: 600px) {
+				#chat-panel-float.open {
+					position: fixed;
+					top: 50%;
+					left: 50%;
+					transform: translate(-50%, -50%);
+					right: auto;
+					bottom: auto;
+					width: 80vw;
+					height: 55vh;
+					z-index: 300;
+				}
 			}
 			.chat-panel-header {
 				background: #d1a35e;
@@ -743,6 +753,68 @@
 				color: #999;
 				margin-top: 0.5em;
 				font-style: italic;
+			}
+
+			/* ===== CHAT MESSAGES ===== */
+			#chat-messages {
+				flex: 1;
+				overflow-y: auto;
+				padding: 0.8em 1em;
+				display: flex;
+				flex-direction: column;
+				gap: 0.5em;
+				min-height: 200px;
+				max-height: 300px;
+				text-align: left;
+			}
+			@media (max-width: 600px) {
+				#chat-messages {
+					max-height: none;
+				}
+			}
+			.chat-msg {
+				padding: 0.45em 0.8em;
+				border-radius: 8px;
+				font-size: 0.82em;
+				font-family: Tahoma, Arial, sans-serif;
+				max-width: 85%;
+				word-break: break-word;
+			}
+			.chat-msg-user {
+				background: #2d5016;
+				color: #f5f3e8;
+				align-self: flex-end;
+			}
+			.chat-msg-bot {
+				background: #e4e0cf;
+				color: #2b2d2e;
+				align-self: flex-start;
+			}
+			.chat-input-row {
+				display: flex;
+				border-top: 1px solid #d1a35e;
+				padding: 0.5em 0.7em;
+				gap: 0.4em;
+			}
+			.chat-input-row input {
+				flex: 1;
+				border: 1px solid #c4bfa8;
+				border-radius: 5px;
+				padding: 0.4em 0.6em;
+				font-size: 0.82em;
+				font-family: Tahoma, Arial, sans-serif;
+				background: #fff;
+			}
+			.chat-input-row button {
+				background: #2d5016;
+				color: #f5f3e8;
+				border: none;
+				border-radius: 5px;
+				padding: 0.4em 0.8em;
+				font-size: 0.82em;
+				font-family: Tahoma, Arial, sans-serif;
+				cursor: pointer;
+				font-weight: bold;
 			}
 		</style>
 	</head>
@@ -859,18 +931,11 @@
 				<span>🤖 TeaZen Assistant</span>
 				<button id="close-chat-btn" onclick="toggleChat()">✕</button>
 			</div>
-			<div class="chat-panel-body">
-				<p>Your AI assistant will appear here.</p>
-				<p style="font-size: 0.78em; color: #bbb">
-					Connect your local API endpoint to power this widget.
-				</p>
-				<button
-					class="chat-connect-btn"
-					onclick="sendToLM(buildOrderPayload())"
-				>
-					Send Current Order to AI
-				</button>
-			</div>
+			<div class="chat-panel-body" id="chat-messages"></div>
+		<div class="chat-input-row">
+			<input id="chat-input" type="text" placeholder="Ask TeaZen..." autocomplete="off" onkeydown="if(event.key==='Enter')sendChatMessage()" />
+			<button onclick="sendChatMessage()">Send</button>
+		</div>
 		</div>
 
 		<div id="lm-modal">
@@ -1126,11 +1191,7 @@
 			function setChatPosition(cartOpen) {
 				const bubble = document.getElementById("chat-bubble");
 				const panel = document.getElementById("chat-panel-float");
-				// On desktop, shift left to clear the cart panel; on mobile keep at edge
-				const offset =
-					cartOpen && window.innerWidth > 900
-						? `calc(${CART_WIDTH}px + 1.5em)`
-						: "1.5em";
+				const offset = cartOpen ? `calc(${CART_WIDTH}px + 1.5em)` : "1.5em";
 				if (bubble) bubble.style.right = offset;
 				if (panel) panel.style.right = offset;
 			}
@@ -1236,12 +1297,12 @@
 			}
 
 			function openMobileCart() {
-				document.getElementById("cart-panel").classList.add("mobile-open");
 				document.getElementById("cart-overlay").classList.add("open");
+				setChatPosition(true);
 			}
 			function closeMobileCart() {
-				document.getElementById("cart-panel").classList.remove("mobile-open");
 				document.getElementById("cart-overlay").classList.remove("open");
+				setChatPosition(cart.length > 0);
 			}
 
 			function toggleChat() {
@@ -1292,17 +1353,37 @@
 				};
 			}
 
-			async function sendToLM(payload) {
-				// Wire to your local API here, e.g.:
-				// const response = await fetch('http://localhost:11434/api/chat', {
-				//   method: 'POST',
-				//   headers: { 'Content-Type': 'application/json' },
-				//   body: JSON.stringify({ model: 'llama3', messages: [{ role: 'user', content: JSON.stringify(payload) }] }),
-				// });
-				console.log(
-					"[TeaZen] Order payload:",
-					JSON.stringify(payload, null, 2),
-				);
+			async function sendChatMessage() {
+				const input = document.getElementById("chat-input");
+				const messages = document.getElementById("chat-messages");
+				const text = input.value.trim();
+				if (!text) return;
+
+				const userMsg = document.createElement("div");
+				userMsg.className = "chat-msg chat-msg-user";
+				userMsg.textContent = text;
+				messages.appendChild(userMsg);
+				input.value = "";
+				messages.scrollTop = messages.scrollHeight;
+
+				try {
+					const response = await fetch("http://127.0.0.1:5000/api/chat", {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({ message: text })
+					});
+					const data = await response.json();
+					const botMsg = document.createElement("div");
+					botMsg.className = "chat-msg chat-msg-bot";
+					botMsg.textContent = data.reply;
+					messages.appendChild(botMsg);
+				} catch (e) {
+					const errMsg = document.createElement("div");
+					errMsg.className = "chat-msg chat-msg-bot";
+					errMsg.textContent = "Couldn't connect to TeaZen assistant.";
+					messages.appendChild(errMsg);
+				}
+				messages.scrollTop = messages.scrollHeight;
 			}
 
 			function showLMPayload() {
