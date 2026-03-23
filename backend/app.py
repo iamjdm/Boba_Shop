@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import json
 import os
+import re
 
 app = Flask(__name__)
 CORS(app)
@@ -31,47 +32,105 @@ def load_training_data():
 
     return data
 
+def tokenize(text):
+    text = text.lower()
+    words = re.findall(r"\b\w+\b", text)
+    stop_words = {
+        "what", "is", "the", "a", "an", "do", "does", "in", "on", "of",
+        "to", "i", "me", "my", "you", "your", "it", "and", "or", "at",
+        "for", "are", "with", "can", "how", "much", "any", "we", "have"
+    }
+    return [word for word in words if word not in stop_words]
+
 @app.route("/")
 def home():
     return "TeaZen Flask backend is running!"
 
-STOPWORDS = {"a", "an", "the", "is", "are", "do", "does", "can", "i", "you",
-             "what", "how", "tell", "me", "about", "any", "in", "on", "at",
-             "to", "of", "and", "or", "for", "with", "it", "my", "your"}
-
-def keywords(text):
-    words = text.lower().split()
-    return {w.strip("?.,!") for w in words if w.strip("?.,!") not in STOPWORDS and len(w) > 2}
-
 @app.route("/api/chat", methods=["POST"])
 def chat():
     data = request.get_json()
-    user_message = data.get("message", "")
+    user_message = data.get("message", "").strip()
+
+    if not user_message:
+        return jsonify({"reply": "Please type a question."})
+
+    lower_message = user_message.lower()
+
+    # Friendly greeting responses
+    if lower_message in ["hi", "hello", "hey", "hey there", "hi there"]:
+        return jsonify({
+            "reply": (
+                "Hi! Welcome to TeaZen Boba Bar 🍵\n\n"
+                "Here's what's on our menu:\n"
+                "• Signature Boba Teas\n"
+                "• Premium Milk Teas\n"
+                "• Mochi, Taiyaki & Asian Pastries\n"
+                "• Fresh Poké Bowls & Summer Rolls\n\n"
+                "You can also ask me about ingredients, caffeine, toppings, events, or jobs.\n\n"
+                "TeaZen Assistant"
+            )
+        })
+
+    if "menu" in lower_message:
+        return jsonify({
+            "reply": (
+                "Of course! Here's what we currently offer at TeaZen 🍹\n\n"
+                "• Signature Boba Teas\n"
+                "• Premium Milk Teas\n"
+                "• Mochi, Taiyaki & Asian Pastries\n"
+                "• Fresh Poké Bowls & Summer Rolls\n\n"
+                "If you want, you can ask me about a specific drink, toppings, or caffeine content.\n\n"
+                "TeaZen Assistant"
+            )
+        })
 
     training_data = load_training_data()
 
     if isinstance(training_data, dict) and "error" in training_data:
         return jsonify({"reply": training_data["error"]})
 
-    user_keys = keywords(user_message)
+    user_tokens = set(tokenize(user_message))
     best_reply = None
     best_score = 0
 
     for example in training_data:
         messages = example.get("messages", [])
-        user_parts = [m["content"] for m in messages if m["role"] == "user"]
-        assistant_parts = [m["content"] for m in messages if m["role"] == "assistant"]
+        example_user = ""
+        example_assistant = ""
 
-        for user_part in user_parts:
-            score = len(user_keys & keywords(user_part))
-            if score > best_score:
-                best_score = score
-                best_reply = assistant_parts[0] if assistant_parts else None
+        for message in messages:
+            if message.get("role") == "user" and not example_user:
+                example_user = message.get("content", "")
+            elif message.get("role") == "assistant" and not example_assistant:
+                example_assistant = message.get("content", "")
 
-    if best_score >= 1 and best_reply:
-        return jsonify({"reply": best_reply})
+        example_tokens = set(tokenize(example_user))
+        score = len(user_tokens.intersection(example_tokens))
 
-    return jsonify({"reply": "Sorry, I'm still learning. Can you rephrase that?"})
+        if user_message.lower() == example_user.lower():
+            score += 100
+
+        if score > best_score and example_assistant:
+            best_score = score
+            best_reply = example_assistant
+
+    if best_score >= 2:
+        return jsonify({
+            "reply": f"{best_reply}\n\nTeaZen Assistant"
+        })
+
+    return jsonify({
+        "reply": (
+            "I'm still learning 🤖\n\n"
+            "Try asking about:\n"
+            "• Drinks\n"
+            "• Toppings\n"
+            "• Caffeine\n"
+            "• Events\n"
+            "• Jobs\n\n"
+            "TeaZen Assistant"
+        )
+    })
 
 if __name__ == "__main__":
     app.run(debug=True)
