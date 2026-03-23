@@ -24,7 +24,7 @@ header {
 	color: #2b2d2e;
 
 	background-color: #b8c5a8;
-	background-image: url("./images/boba_logo.png");
+	background-image: url("../images/boba_logo.png");
 	background-repeat: no-repeat;
 	background-position: 15px center; /* positions the logo */
 	background-size: 120px auto;
@@ -158,7 +158,7 @@ main ul {
 /* ===== HERO SECTIONS ===== */
 #homehero {
 	height: 300px;
-	background-image: url("./images/boba_homehero_1.avif");
+	background-image: url("../images/boba_homehero_1.avif");
 	background-repeat: no-repeat;
 	/* background-size: 100% 100%; */
 	background-size: cover;
@@ -167,7 +167,7 @@ main ul {
 
 #heromugs {
 	height: 300px;
-	background-image: url("./images/boba_heromugs_2.webp");
+	background-image: url("../images/boba_heromugs_2.webp");
 	background-repeat: no-repeat;
 	/* background-size: 100% 100%; */
 	background-size: cover;
@@ -176,7 +176,7 @@ main ul {
 
 #heroguitar {
 	height: 300px;
-	background-image: url("./images/music_hero.jpg");
+	background-image: url("../images/music_hero.jpg");
 	background-repeat: no-repeat;
 	/* background-size: 100% 100%; */
 	background-size: cover;
@@ -186,7 +186,7 @@ main ul {
 
 #herojobs {
 	height: 300px;
-	background-image: url("./images/boba_jobs.jpg");
+	background-image: url("../images/boba_jobs.jpg");
 	background-repeat: no-repeat;
 	background-size: cover;
 	background-position: center 25%;
@@ -194,7 +194,7 @@ main ul {
 
 #herocouch {
 	height: 300px;
-	background-image: url("./images/boba_merch_banner.webp");
+	background-image: url("../images/boba_merch_banner.webp");
 	background-repeat: no-repeat;
 	/* background-size: 100% 100%; */
 	background-size: cover;
@@ -358,27 +358,27 @@ tr:nth-child(odd) {
 
 	#homehero {
 		height: 50vh;
-		background-image: url("./images/boba_homehero_1.avif");
+		background-image: url("../images/boba_homehero_1.avif");
 	}
 
 	#heromugs {
 		height: 50vh;
-		background-image: url("./images/boba_heromugs_2.webp");
+		background-image: url("../images/boba_heromugs_2.webp");
 	}
 
 	#heroguitar {
 		height: 50vh;
-		background-image: url("./images/music_hero.jpg");
+		background-image: url("../images/music_hero.jpg");
 	}
 
 	#herojobs {
 		height: 50vh;
-		background-image: url("./images/boba_jobs.jpg");
+		background-image: url("../images/boba_jobs.jpg");
 	}
 
 	#herocouch {
 		height: 50vh;
-		background-image: url("./images/boba_merch_banner.webp");
+		background-image: url("../images/boba_merch_banner.webp");
 	}
 
 	#flow {
@@ -423,7 +423,7 @@ tr:nth-child(odd) {
 @media (width >= 1024px) {
 	header {
 		grid-area: header;
-		background-image: url("./images/boba_logo.png");
+		background-image: url("../images/boba_logo.png");
 	}
 
 	nav {
