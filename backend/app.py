@@ -5,8 +5,9 @@ from sqlalchemy import text
 import json
 import os
 import re
+## testing
 
-app = Flask(__name__)
+
 CORS(app)
 
 #MySQL connection
