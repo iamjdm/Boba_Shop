@@ -250,6 +250,7 @@ img {
 	padding-left: 10px;
 }
 
+
 #mobile {
 	display: inline;
 }
@@ -450,121 +451,4 @@ tr:nth-child(odd) {
 	nav ul {
 		flex-direction: column;
 	}
-}
-
-/* ===== JOB APPLICATION FORM ===== */
-#jobApplicationForm {
-	display: flex;
-	flex-direction: column;
-	max-width: 600px;
-	margin: 2em auto;
-	padding: 2em;
-	background-color: #f5f3e8;
-	border: 2px solid #2d5016;
-	border-radius: 8px;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-#jobApplicationForm fieldset {
-	border: none;
-	padding: 0;
-	margin: 0;
-}
-
-#jobApplicationForm legend {
-	font-size: 1.5em;
-	font-weight: bold;
-	color: #2d5016;
-	margin-bottom: 1.5em;
-	padding: 0;
-}
-
-.form-group {
-	margin-bottom: 1.5em;
-	display: flex;
-	flex-direction: column;
-}
-
-.form-group label {
-	font-weight: bold;
-	color: #2d5016;
-	margin-bottom: 0.5em;
-	font-size: 0.95em;
-}
-
-.form-group input[type="text"],
-.form-group input[type="email"],
-.form-group input[type="tel"],
-.form-group input[type="date"],
-.form-group select,
-.form-group textarea {
-	padding: 0.75em;
-	border: 1px solid #b8c5a8;
-	border-radius: 4px;
-	font-family: inherit;
-	font-size: 0.95em;
-	background-color: #ffffff;
-	color: #2b2d2e;
-	transition: border-color 0.3s ease;
-}
-
-.form-group input[type="text"]:focus,
-.form-group input[type="email"]:focus,
-.form-group input[type="tel"]:focus,
-.form-group input[type="date"]:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-	outline: none;
-	border-color: #2d5016;
-	box-shadow: 0 0 5px rgba(45, 80, 22, 0.3);
-}
-
-.form-group textarea {
-	resize: vertical;
-	min-height: 120px;
-}
-
-.submit-btn {
-	background-color: #2d5016;
-	color: #f5f3e8;
-	padding: 0.75em 2em;
-	border: none;
-	border-radius: 4px;
-	font-size: 1em;
-	font-weight: bold;
-	cursor: pointer;
-	transition:
-		background-color 0.3s ease,
-		transform 0.1s ease;
-	align-self: flex-start;
-	margin-top: 1em;
-}
-
-.submit-btn:hover {
-	background-color: #1a3009;
-	transform: translateY(-2px);
-}
-
-.submit-btn:active {
-	transform: translateY(0);
-}
-
-#formMessage {
-	margin-top: 1em;
-	padding: 1em;
-	border-radius: 4px;
-	font-weight: bold;
-	text-align: center;
-}
-
-#formMessage[style*="green"] {
-	background-color: #d4f1d4;
-	color: #2d5016;
-	border: 1px solid #2d5016;
-}
-
-#formMessage[style*="red"] {
-	background-color: #f1d4d4;
-	color: #8b3a3a;
-	border: 1px solid #8b3a3a;
 }
