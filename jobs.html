@@ -37,28 +37,86 @@
 				</p>
 
 				<!-- job application form -->
-				<form
-					action="https://webdevbasics.net/scripts/javajam8.php"
-					method="post"
-				>
-					<label for="name">Name:</label>
-					<input type="text" id="name" name="myName" required />
+				<form id="jobApplicationForm">
+					<fieldset>
+						<legend>Job Application Form</legend>
 
-					<label for="email">Email:</label>
-					<input type="email" id="email" name="myEmail" required />
+						<div class="form-group">
+							<label for="name">Full Name:</label>
+							<input
+								type="text"
+								id="name"
+								name="name"
+								placeholder="Enter your full name"
+								required
+							/>
+						</div>
 
-					<label for="startdate">Start Date:</label>
-					<input type="date" id="startdate" name="myStart" required />
+						<div class="form-group">
+							<label for="email">Email:</label>
+							<input
+								type="email"
+								id="email"
+								name="email"
+								placeholder="your.email@example.com"
+								required
+							/>
+						</div>
 
-					<label for="experience">Experience:</label>
-					<textarea
-						id="experience"
-						name="myExperience"
-						rows="2"
-						required
-					></textarea>
+						<div class="form-group">
+							<label for="phone">Phone Number:</label>
+							<input
+								type="tel"
+								id="phone"
+								name="phone"
+								placeholder="(123) 456-7890"
+								required
+							/>
+						</div>
 
-					<input type="submit" value="Apply Now" id="mySubmit" />
+						<div class="form-group">
+							<label for="position">Position Interested In:</label>
+							<select id="position" name="position" required>
+								<option value="">-- Select a Position --</option>
+								<option value="Tea Master">Tea Master</option>
+								<option value="Barista">Barista</option>
+								<option value="Food Staff">Food Staff</option>
+								<option value="Cashier">Cashier</option>
+								<option value="Kitchen Staff">Kitchen Staff</option>
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label for="startdate">Desired Start Date:</label>
+							<input type="date" id="startdate" name="startDate" required />
+						</div>
+
+						<div class="form-group">
+							<label for="experience">Tell us about your experience:</label>
+							<textarea
+								id="experience"
+								name="experience"
+								rows="4"
+								placeholder="Share any relevant work experience, skills, or why you're excited about TeaZen..."
+								required
+							></textarea>
+						</div>
+
+						<div class="form-group">
+							<label for="availability">Availability:</label>
+							<select id="availability" name="availability" required>
+								<option value="">-- Select Availability --</option>
+								<option value="Full-time">Full-time</option>
+								<option value="Part-time">Part-time</option>
+								<option value="Flexible">Flexible</option>
+							</select>
+						</div>
+
+						<button type="submit" id="mySubmit" class="submit-btn">
+							Submit Application
+						</button>
+						<p id="formMessage" style="display: none"></p>
+					</fieldset>
 				</form>
 			</main>
 
@@ -68,5 +126,8 @@
 				<a href="mailto:info@teazenboba.com">info@teazenboba.com</a>
 			</footer>
 		</div>
+
+		<!-- Job Application Script -->
+		<script src="scripts/jobs.js"></script>
 	</body>
 </html>
