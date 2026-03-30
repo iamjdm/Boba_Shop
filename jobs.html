@@ -37,86 +37,29 @@
 				</p>
 
 				<!-- job application form -->
-				<form id="jobForm">
-    				<label for="positionID">Position:</label>
-					<select id="positionID" name="positionID" required>
-    					<option value="">Select a position</option>
-					</select>
+				<form
+					action="https://webdevbasics.net/scripts/javajam8.php"
+					method="post"
+				>
+					<label for="name">Name:</label>
+					<input type="text" id="name" name="myName" required />
 
-    				<label for="name">Name:</label>
-    				<input type="text" id="name" name="name" required />
+					<label for="email">Email:</label>
+					<input type="email" id="email" name="myEmail" required />
 
-    				<label for="email">Email:</label>
-    				<input type="email" id="email" name="email" required />
+					<label for="startdate">Start Date:</label>
+					<input type="date" id="startdate" name="myStart" required />
 
-    				<label for="experience">Experience:</label>
-    				<textarea
-        				id="experience"
-        				name="experience"
-        				rows="2"
-        				required
-    				></textarea>
+					<label for="experience">Experience:</label>
+					<textarea
+						id="experience"
+						name="myExperience"
+						rows="2"
+						required
+					></textarea>
 
-    				<input type="submit" value="Apply Now" id="mySubmit" />
+					<input type="submit" value="Apply Now" id="mySubmit" />
 				</form>
-
-				<p id="jobMessage"></p>
-
-				<script>
-				async function loadJobPositions() {
-    				try {
-        				const response = await fetch("http://127.0.0.1:5000/job-positions");
-        				const positions = await response.json();
-
-        				const dropdown = document.getElementById("positionID");
-
-        				positions.forEach(position => {
-            				const option = document.createElement("option");
-            				option.value = position.positionID;
-            				option.textContent = position.positionTitle;
-            				dropdown.appendChild(option);
-        				});
-    				} catch (error) {
-        				console.error("Error loading job positions:", error);
-    				}
-				}
-
-				loadJobPositions();
-
-				document.getElementById("jobForm").addEventListener("submit", async function(e) {
-    				e.preventDefault();
-
-    				const formData = {
-        				positionID: document.getElementById("positionID").value,
-        				name: document.getElementById("name").value,
-        				email: document.getElementById("email").value,
-        				experience: document.getElementById("experience").value
-    				};
-
-    				try {
-        				const response = await fetch("http://127.0.0.1:5000/submit-job", {
-            				method: "POST",
-            				headers: {
-                				"Content-Type": "application/json"
-            				},
-            				body: JSON.stringify(formData)
-        				});
-
-        				const result = await response.json();
-
-        				if (result.success) {
-            				document.getElementById("jobMessage").textContent = result.message;
-            				document.getElementById("jobForm").reset();
-        				} else {
-            				document.getElementById("jobMessage").textContent = "Error: " + result.error;
-        				}
-    				} catch (error) {
-        				document.getElementById("jobMessage").textContent = "Something went wrong.";
-    				}
-				});
-				</script>
-				
-				
 			</main>
 
 			<!-- footer -->

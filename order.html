@@ -513,34 +513,15 @@
 				toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
 			}
 
-			async function checkout() {
+			function checkout() {
 				if (!cart.length) return;
 				const payload = buildOrderPayload();
-				try{
-					const response = await fetch("http://127.0.0.1:5000/submit-order", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json"
-						},
-						body: JSON.stringify({
-							paymentMethod: "Card",
-							totalAmount: payload.subtotal
-						})
-					});
-					const result = await response.json();
-
-					if (response.ok) {
-						alert(`Order placed! 🎉\n\nTotal: $${payload.subtotal}\nWe'll have it ready soon!`);
-						cart = [];
-						updateCartUI();
-						closeMobileCart();
-					} else {
-						alert("Error: " + result.error);
-					}
-				} catch (error) {
-					alert("Something went wrong while placing the order.");
-					console.error(error);
-				}
+				alert(
+					`Order placed! 🎉\n\nTotal: $${payload.subtotal}\nWe'll have it ready soon!`,
+				);
+				cart = [];
+				updateCartUI();
+				closeMobileCart();
 			}
 
 			function buildOrderPayload() {
