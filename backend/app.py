@@ -114,7 +114,8 @@ def chat():
             best_score = score
             best_reply = example_assistant
 
-    if best_score >= 2:
+    min_score = 1 if len(user_tokens) <= 2 else 2
+    if best_score >= min_score:
         return jsonify({
             "reply": f"{best_reply}\n\nTeaZen Assistant"
         })
@@ -131,6 +132,41 @@ def chat():
             "TeaZen Assistant"
         )
     })
+
+@app.route("/api/apply", methods=["POST"])
+def submit_application():
+    """
+    Handle job application submissions.
+    Data from the form is received here and can be stored in MySQL.
+    """
+    try:
+        data = request.get_json()
+
+        # Validate required fields
+        required_fields = ["name", "email", "phone", "position", "startDate", "experience", "availability"]
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({"error": f"Missing required field: {field}"}), 400
+
+        # Basic email validation
+        if "@" not in data.get("email", ""):
+            return jsonify({"error": "Invalid email format"}), 400
+
+        # TODO: Database person - Insert this data into MySQL table
+        # Example structure:
+        # INSERT INTO job_applications (name, email, phone, position, start_date, experience, availability, submitted_at)
+        # VALUES (data['name'], data['email'], data['phone'], data['position'], data['startDate'], data['experience'], data['availability'], NOW())
+
+        print(f"New job application: {data}")  # Debug log
+
+        return jsonify({
+            "success": True,
+            "message": "Application received successfully!"
+        }), 200
+
+    except Exception as e:
+        print(f"Error processing application: {str(e)}")
+        return jsonify({"error": "Failed to process application"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
