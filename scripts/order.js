@@ -10,8 +10,8 @@ const PRODUCTS = {
 			name: "Classic Milk Tea",
 			desc: "Traditional black tea with creamy milk and chewy tapioca pearls.",
 			sizes: [
-				{ label: "Regular", price: 5.5 },
-				{ label: "Large", price: 6.5 },
+				{ label: "Regular", price: 5.5, menuItemID: 1 },
+				{ label: "Large", price: 6.5, menuItemID: 2 },
 			],
 			emoji: "🧋",
 			tags: ["milk tea", "classic"],
@@ -21,8 +21,8 @@ const PRODUCTS = {
 			name: "Taro Bliss",
 			desc: "Sweet taro root blended with milk and your choice of toppings.",
 			sizes: [
-				{ label: "Regular", price: 6.0 },
-				{ label: "Large", price: 7.0 },
+				{ label: "Regular", price: 6.0, menuItemID: 3 },
+				{ label: "Large", price: 7.0, menuItemID: 4 },
 			],
 			emoji: "🫐",
 			tags: ["taro", "milk tea"],
@@ -32,8 +32,8 @@ const PRODUCTS = {
 			name: "Matcha Zen",
 			desc: "Premium Japanese matcha with oat milk and honey boba.",
 			sizes: [
-				{ label: "Regular", price: 6.75 },
-				{ label: "Large", price: 7.75 },
+				{ label: "Regular", price: 6.75, menuItemID: 5 },
+				{ label: "Large", price: 7.75, menuItemID: 6 },
 			],
 			emoji: "🍵",
 			tags: ["matcha", "green tea"],
@@ -43,8 +43,8 @@ const PRODUCTS = {
 			name: "Strawberry Cloud",
 			desc: "Fresh strawberries blended with jasmine tea, topped with sweet cheese foam.",
 			sizes: [
-				{ label: "Regular", price: 6.5 },
-				{ label: "Large", price: 7.5 },
+				{ label: "Regular", price: 6.5, menuItemID: 7 },
+				{ label: "Large", price: 7.5, menuItemID: 8 },
 			],
 			emoji: "🍓",
 			tags: ["fruit", "jasmine"],
@@ -54,8 +54,8 @@ const PRODUCTS = {
 			name: "Brown Sugar Tiger",
 			desc: "House-made brown sugar syrup swirled with fresh milk and chewy pearls.",
 			sizes: [
-				{ label: "Regular", price: 6.25 },
-				{ label: "Large", price: 7.25 },
+				{ label: "Regular", price: 6.25, menuItemID: 9 },
+				{ label: "Large", price: 7.25, menuItemID: 10 },
 			],
 			emoji: "🐯",
 			tags: ["brown sugar", "milk tea"],
@@ -66,7 +66,7 @@ const PRODUCTS = {
 			id: "mochi-set",
 			name: "Mochi Trio",
 			desc: "Three pieces of handmade mochi in rotating seasonal flavors.",
-			sizes: [{ label: "3 pcs", price: 5.0 }],
+			sizes: [{ label: "3 pcs", price: 5.0, menuItemID: 11 }],
 			emoji: "🍡",
 			tags: ["mochi", "dessert"],
 		},
@@ -75,8 +75,8 @@ const PRODUCTS = {
 			name: "Taiyaki",
 			desc: "Fish-shaped waffle pastry filled with red bean, Nutella, or custard.",
 			sizes: [
-				{ label: "1 pc", price: 3.5 },
-				{ label: "3 pcs", price: 9.0 },
+				{ label: "1 pc", price: 3.5, menuItemID: 12 },
+				{ label: "3 pcs", price: 9.0, menuItemID: 13 },
 			],
 			emoji: "🐟",
 			tags: ["pastry", "sweet"],
@@ -85,7 +85,7 @@ const PRODUCTS = {
 			id: "poke-bowl",
 			name: "Poké Bowl",
 			desc: "Fresh tuna or tofu over seasoned rice with avocado, edamame, and sesame.",
-			sizes: [{ label: "Regular", price: 12.95 }],
+			sizes: [{ label: "Regular", price: 12.95, menuItemID: 14 }],
 			emoji: "🥗",
 			tags: ["poke", "savory"],
 		},
@@ -93,7 +93,7 @@ const PRODUCTS = {
 			id: "summer-rolls",
 			name: "Summer Rolls",
 			desc: "Two rice paper rolls with shrimp or tofu, fresh herbs, and rice noodles.",
-			sizes: [{ label: "2 pcs", price: 7.5 }],
+			sizes: [{ label: "2 pcs", price: 7.5, menuItemID: 15 }],
 			emoji: "🌿",
 			tags: ["rolls", "fresh"],
 		},
@@ -104,10 +104,10 @@ const PRODUCTS = {
 			name: "TeaZen Zen Vibes Tee",
 			desc: "100% organic cotton. S–XL. Wear in-store for 10% off your drink!",
 			sizes: [
-				{ label: "S", price: 18.95 },
-				{ label: "M", price: 18.95 },
-				{ label: "L", price: 18.95 },
-				{ label: "XL", price: 18.95 },
+				{ label: "S", price: 18.95, menuItemID: 16 },
+				{ label: "M", price: 18.95, menuItemID: 17 },
+				{ label: "L", price: 18.95, menuItemID: 18 },
+				{ label: "XL", price: 18.95, menuItemID: 19 },
 			],
 			emoji: "👕",
 			tags: ["shirt", "apparel"],
@@ -116,7 +116,7 @@ const PRODUCTS = {
 			id: "boba-tumbler",
 			name: "TeaZen Boba Tumbler",
 			desc: "20oz tumbler with wide boba straw. Keeps drinks cold for hours. Bring in for 10% off!",
-			sizes: [{ label: "20oz", price: 14.95 }],
+			sizes: [{ label: "20oz", price: 14.95, menuItemID: 20 }],
 			emoji: "🥤",
 			tags: ["tumbler", "drinkware"],
 		},
@@ -206,6 +206,7 @@ function addToCart(pid, category) {
 		cart.push({
 			_key: key,
 			id: pid,
+			menuItemID: size.menuItemID,
 			category,
 			name: p.name,
 			emoji: p.emoji,
@@ -361,15 +362,46 @@ function showToast(msg) {
 	toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
 }
 
-function checkout() {
+async function checkout() {
 	if (!cart.length) return;
-	const payload = buildOrderPayload();
-	alert(
-		`Order placed! 🎉\n\nTotal: $${payload.subtotal}\nWe'll have it ready soon!`,
-	);
-	cart = [];
-	updateCartUI();
-	closeMobileCart();
+
+	const subtotal = cart.reduce((s, i) => s + i.unitPrice * i.quantity, 0);
+
+	const orderData = {
+		customerID: 1,
+		paymentMethod: "Card",
+		totalAmount: parseFloat(subtotal.toFixed(2)),
+		items: cart.map((item) => ({
+			menuItemID: item.menuItemID,
+			quantity: item.quantity,
+			item_price: parseFloat(item.unitPrice.toFixed(2)),
+			specialRequest: item.customRequest || ""
+		}))
+	};
+
+	try {
+		const response = await fetch("http://127.0.0.1:5000/submit-order", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(orderData)
+		});
+
+		const result = await response.json();
+
+		if (result.success) {
+			alert(`Order placed! 🎉\n\nOrder ID: ${result.orderID}\nTotal: $${orderData.totalAmount}`);
+			cart = [];
+			updateCartUI();
+			closeMobileCart();
+		} else {
+			alert("Error: " + result.error);
+		}
+	} catch (error) {
+		console.error("Checkout error:", error);
+		alert("Something went wrong while submitting the order.");
+	}
 }
 
 function buildOrderPayload() {

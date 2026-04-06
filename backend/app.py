@@ -7,6 +7,7 @@ import re
 ## testing
 
 import logging
+from datetime import datetime
 
 app= Flask(__name__)
 
@@ -95,7 +96,49 @@ class JobApplication(db.Model):
             "email": self.email,
             "experience": self.experience
         }
+    
 
+class Order(db.Model):
+    __tablename__ = "orders"
+
+    orderID = db.Column(db.Integer, primary_key=True)
+    customerID = db.Column(db.Integer, nullable=False)
+    orderDate = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    status = db.Column(db.String(30), nullable=False)
+    paymentMethod = db.Column(db.String(50), nullable=False)
+    totalAmount = db.Column(db.Numeric(8, 2), nullable=False)
+
+    def to_dict(self):
+        return {
+            "orderID": self.orderID,
+            "customerID": self.customerID,
+            "orderDate": self.orderDate.isoformat() if self.orderDate else None,
+            "status": self.status,
+            "paymentMethod": self.paymentMethod,
+            "totalAmount": float(self.totalAmount)
+        }
+    
+
+class OrderDetail(db.Model):
+    __tablename__ = "orderdetails"
+
+    orderDetailID = db.Column(db.Integer, primary_key=True)
+    orderID = db.Column(db.Integer, db.ForeignKey("orders.orderID"), nullable=False)
+    menuItemID = db.Column(db.Integer, nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    item_price = db.Column(db.Numeric(8, 2), nullable=False)
+    specialRequest = db.Column(db.String(255), nullable=True)
+
+
+    def to_dict(self):
+        return {
+            "orderDetailID": self.orderDetailID,
+            "orderID": self.orderID,
+            "menuItemID": self.menuItemID,
+            "quantity": self.quantity,
+            "item_price": float(self.item_price),
+            "specialRequest": self.specialRequest
+        }
 
 def seed_positions():
     try:
@@ -247,6 +290,53 @@ def submit_job():
 
     logger.info("Inserted application id=%s", app_entry.applicationID)
     return jsonify({"success": True, "message": "Application submitted", "id": app_entry.applicationID})
+
+@app.route("/submit-order", methods=["POST"])
+def submit_order():
+    data = request.get_json() or {}
+    logger.info("Received submit-order data: %s", data)
+
+    customerID = data.get("customerID")
+    paymentMethod = data.get("paymentMethod")
+    totalAmount = data.get("totalAmount")
+    items = data.get("items", [])
+
+    if not customerID or not paymentMethod or totalAmount is None or not items:
+        return jsonify({"success": False, "error": "Missing required order fields"}), 400
+
+    try:
+        new_order = Order(
+            customerID=int(customerID),
+            status="Pending",
+            paymentMethod=paymentMethod,
+            totalAmount=float(totalAmount)
+        )
+        db.session.add(new_order)
+        db.session.flush()
+
+        for item in items:
+            detail = OrderDetail(
+                orderID=new_order.orderID,
+                menuItemID=int(item["menuItemID"]),
+                quantity=int(item["quantity"]),
+                item_price=float(item["item_price"]),
+                specialRequest=item.get("specialRequest", "")
+            )
+            db.session.add(detail)
+
+        db.session.commit()
+
+        logger.info("Inserted order id=%s", new_order.orderID)
+        return jsonify({
+            "success": True,
+            "message": "Order submitted successfully",
+            "orderID": new_order.orderID
+        })
+
+    except Exception:
+        logger.exception("DB commit failed for order")
+        db.session.rollback()
+        return jsonify({"success": False, "error": "Database error"}), 500
 
 if __name__ == "__main__":
     with app.app_context():
