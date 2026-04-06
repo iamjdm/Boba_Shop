@@ -139,6 +139,24 @@ class OrderDetail(db.Model):
             "item_price": float(self.item_price),
             "specialRequest": self.specialRequest
         }
+    
+class MenuItem(db.Model):
+    __tablename__ = "menuitem"
+
+    menuItemID = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    category = db.Column(db.String(45), nullable=False)
+    description = db.Column(db.String(250), nullable=True)
+    price = db.Column(db.Numeric(8, 2), nullable=False)
+
+    def to_dict(self):
+        return {
+            "menuItemID": self.menuItemID,
+            "name": self.name,
+            "category": self.category,
+            "description": self.description,
+            "price": float(self.price)
+        }
 
 def seed_positions():
     try:
@@ -337,6 +355,11 @@ def submit_order():
         logger.exception("DB commit failed for order")
         db.session.rollback()
         return jsonify({"success": False, "error": "Database error"}), 500
+
+@app.route("/menu-items", methods=["GET"])
+def get_menu_items():
+    items = MenuItem.query.order_by(MenuItem.menuItemID.asc()).all()
+    return jsonify([item.to_dict() for item in items])
 
 if __name__ == "__main__":
     with app.app_context():
