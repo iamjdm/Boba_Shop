@@ -1,63 +1,127 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import json
-import os
-import re
+import requests
 
 app = Flask(__name__)
 CORS(app)
 
-def load_training_data():
-    possible_paths = [
-        os.path.join(os.path.dirname(__file__), "teazen_training_chatml.jsonl"),
-        os.path.join(os.path.dirname(__file__), "..", "teazen_training_chatml.jsonl")
-    ]
+OLLAMA_URL = "http://localhost:11434/api/generate"
+MODEL_NAME = "llama3"
 
-    data = []
-    file_found = None
+MENU_CONTEXT = """
+You are TeaZen Assistant for TeaZen Boba Bar.
 
-    for path in possible_paths:
-        if os.path.exists(path):
-            file_found = path
-            break
+TeaZen drink menu:
+- Classic Milk Tea:
+  Traditional black tea with creamy milk and chewy tapioca pearls.
+  Prices: Regular $5.50, Large $6.50
 
-    if not file_found:
-        return {"error": "Training file not found"}
+- Taro Bliss:
+  Sweet taro root blended with milk and choice of toppings.
+  Prices: Regular $6.00, Large $7.00
 
-    with open(file_found, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                data.append(json.loads(line))
+- Matcha Zen:
+  Premium Japanese matcha whisked with oat milk and honey boba.
+  Prices: Regular $6.75, Large $7.75
 
-    return data
+- Strawberry Cloud:
+  Fresh strawberries blended with jasmine tea, topped with sweet cheese foam.
+  Prices: Regular $6.50, Large $7.50
 
-def tokenize(text):
-    text = text.lower()
-    words = re.findall(r"\b\w+\b", text)
-    stop_words = {
-        "what", "is", "the", "a", "an", "do", "does", "in", "on", "of",
-        "to", "i", "me", "my", "you", "your", "it", "and", "or", "at",
-        "for", "are", "with", "can", "how", "much", "any", "we", "have"
-    }
-    return [word for word in words if word not in stop_words]
+- Brown Sugar Tiger:
+  House-made brown sugar syrup swirled with fresh milk and chewy pearls.
+  Prices: Regular $6.25, Large $7.25
+
+TeaZen snacks:
+- Mochi Trio:
+  Three pieces of handmade mochi in rotating seasonal flavors.
+  Price: $5.00
+
+- Taiyaki:
+  Fish-shaped waffle pastry filled with red bean, Nutella, or custard.
+  Price range: $3.50 to $9.00
+  Options: 1 piece or 3 pieces
+
+- Poké Bowl:
+  Fresh tuna or tofu over seasoned rice with avocado, edamame, and sesame.
+  Price: $12.95
+
+- Summer Rolls:
+  Two rice paper rolls with shrimp or tofu, fresh herbs, and rice noodles.
+  Price: $7.50
+
+TeaZen merch:
+- TeaZen Zen Vibes Tee:
+  100% organic cotton, sizes S to XL.
+  Wear in-store for 10% off your drink.
+  Price: $18.95
+
+- TeaZen Boba Tumbler:
+  20oz tumbler with wide boba straw.
+  Keeps drinks cold for hours.
+  Bring in for 10% off.
+  Price: $14.95
+
+Rules:
+- Only answer questions about TeaZen menu items, ingredients, flavors, sweetness, texture, caffeine, snacks, merch, events, and light menu guidance.
+- Do not place orders.
+- Do not track orders.
+- Do not process payments.
+- If the user asks to place an order, track an order, or pay, tell them to use the website's Order or Track Order section.
+- Do not invent menu items that are not listed here.
+- If you do not know something exactly, say so clearly.
+- Keep replies friendly, short, and clear.
+"""
 
 @app.route("/")
 def home():
-    return "TeaZen Flask backend is running!"
+    return "TeaZen Flask backend is running with Ollama"
 
 @app.route("/api/chat", methods=["POST"])
 def chat():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     user_message = data.get("message", "").strip()
 
+    print("User asked:", user_message)
+
     if not user_message:
-        return jsonify({"reply": "Please type a question."})
+        return jsonify({"reply": "Please type a question."}), 400
 
-    lower_message = user_message.lower()
+    prompt = f"""
+{MENU_CONTEXT}
 
-    # Friendly greeting responses
-    if lower_message in ["hi", "hello", "hey", "hey there", "hi there"]:
+Customer question:
+{user_message}
+
+Assistant reply:
+"""
+
+    try:
+        print("Sending request to Ollama...")
+
+        response = requests.post(
+            OLLAMA_URL,
+            json={
+                "model": MODEL_NAME,
+                "prompt": prompt,
+                "stream": False
+            },
+            timeout=120
+        )
+
+        response.raise_for_status()
+        data = response.json()
+        reply = data.get("response", "").strip()
+
+        print("Ollama reply:", reply)
+
+        if not reply:
+            reply = "Sorry, I couldn't answer that right now."
+
+        return jsonify({"reply": reply})
+
+    except requests.exceptions.ConnectionError:
+        print("Error: Could not connect to Ollama.")
         return jsonify({
             "reply": (
                 "Hi! Welcome to TeaZen Boba Bar 🍵\n\n"
