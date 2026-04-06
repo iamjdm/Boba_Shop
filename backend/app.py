@@ -1,12 +1,14 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import text
 import json
 import os
 import re
 ## testing
 
+import logging
+
+app= Flask(__name__)
 
 CORS(app)
 
@@ -15,6 +17,10 @@ db_password = "Poiu2115"
 
 app.config["SQLALCHEMY_DATABASE_URI"] = f"mysql+pymysql://root:{db_password}@localhost/boba_shop_db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SQLALCHEMY_ECHO"] = True
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 db = SQLAlchemy(app)
 
@@ -52,6 +58,58 @@ def tokenize(text):
         "for", "are", "with", "can", "how", "much", "any", "we", "have"
     }
     return [word for word in words if word not in stop_words]
+ 
+# Models and job endpoints
+
+class JobPosition(db.Model):
+    __tablename__ = "jobpositions"
+
+    positionID = db.Column(db.Integer, primary_key=True)
+    positionTitle = db.Column(db.String(120), nullable=False)
+
+    def to_dict(self):
+        return {
+            "positionID": self.positionID,
+            "positionTitle": self.positionTitle
+        }
+
+
+class JobApplication(db.Model):
+    __tablename__ = "jobapplications"
+
+    applicationID = db.Column(db.Integer, primary_key=True)
+    positionID = db.Column(
+        db.Integer,
+        db.ForeignKey("jobpositions.positionID"),
+        nullable=False
+    )
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(150), nullable=False)
+    experience = db.Column(db.String(300), nullable=False)
+
+    def to_dict(self):
+        return {
+            "applicationID": self.applicationID,
+            "positionID": self.positionID,
+            "name": self.name,
+            "email": self.email,
+            "experience": self.experience
+        }
+
+
+def seed_positions():
+    try:
+        if JobPosition.query.count() == 0:
+            defaults = [
+                JobPosition(positionTitle="Barista"),
+                JobPosition(positionTitle="Cashier"),
+                JobPosition(positionTitle="Shift Supervisor"),
+            ]
+            db.session.add_all(defaults)
+            db.session.commit()
+    except Exception:
+        pass
+
 
 @app.route("/")
 def home():
@@ -144,6 +202,55 @@ def chat():
         )
     })
 
+
+@app.route("/job-positions", methods=["GET"])
+def get_job_positions():
+    positions = JobPosition.query.all()
+    return jsonify([p.to_dict() for p in positions])
+
+
+@app.route("/applications", methods=["GET"])
+def list_applications():
+    apps = JobApplication.query.order_by(JobApplication.applicationID.desc()).all()
+    return jsonify([a.to_dict() for a in apps])
+
+
+@app.route("/submit-job", methods=["POST"])
+def submit_job():
+    data = request.get_json() or {}
+    logger.info("Received submit-job data: %s", data)
+
+    try:
+        positionID = int(data.get("positionID"))
+    except Exception:
+        return jsonify({"success": False, "error": "Invalid positionID"}), 400
+
+    name = data.get("name")
+    email = data.get("email")
+    experience = data.get("experience")
+
+    if not (positionID and name and email and experience):
+        return jsonify({"success": False, "error": "Missing required fields"}), 400
+
+    position = JobPosition.query.get(positionID)
+    if not position:
+        return jsonify({"success": False, "error": "Invalid position"}), 400
+
+    app_entry = JobApplication(positionID=positionID, name=name, email=email, experience=experience)
+    db.session.add(app_entry)
+    try:
+        db.session.commit()
+    except Exception as e:
+        logger.exception("DB commit failed for job application")
+        db.session.rollback()
+        return jsonify({"success": False, "error": "Database error"}), 500
+
+    logger.info("Inserted application id=%s", app_entry.applicationID)
+    return jsonify({"success": True, "message": "Application submitted", "id": app_entry.applicationID})
+
 if __name__ == "__main__":
+    with app.app_context():
+            db.create_all()
+            #seed_positions()
     app.run(debug=True)
 
