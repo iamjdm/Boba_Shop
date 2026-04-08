@@ -1,3 +1,19 @@
+/* ===== ORDER HERO SECTION ===== */
+#herocouch {
+	height: 300px;
+	background-image: url("../images/boba_merch_banner.webp");
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center 25%;
+}
+
+@media (width >= 600px) {
+	#herocouch {
+		height: 50vh;
+		background-image: url("../images/boba_merch_banner.webp");
+	}
+}
+
 /* ===== ORDER PAGE STYLES ===== */
 
 #order-topbar {
