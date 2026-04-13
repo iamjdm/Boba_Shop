@@ -3,6 +3,27 @@
  * Handles form submission and API communication for job applications
  */
 
+// Load available job positions from backend
+async function loadJobPositions() {
+	try {
+		const response = await fetch("http://127.0.0.1:5000/job-positions");
+		const positions = await response.json();
+		
+		const select = document.getElementById("position");
+		positions.forEach(pos => {
+			const option = document.createElement("option");
+			option.value = pos.positionID;
+			option.textContent = pos.positionTitle;
+			select.appendChild(option);
+		});
+	} catch (error) {
+		console.error("Error loading positions:", error);
+	}
+}
+
+// Load positions on page load
+document.addEventListener("DOMContentLoaded", loadJobPositions);
+
 document
 	.getElementById("jobApplicationForm")
 	.addEventListener("submit", async (e) => {

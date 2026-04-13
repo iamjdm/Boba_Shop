@@ -156,6 +156,28 @@ class MenuItem(db.Model):
             "price": float(self.price)
         }
 
+class Event(db.Model):
+    __tablename__ = "events"
+
+    eventID = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    time = db.Column(db.String(20), nullable=False)
+    host = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(500), nullable=False)
+    category = db.Column(db.String(50), nullable=False)
+
+    def to_dict(self):
+        return {
+            "eventID": self.eventID,
+            "title": self.title,
+            "date": self.date.isoformat() if self.date else None,
+            "time": self.time,
+            "host": self.host,
+            "description": self.description,
+            "category": self.category
+        }
+
 def seed_positions():
     try:
         if JobPosition.query.count() == 0:
@@ -357,6 +379,37 @@ def submit_order():
 def get_menu_items():
     items = MenuItem.query.order_by(MenuItem.menuItemID.asc()).all()
     return jsonify([item.to_dict() for item in items])
+
+@app.route("/events", methods=["GET"])
+def get_events():
+    events = Event.query.order_by(Event.date.asc()).all()
+    return jsonify([e.to_dict() for e in events])
+
+@app.route("/submit-event", methods=["POST"])
+def submit_event():
+    data = request.get_json() or {}
+    logger.info("Received submit-event data: %s", data)
+
+    title = data.get("title")
+    date = data.get("date")
+    time = data.get("time")
+    host = data.get("host")
+    description = data.get("description")
+    category = data.get("category")
+
+    if not (title and date and time and host and description and category):
+        return jsonify({"success": False, "error": "Missing required fields"}), 400
+
+    try:
+        event = Event(title=title, date=date, time=time, host=host, description=description, category=category)
+        db.session.add(event)
+        db.session.commit()
+        logger.info("Inserted event id=%s", event.eventID)
+        return jsonify({"success": True, "message": "Event created", "eventID": event.eventID})
+    except Exception:
+        logger.exception("DB commit failed for event")
+        db.session.rollback()
+        return jsonify({"success": False, "error": "Database error"}), 500
 
 if __name__ == "__main__":
     with app.app_context():

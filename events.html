@@ -63,6 +63,81 @@
 					<div id="event-detail-content"></div>
 				</div>
 
+				<!-- event submission form -->
+				<h3>Submit Your Event</h3>
+				<form id="eventForm">
+					<fieldset>
+						<legend>Add a New Event</legend>
+
+						<div class="form-group">
+							<label for="event-title">Event Title:</label>
+							<input
+								type="text"
+								id="event-title"
+								name="title"
+								placeholder="e.g., Trivia Night"
+								required
+							/>
+						</div>
+
+						<div class="form-group">
+							<label for="event-date">Date:</label>
+							<input
+								type="date"
+								id="event-date"
+								name="date"
+								required
+							/>
+						</div>
+
+						<div class="form-group">
+							<label for="event-time">Time:</label>
+							<input
+								type="time"
+								id="event-time"
+								name="time"
+								required
+							/>
+						</div>
+
+						<div class="form-group">
+							<label for="event-host">Host Name:</label>
+							<input
+								type="text"
+								id="event-host"
+								name="host"
+								placeholder="e.g., DJ Alex"
+								required
+							/>
+						</div>
+
+						<div class="form-group">
+							<label for="event-category">Category:</label>
+							<select id="event-category" name="category" required>
+								<option value="">-- Select Category --</option>
+								<option value="kpop">K-Pop Night</option>
+								<option value="acoustic">Acoustic Chill</option>
+								<option value="trivia">Trivia</option>
+								<option value="other">Other</option>
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label for="event-description">Description:</label>
+							<textarea
+								id="event-description"
+								name="description"
+								rows="4"
+								placeholder="Describe your event..."
+								required
+							></textarea>
+						</div>
+
+						<button type="submit" class="submit-btn">Submit Event</button>
+						<p id="eventMessage" style="display: none"></p>
+					</fieldset>
+				</form>
+
 				<!-- event info sections -->
 				<h4>K-Pop Night (Bi-weekly Fridays, 8:00 PM)</h4>
 				<div class="details" id="kpop-section">

@@ -3,58 +3,99 @@
  * Custom calendar implementation for teazen events
  */
 
-const eventData = {
-	kpop: {
-		title: "K-Pop Night",
-		time: "8:00 PM",
-		host: "Hosted by Jasmine Chen",
-		description:
-			"Get ready for an evening of dancing, singing, and celebrating K-Pop culture with themed drinks and games.",
-		anchor: "kpop-section",
-		color: "#c0427a",
-		class: "kpop",
-	},
-	acoustic: {
-		title: "Acoustic Chill Night",
-		time: "8:00 PM",
-		host: "Hosted by Atlas Grey",
-		description:
-			"Soothing acoustic melodies to create the perfect zen atmosphere. Relax with live music, warm lighting, and your favorite boba drink.",
-		anchor: "acoustic-section",
-		color: "#2d6e2d",
-		class: "acoustic",
-	},
-};
-
-// Hardcoded Friday events — alternating K-Pop / Acoustic
-const fridays = [
-	"2026-02-06",
-	"2026-02-13",
-	"2026-02-20",
-	"2026-02-27",
-	"2026-03-06",
-	"2026-03-13",
-	"2026-03-20",
-	"2026-03-27",
-	"2026-04-03",
-	"2026-04-10",
-	"2026-04-17",
-	"2026-04-24",
-	"2026-05-01",
-	"2026-05-08",
-	"2026-05-15",
-	"2026-05-22",
-	"2026-05-29",
-];
-
-// Parse events into a map for easy lookup
-const eventMap = {};
-fridays.forEach((dateStr, i) => {
-	const type = i % 2 === 0 ? "kpop" : "acoustic";
-	eventMap[dateStr] = type;
-});
-
+let eventData = {};
+let eventMap = {};
 let currentDate = new Date(2026, 2, 1); // March 2026
+
+// Fetch events from backend
+async function loadEvents() {
+	try {
+		const response = await fetch("http://127.0.0.1:5000/events");
+		const events = await response.json();
+
+		// Clear previous data
+		eventData = {};
+		eventMap = {};
+
+		// Build eventData and eventMap from fetched events
+		events.forEach((event, index) => {
+			const eventKey = `event-${index}`;
+			eventData[eventKey] = {
+				title: event.title,
+				time: event.time,
+				host: `Hosted by ${event.host}`,
+				description: event.description,
+				category: event.category,
+				anchor: event.category,
+				color: getColorForCategory(event.category),
+				class: event.category.toLowerCase().replace(/\s/g, "-"),
+			};
+			eventMap[event.date] = eventKey;
+		});
+
+		renderCalendar();
+	} catch (error) {
+		console.error("Error loading events:", error);
+	}
+}
+
+function getColorForCategory(category) {
+	const colors = {
+		"kpop": "#c0427a",
+		"acoustic": "#2d6e2d",
+		"default": "#6b4ce0",
+	};
+	return colors[category.toLowerCase().replace(/\s/g, "")] || colors.default;
+}
+
+// Event form submission
+document.addEventListener("DOMContentLoaded", () => {
+	const eventForm = document.getElementById("eventForm");
+	if (eventForm) {
+		eventForm.addEventListener("submit", async (e) => {
+			e.preventDefault();
+
+			const formData = {
+				title: document.getElementById("event-title").value,
+				date: document.getElementById("event-date").value,
+				time: document.getElementById("event-time").value,
+				host: document.getElementById("event-host").value,
+				category: document.getElementById("event-category").value,
+				description: document.getElementById("event-description").value,
+			};
+
+			const messageEl = document.getElementById("eventMessage");
+
+			try {
+				const response = await fetch("http://127.0.0.1:5000/submit-event", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(formData),
+				});
+
+				const data = await response.json();
+				messageEl.style.display = "block";
+
+				if (response.ok) {
+					messageEl.style.color = "green";
+					messageEl.textContent = "✓ Event submitted successfully!";
+					eventForm.reset();
+					loadEvents(); // Refresh calendar
+				} else {
+					messageEl.style.color = "red";
+					messageEl.textContent = "✗ " + (data.error || "Failed to submit event");
+				}
+			} catch (error) {
+				messageEl.style.display = "block";
+				messageEl.style.color = "red";
+				messageEl.textContent = "✗ Error connecting to server.";
+				console.error("Error:", error);
+			}
+		});
+	}
+
+	loadEvents();
+});
 
 function renderCalendar() {
 	const year = currentDate.getFullYear();
@@ -175,6 +216,3 @@ document.getElementById("next-month").addEventListener("click", () => {
 document.getElementById("close-detail").addEventListener("click", () => {
 	document.getElementById("event-detail").classList.add("hidden");
 });
-
-// Initial render
-document.addEventListener("DOMContentLoaded", renderCalendar);
