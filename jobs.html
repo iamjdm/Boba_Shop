@@ -5,6 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>TeaZen Boba Bar Jobs</title>
 		<link rel="stylesheet" href="styles/teazen.css" />
+		<link rel="stylesheet" href="styles/jobs.css" />
 	</head>
 	<body>
 		<!-- wrapper -->
@@ -37,86 +38,87 @@
 				</p>
 
 				<!-- job application form -->
-				<form id="jobForm">
-    				<label for="positionID">Position:</label>
-					<select id="positionID" name="positionID" required>
-    					<option value="">Select a position</option>
-					</select>
+				<form id="jobApplicationForm">
+					<fieldset>
+						<legend>Job Application Form</legend>
 
-    				<label for="name">Name:</label>
-    				<input type="text" id="name" name="name" required />
+						<div class="form-group">
+							<label for="name">Full Name:</label>
+							<input
+								type="text"
+								id="name"
+								name="name"
+								placeholder="Enter your full name"
+								required
+							/>
+						</div>
 
-    				<label for="email">Email:</label>
-    				<input type="email" id="email" name="email" required />
+						<div class="form-group">
+							<label for="email">Email:</label>
+							<input
+								type="email"
+								id="email"
+								name="email"
+								placeholder="your.email@example.com"
+								required
+							/>
+						</div>
 
-    				<label for="experience">Experience:</label>
-    				<textarea
-        				id="experience"
-        				name="experience"
-        				rows="2"
-        				required
-    				></textarea>
+						<div class="form-group">
+							<label for="phone">Phone Number:</label>
+							<input
+								type="tel"
+								id="phone"
+								name="phone"
+								placeholder="(123) 456-7890"
+								required
+							/>
+						</div>
 
-    				<input type="submit" value="Apply Now" id="mySubmit" />
+						<div class="form-group">
+							<label for="position">Position Interested In:</label>
+							<select id="position" name="position" required>
+								<option value="">-- Select a Position --</option>
+								<option value="Tea Master">Tea Master</option>
+								<option value="Barista">Barista</option>
+								<option value="Food Staff">Food Staff</option>
+								<option value="Cashier">Cashier</option>
+								<option value="Kitchen Staff">Kitchen Staff</option>
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label for="startdate">Desired Start Date:</label>
+							<input type="date" id="startdate" name="startDate" required />
+						</div>
+
+						<div class="form-group">
+							<label for="experience">Tell us about your experience:</label>
+							<textarea
+								id="experience"
+								name="experience"
+								rows="4"
+								placeholder="Share any relevant work experience, skills, or why you're excited about TeaZen..."
+								required
+							></textarea>
+						</div>
+
+						<div class="form-group">
+							<label for="availability">Availability:</label>
+							<select id="availability" name="availability" required>
+								<option value="">-- Select Availability --</option>
+								<option value="Full-time">Full-time</option>
+								<option value="Part-time">Part-time</option>
+								<option value="Flexible">Flexible</option>
+							</select>
+						</div>
+
+						<button type="submit" id="mySubmit" class="submit-btn">
+							Submit Application
+						</button>
+						<p id="formMessage" style="display: none"></p>
+					</fieldset>
 				</form>
-
-				<p id="jobMessage"></p>
-
-				<script>
-				async function loadJobPositions() {
-    				try {
-        				const response = await fetch("http://127.0.0.1:5000/job-positions");
-        				const positions = await response.json();
-
-        				const dropdown = document.getElementById("positionID");
-
-        				positions.forEach(position => {
-            				const option = document.createElement("option");
-            				option.value = position.positionID;
-            				option.textContent = position.positionTitle;
-            				dropdown.appendChild(option);
-        				});
-    				} catch (error) {
-        				console.error("Error loading job positions:", error);
-    				}
-				}
-
-				loadJobPositions();
-
-				document.getElementById("jobForm").addEventListener("submit", async function(e) {
-    				e.preventDefault();
-
-    				const formData = {
-        				positionID: document.getElementById("positionID").value,
-        				name: document.getElementById("name").value,
-        				email: document.getElementById("email").value,
-        				experience: document.getElementById("experience").value
-    				};
-
-    				try {
-        				const response = await fetch("http://127.0.0.1:5000/submit-job", {
-            				method: "POST",
-            				headers: {
-                				"Content-Type": "application/json"
-            				},
-            				body: JSON.stringify(formData)
-        				});
-
-        				const result = await response.json();
-
-        				if (result.success) {
-            				document.getElementById("jobMessage").textContent = result.message;
-            				document.getElementById("jobForm").reset();
-        				} else {
-            				document.getElementById("jobMessage").textContent = "Error: " + result.error;
-        				}
-    				} catch (error) {
-        				document.getElementById("jobMessage").textContent = "Something went wrong.";
-    				}
-				});
-				</script>
-				
-				
 			</main>
 
 			<!-- footer -->

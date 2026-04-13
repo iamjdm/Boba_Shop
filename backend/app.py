@@ -263,7 +263,6 @@ def chat():
         )
     })
 
-
 @app.route("/job-positions", methods=["GET"])
 def get_job_positions():
     positions = JobPosition.query.all()
@@ -366,4 +365,3 @@ if __name__ == "__main__":
             db.create_all()
             #seed_positions()
     app.run(debug=True)
-

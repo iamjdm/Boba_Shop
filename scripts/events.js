@@ -1,31 +1,32 @@
 /**
  * Events Calendar Handler
- * Manages FullCalendar event display and event detail modals
+ * Custom calendar implementation for teazen events
  */
 
 const eventData = {
 	kpop: {
 		title: "K-Pop Night",
-		time: "Every other Friday at 8:00 PM",
+		time: "8:00 PM",
 		host: "Hosted by Jasmine Chen",
 		description:
 			"Get ready for an evening of dancing, singing, and celebrating K-Pop culture with themed drinks and games.",
 		anchor: "kpop-section",
 		color: "#c0427a",
+		class: "kpop",
 	},
 	acoustic: {
 		title: "Acoustic Chill Night",
-		time: "Alternate Fridays at 8:00 PM",
+		time: "8:00 PM",
 		host: "Hosted by Atlas Grey",
 		description:
 			"Soothing acoustic melodies to create the perfect zen atmosphere. Relax with live music, warm lighting, and your favorite boba drink.",
 		anchor: "acoustic-section",
 		color: "#2d6e2d",
+		class: "acoustic",
 	},
 };
 
 // Hardcoded Friday events — alternating K-Pop / Acoustic
-// Replace this array with a fetch('/api/events') call when the DB is ready
 const fridays = [
 	"2026-02-06",
 	"2026-02-13",
@@ -46,35 +47,95 @@ const fridays = [
 	"2026-05-29",
 ];
 
-const calendarEvents = fridays.map((date, i) => {
+// Parse events into a map for easy lookup
+const eventMap = {};
+fridays.forEach((dateStr, i) => {
 	const type = i % 2 === 0 ? "kpop" : "acoustic";
-	const info = eventData[type];
-	return {
-		title: info.title,
-		start: date,
-		color: info.color,
-		extendedProps: { type },
-	};
+	eventMap[dateStr] = type;
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-	const calendarEl = document.getElementById("calendar");
-	const calendar = new FullCalendar.Calendar(calendarEl, {
-		initialView: "dayGridMonth",
-		initialDate: "2026-03-01",
-		headerToolbar: {
-			left: "prev,next today",
-			center: "title",
-			right: "",
-		},
-		events: calendarEvents,
-		eventClick: function (info) {
-			showDetail(info.event.extendedProps.type, info.event.startStr);
-		},
-		height: "auto",
-	});
-	calendar.render();
-});
+let currentDate = new Date(2026, 2, 1); // March 2026
+
+function renderCalendar() {
+	const year = currentDate.getFullYear();
+	const month = currentDate.getMonth();
+
+	// Update title
+	const monthNames = [
+		"January", "February", "March", "April", "May", "June",
+		"July", "August", "September", "October", "November", "December",
+	];
+	document.getElementById("calendar-title").textContent = `${monthNames[month]} ${year}`;
+
+	// Get first day of month and number of days
+	const firstDay = new Date(year, month, 1).getDay();
+	const daysInMonth = new Date(year, month + 1, 0).getDate();
+	const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+	// Clear calendar days
+	const calendarDays = document.getElementById("calendar-days");
+	calendarDays.innerHTML = "";
+
+	// Previous month's days
+	for (let i = firstDay - 1; i >= 0; i--) {
+		const day = daysInPrevMonth - i;
+		const dateObj = new Date(year, month - 1, day);
+		addDayElement(calendarDays, day, dateObj, true);
+	}
+
+	// Current month's days
+	for (let day = 1; day <= daysInMonth; day++) {
+		const dateObj = new Date(year, month, day);
+		addDayElement(calendarDays, day, dateObj, false);
+	}
+
+	// Next month's days
+	const totalCells = calendarDays.children.length;
+	const remainingCells = 42 - totalCells; // 6 rows * 7 days
+	for (let day = 1; day <= remainingCells; day++) {
+		const dateObj = new Date(year, month + 1, day);
+		addDayElement(calendarDays, day, dateObj, true);
+	}
+}
+
+function addDayElement(container, day, dateObj, isOtherMonth) {
+	const dayEl = document.createElement("div");
+	dayEl.classList.add("calendar-day");
+
+	const dateStr = dateObj.toISOString().split("T")[0]; // YYYY-MM-DD
+	const isToday = dateObj.toDateString() === new Date().toDateString();
+
+	if (isOtherMonth) {
+		dayEl.classList.add("other-month");
+	}
+	if (isToday) {
+		dayEl.classList.add("today");
+	}
+
+	// Day number
+	const dayNum = document.createElement("div");
+	dayNum.classList.add("day-number");
+	dayNum.textContent = day;
+	dayEl.appendChild(dayNum);
+
+	// Events for this day
+	const eventsDiv = document.createElement("div");
+	eventsDiv.classList.add("day-events");
+
+	if (eventMap[dateStr]) {
+		const type = eventMap[dateStr];
+		const info = eventData[type];
+		const eventEl = document.createElement("div");
+		eventEl.classList.add("calendar-event", info.class);
+		eventEl.textContent = info.title;
+		eventEl.style.cursor = "pointer";
+		eventEl.addEventListener("click", () => showDetail(type, dateStr));
+		eventsDiv.appendChild(eventEl);
+	}
+
+	dayEl.appendChild(eventsDiv);
+	container.appendChild(dayEl);
+}
 
 function showDetail(type, dateStr) {
 	const info = eventData[type];
@@ -88,7 +149,7 @@ function showDetail(type, dateStr) {
 
 	document.getElementById("event-detail-content").innerHTML = `
 		<h3>${info.title}</h3>
-		<p class="event-date">${formatted} &mdash; 8:00 PM</p>
+		<p class="event-date">${formatted} &mdash; ${info.time}</p>
 		<p class="event-host">${info.host}</p>
 		<p>${info.description}</p>
 		<a href="#${info.anchor}" class="event-link">See full details &darr;</a>
@@ -99,6 +160,21 @@ function showDetail(type, dateStr) {
 	panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
-document.getElementById("close-detail").addEventListener("click", function () {
+// Month navigation
+document.getElementById("prev-month").addEventListener("click", () => {
+	currentDate.setMonth(currentDate.getMonth() - 1);
+	renderCalendar();
+});
+
+document.getElementById("next-month").addEventListener("click", () => {
+	currentDate.setMonth(currentDate.getMonth() + 1);
+	renderCalendar();
+});
+
+// Close detail panel
+document.getElementById("close-detail").addEventListener("click", () => {
 	document.getElementById("event-detail").classList.add("hidden");
 });
+
+// Initial render
+document.addEventListener("DOMContentLoaded", renderCalendar);
