@@ -1,0 +1,79 @@
+{
+  "drinks": [
+    {
+      "name": "Classic Milk Tea",
+      "description": "Traditional black tea with creamy milk and chewy tapioca pearls.",
+      "prices": {
+        "regular": 5.5,
+        "large": 6.5
+      }
+    },
+    {
+      "name": "Taro Bliss",
+      "description": "Sweet taro root blended with milk and choice of toppings.",
+      "prices": {
+        "regular": 6.0,
+        "large": 7.0
+      }
+    },
+    {
+      "name": "Matcha Zen",
+      "description": "Premium Japanese matcha whisked with oat milk and honey boba.",
+      "prices": {
+        "regular": 6.75,
+        "large": 7.75
+      }
+    },
+    {
+      "name": "Strawberry Cloud",
+      "description": "Fresh strawberries blended with jasmine tea, topped with sweet cheese foam.",
+      "prices": {
+        "regular": 6.5,
+        "large": 7.5
+      }
+    },
+    {
+      "name": "Brown Sugar Tiger",
+      "description": "House-made brown sugar syrup swirled with fresh milk and chewy pearls.",
+      "prices": {
+        "regular": 6.25,
+        "large": 7.25
+      }
+    }
+  ],
+  "snacks": [
+    {
+      "name": "Mochi Trio",
+      "description": "Three pieces of handmade mochi in rotating seasonal flavors.",
+      "price": 5.0
+    },
+    {
+      "name": "Taiyaki",
+      "description": "Fish-shaped waffle pastry filled with red bean, Nutella, or custard.",
+      "price_range": "$3.50 to $9.00",
+      "options": "1 piece or 3 pieces"
+    },
+    {
+      "name": "Poké Bowl",
+      "description": "Fresh tuna or tofu over seasoned rice with avocado, edamame, and sesame.",
+      "price": 12.95
+    },
+    {
+      "name": "Summer Rolls",
+      "description": "Two rice paper rolls with shrimp or tofu, fresh herbs, and rice noodles.",
+      "price": 7.5
+    }
+  ],
+  "merch": [
+    {
+      "name": "TeaZen Zen Vibes Tee",
+      "description": "100% organic cotton, sizes S to XL. Wear in-store for 10% off your drink.",
+      "price": 18.95
+    },
+    {
+      "name": "TeaZen Boba Tumbler",
+      "description": "20oz tumbler with wide boba straw. Keeps drinks cold for hours. Bring in for 10% off.",
+      "price": 14.95
+    }
+  ]
+}

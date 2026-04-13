@@ -155,52 +155,6 @@ main ul {
 	background-color: #2b2d2e;
 }
 
-/* ===== HERO SECTIONS ===== */
-#homehero {
-	height: 300px;
-	background-image: url("../images/boba_homehero_1.avif");
-	background-repeat: no-repeat;
-	/* background-size: 100% 100%; */
-	background-size: cover;
-	background-position: center 25%;
-}
-
-#heromugs {
-	height: 300px;
-	background-image: url("../images/boba_heromugs_2.webp");
-	background-repeat: no-repeat;
-	/* background-size: 100% 100%; */
-	background-size: cover;
-	background-position: center 5%;
-}
-
-#heroguitar {
-	height: 300px;
-	background-image: url("../images/music_hero.jpg");
-	background-repeat: no-repeat;
-	/* background-size: 100% 100%; */
-	background-size: cover;
-	background-position: center 45%;
-	filter: sepia(0.5) hue-rotate(60deg) saturate(1.2);
-}
-
-#herojobs {
-	height: 300px;
-	background-image: url("../images/boba_jobs.jpg");
-	background-repeat: no-repeat;
-	background-size: cover;
-	background-position: center 25%;
-}
-
-#herocouch {
-	height: 300px;
-	background-image: url("../images/boba_merch_banner.webp");
-	background-repeat: no-repeat;
-	/* background-size: 100% 100%; */
-	background-size: cover;
-	background-position: center 25%;
-}
-
 /* ===== FOOTER ===== */
 footer {
 	padding: 1em;
@@ -276,47 +230,6 @@ audio {
 	margin-top: 1em;
 }
 
-/* ===== ITEMS ===== */
-.item {
-	overflow: auto;
-	margin: 1em;
-	padding: 1em;
-	/* background-color: #fdfbf7; */
-}
-
-.item p {
-	padding-left: 1.2em;
-}
-
-.item form {
-	padding-left: 1.2em;
-}
-
-.item img {
-	float: right;
-	max-width: 300px; /* Won't exceed this width */
-	width: 100%; /* Scales down on smaller screens */
-	height: auto;
-}
-
-/* Merch page - Add to Cart buttons */
-.item input[type="submit"],
-.item button[type="submit"] {
-	width: 150px;
-	padding: 0.5em 1.5em;
-	font-size: 0.95em;
-}
-
-/* Center images on mobile/small screens */
-@media (width < 600px) {
-	.item img {
-		float: none;
-		display: block;
-		margin: 0 auto 1em auto;
-		max-width: 400px;
-	}
-}
-
 /* ===== TABLES ===== */
 
 table {
@@ -355,31 +268,6 @@ tr:nth-child(odd) {
 		border-bottom: none;
 	}
 
-	#homehero {
-		height: 50vh;
-		background-image: url("../images/boba_homehero_1.avif");
-	}
-
-	#heromugs {
-		height: 50vh;
-		background-image: url("../images/boba_heromugs_2.webp");
-	}
-
-	#heroguitar {
-		height: 50vh;
-		background-image: url("../images/music_hero.jpg");
-	}
-
-	#herojobs {
-		height: 50vh;
-		background-image: url("../images/boba_jobs.jpg");
-	}
-
-	#herocouch {
-		height: 50vh;
-		background-image: url("../images/boba_merch_banner.webp");
-	}
-
 	#flow {
 		display: flex;
 		flex-flow: row;
@@ -410,11 +298,9 @@ tr:nth-child(odd) {
 		width: 40%;
 	}
 
-	/* Only apply grid to regular forms, not merch items */
-	form:not(.item form) input[type="submit"],
-	form:not(.item form) button[type="submit"] {
+	form input[type="submit"],
+	form button[type="submit"] {
 		grid-column: 2;
-		width: 9em;
 	}
 }
 
@@ -451,9 +337,19 @@ tr:nth-child(odd) {
 		flex-direction: column;
 	}
 }
+<<<<<<< HEAD
 
+<<<<<<< Updated upstream:styles/teazen.css
 /* ===== JOB APPLICATION FORM ===== */
 #jobApplicationForm {
+=======
+/* ===== CHATBOT (FIXED) ===== */
+#chatbot-container {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	z-index: 9999;
+>>>>>>> Stashed changes:teazen.css
 	display: flex;
 	flex-direction: column;
 	max-width: 600px;
@@ -467,6 +363,7 @@ tr:nth-child(odd) {
 
 #jobApplicationForm fieldset {
 	border: none;
+<<<<<<< Updated upstream:styles/teazen.css
 	padding: 0;
 	margin: 0;
 }
@@ -481,6 +378,26 @@ tr:nth-child(odd) {
 
 .form-group {
 	margin-bottom: 1.5em;
+=======
+	padding: 12px 18px;
+	border-radius: 25px;
+	cursor: pointer;
+	font-weight: bold;
+	box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+	margin-bottom: 10px;
+}
+
+#chat-toggle:hover {
+	background-color: #3b6820;
+}
+
+#chat-window {
+	width: 320px;
+	height: 420px;
+	background: #f5f3e8;
+	border-radius: 15px;
+	box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+>>>>>>> Stashed changes:teazen.css
 	display: flex;
 	flex-direction: column;
 }
@@ -532,6 +449,7 @@ tr:nth-child(odd) {
 	border-radius: 4px;
 	font-size: 1em;
 	font-weight: bold;
+<<<<<<< Updated upstream:styles/teazen.css
 	cursor: pointer;
 	transition:
 		background-color 0.3s ease,
@@ -555,6 +473,72 @@ tr:nth-child(odd) {
 	border-radius: 4px;
 	font-weight: bold;
 	text-align: center;
+=======
+}
+
+#chat-messages {
+	flex: 1;
+	padding: 12px;
+	overflow-y: auto;
+	background: #ffffff;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.user-message {
+	align-self: flex-end;
+	background: #d4e0c8;
+	padding: 10px 12px;
+	border-radius: 15px 15px 5px 15px;
+	max-width: 75%;
+	white-space: pre-wrap;
+}
+
+.bot-message {
+	align-self: flex-start;
+	background: #f1f1f1;
+	padding: 10px 12px;
+	border-radius: 15px 15px 15px 5px;
+	max-width: 75%;
+	border: 1px solid #ddd;
+	white-space: pre-wrap;
+}
+
+#chat-input-area {
+	display: flex;
+	padding: 8px;
+	border-top: 1px solid #ccc;
+	background: #fff;
+	gap: 8px;
+}
+
+#chatInput {
+	flex: 1;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 8px;
+	outline: none;
+	margin: 0 !important;
+}
+
+#chatInput:focus {
+	border-color: #2d5016;
+}
+
+#chat-input-area button {
+	background-color: #2d5016;
+	color: #f5f3e8;
+	border: none;
+	padding: 10px 14px;
+	border-radius: 8px;
+	cursor: pointer;
+	font-weight: bold;
+}
+
+#chat-input-area button:hover {
+	background-color: #3b6820;
+>>>>>>> Stashed changes:teazen.css
 }
 
 #formMessage[style*="green"] {
@@ -568,3 +552,5 @@ tr:nth-child(odd) {
 	color: #8b3a3a;
 	border: 1px solid #8b3a3a;
 }
+=======
+>>>>>>> 483d1e0a27bd4747a47a7f8847b995fde7b28a60

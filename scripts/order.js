@@ -3,6 +3,9 @@
  * Handles product display, cart management, and checkout functionality
  */
 
+const CHAT_API_URL =
+	document.querySelector('meta[name="chat-api-url"]')?.content || "/api/chat";
+
 const PRODUCTS = {
 	drinks: [
 		{
@@ -398,6 +401,9 @@ function buildOrderPayload() {
 async function sendChatMessage() {
 	const input = document.getElementById("chat-input");
 	const messages = document.getElementById("chat-messages");
+
+	if (!input || !messages) return;
+
 	const text = input.value.trim();
 	if (!text) return;
 
@@ -405,27 +411,37 @@ async function sendChatMessage() {
 	userMsg.className = "chat-msg chat-msg-user";
 	userMsg.textContent = text;
 	messages.appendChild(userMsg);
+
 	input.value = "";
 	messages.scrollTop = messages.scrollHeight;
 
+	const thinkingMsg = document.createElement("div");
+	thinkingMsg.className = "chat-msg chat-msg-bot";
+	thinkingMsg.textContent = "Thinking...";
+	messages.appendChild(thinkingMsg);
+	messages.scrollTop = messages.scrollHeight;
+
 	try {
-		const response = await fetch("http://127.0.0.1:5000/api/chat", {
+		const response = await fetch(CHAT_API_URL, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ message: text }),
 		});
+
 		const data = await response.json();
-		const botMsg = document.createElement("div");
-		botMsg.className = "chat-msg chat-msg-bot";
-		botMsg.textContent = data.reply;
-		messages.appendChild(botMsg);
+
+		setTimeout(() => {
+			thinkingMsg.textContent =
+				data.reply || "Sorry, I couldn't answer that right now.";
+			messages.scrollTop = messages.scrollHeight;
+		}, 1000);
 	} catch (e) {
-		const errMsg = document.createElement("div");
-		errMsg.className = "chat-msg chat-msg-bot";
-		errMsg.textContent = "Couldn't connect to TeaZen assistant.";
-		messages.appendChild(errMsg);
+		setTimeout(() => {
+			thinkingMsg.textContent = "Couldn't connect to TeaZen assistant.";
+			messages.scrollTop = messages.scrollHeight;
+		}, 1000);
+		console.error(e);
 	}
-	messages.scrollTop = messages.scrollHeight;
 }
 
 function showLMPayload() {

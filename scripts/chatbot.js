@@ -1,3 +1,5 @@
+const CHAT_API_URL = window.CHAT_API_URL || "/api/chat";
+
 function toggleChat() {
 	const chatWindow = document.getElementById("chat-window");
 	if (chatWindow) {
@@ -31,10 +33,10 @@ async function sendMessage() {
 	addMessage(message, "user");
 	input.value = "";
 
-	const typingMessage = addMessage("Thinking...", "bot");
+	const thinkingMessage = addMessage("Thinking...", "bot");
 
 	try {
-		const response = await fetch("http://127.0.0.1:5000/api/chat", {
+		const response = await fetch(CHAT_API_URL, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"
@@ -45,16 +47,20 @@ async function sendMessage() {
 		});
 
 		const data = await response.json();
-		await wait(800);
 
-		if (typingMessage) {
-			typingMessage.textContent = data.reply;
+		await wait(1000);
+
+		if (thinkingMessage) {
+			thinkingMessage.textContent =
+				data.reply || "Sorry, I couldn't answer that right now.";
 		}
 	} catch (error) {
-		await wait(800);
-		if (typingMessage) {
-			typingMessage.textContent = "Error connecting to Flask backend.";
+		await wait(1000);
+
+		if (thinkingMessage) {
+			thinkingMessage.textContent = "Error connecting to Flask backend.";
 		}
+
 		console.error(error);
 	}
 }
