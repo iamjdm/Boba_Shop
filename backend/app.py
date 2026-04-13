@@ -4,12 +4,10 @@ from flask_sqlalchemy import SQLAlchemy
 import json
 import os
 import re
-## testing
-
 import logging
 from datetime import datetime
 
-app= Flask(__name__)
+app = Flask(__name__)
 
 CORS(app)
 
@@ -362,6 +360,7 @@ def get_menu_items():
 
 if __name__ == "__main__":
     with app.app_context():
-            db.create_all()
-            #seed_positions()
+        db.create_all()
+        seed_positions()
+    app.run(debug=True, host="0.0.0.0", port=5000)
     app.run(debug=True)

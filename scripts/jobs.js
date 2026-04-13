@@ -9,19 +9,16 @@ document
 		e.preventDefault();
 
 		const formData = {
+			positionID: parseInt(document.getElementById("position").value),
 			name: document.getElementById("name").value,
 			email: document.getElementById("email").value,
-			phone: document.getElementById("phone").value,
-			position: document.getElementById("position").value,
-			startDate: document.getElementById("startdate").value,
 			experience: document.getElementById("experience").value,
-			availability: document.getElementById("availability").value,
 		};
 
 		const messageEl = document.getElementById("formMessage");
 
 		try {
-			const response = await fetch("http://127.0.0.1:5000/api/apply", {
+			const response = await fetch("http://127.0.0.1:5000/submit-job", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

@@ -79,11 +79,6 @@
 							<label for="position">Position Interested In:</label>
 							<select id="position" name="position" required>
 								<option value="">-- Select a Position --</option>
-								<option value="Tea Master">Tea Master</option>
-								<option value="Barista">Barista</option>
-								<option value="Food Staff">Food Staff</option>
-								<option value="Cashier">Cashier</option>
-								<option value="Kitchen Staff">Kitchen Staff</option>
 							</select>
 						</div>
 
@@ -128,6 +123,28 @@
 			</footer>
 		</div>
 
-		
+		<script src="scripts/jobs.js"></script>
+		<script>
+			// Load job positions from backend
+			async function loadJobPositions() {
+				try {
+					const response = await fetch("http://127.0.0.1:5000/job-positions");
+					const positions = await response.json();
+					const positionSelect = document.getElementById("position");
+					
+					positions.forEach(pos => {
+						const option = document.createElement("option");
+						option.value = pos.positionID;
+						option.textContent = pos.positionTitle;
+						positionSelect.appendChild(option);
+					});
+				} catch (error) {
+					console.error("Error loading job positions:", error);
+				}
+			}
+			
+			// Load positions when page loads
+			document.addEventListener("DOMContentLoaded", loadJobPositions);
+		</script>
 	</body>
 </html>
