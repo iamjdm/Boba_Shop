@@ -367,16 +367,21 @@ async function checkout() {
 
 	const subtotal = cart.reduce((s, i) => s + i.unitPrice * i.quantity, 0);
 
+	const orderNotes = document.getElementById("order-notes").value.trim();
+
 	const orderData = {
 		customerID: 1,
 		paymentMethod: "Card",
 		totalAmount: parseFloat(subtotal.toFixed(2)),
-		items: cart.map((item) => ({
-			menuItemID: item.menuItemID,
-			quantity: item.quantity,
-			item_price: parseFloat(item.unitPrice.toFixed(2)),
-			specialRequest: item.customRequest || ""
-		}))
+		items: cart.map((item) => {
+			const parts = [item.customRequest, orderNotes].filter(Boolean);
+			return {
+				menuItemID: item.menuItemID,
+				quantity: item.quantity,
+				item_price: parseFloat(item.unitPrice.toFixed(2)),
+				specialRequest: parts.join(" | "),
+			};
+		}),
 	};
 
 	try {
