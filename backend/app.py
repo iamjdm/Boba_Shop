@@ -176,6 +176,33 @@ def seed_positions():
         pass
 
 
+class Event(db.Model):
+    __tablename__ = "events"
+
+    eventID = db.Column(db.Integer, primary_key=True)
+    eventTitle = db.Column(db.String(150), nullable=False)
+    eventDescription = db.Column(db.String(500), nullable=True)
+    eventDate = db.Column(db.Date, nullable=False)
+    startTime = db.Column(db.Time, nullable=True)
+    endTime = db.Column(db.Time, nullable=True)
+    location = db.Column(db.String(200), nullable=True)
+    organizer = db.Column(db.String(100), nullable=True)
+    eventStatus = db.Column(db.String(50), nullable=True)
+
+    def to_dict(self):
+        return {
+            "eventID": self.eventID,
+            "eventTitle": self.eventTitle,
+            "eventDescription": self.eventDescription,
+            "eventDate": self.eventDate.isoformat() if self.eventDate else None,
+            "startTime": str(self.startTime) if self.startTime else None,
+            "endTime": str(self.endTime) if self.endTime else None,
+            "location": self.location,
+            "organizer": self.organizer,
+            "eventStatus": self.eventStatus,
+        }
+
+
 @app.route("/")
 def home():
     return "TeaZen Flask backend is running!"
@@ -266,6 +293,8 @@ def chat():
             "TeaZen Assistant"
         )
     })
+
+
 
 @app.route("/job-positions", methods=["GET"])
 def get_job_positions():
@@ -381,6 +410,11 @@ def submit_order():
 def get_menu_items():
     items = MenuItem.query.order_by(MenuItem.menuItemID.asc()).all()
     return jsonify([item.to_dict() for item in items])
+
+@app.route("/events", methods=["GET"])
+def get_events():
+    events = Event.query.order_by(Event.eventDate.asc()).all()
+    return jsonify([e.to_dict() for e in events])
 
 if __name__ == "__main__":
     with app.app_context():
