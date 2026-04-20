@@ -423,6 +423,8 @@ async function checkout() {
 			cart = [];
 			updateCartUI();
 			closeMobileCart();
+			document.getElementById("order-notes").value = "";
+			document.querySelectorAll(".custom-request").forEach((el) => (el.value = ""));
 		} else {
 			alert("Error: " + result.error);
 		}
