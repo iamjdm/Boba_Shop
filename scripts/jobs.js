@@ -13,6 +13,9 @@ document
 			name: document.getElementById("name").value,
 			email: document.getElementById("email").value,
 			experience: document.getElementById("experience").value,
+			phone: document.getElementById("phone").value,
+			desired_start_date: document.getElementById("startdate").value,
+			availability: document.getElementById("availability").value,
 		};
 
 		const messageEl = document.getElementById("formMessage");

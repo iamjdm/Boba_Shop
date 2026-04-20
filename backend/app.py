@@ -85,6 +85,9 @@ class JobApplication(db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(150), nullable=False)
     experience = db.Column(db.String(300), nullable=False)
+    phone = db.Column(db.String(20), nullable=True)
+    desired_start_date = db.Column(db.Date, nullable=True)
+    availability = db.Column(db.String(20), nullable=True)
 
     def to_dict(self):
         return {
@@ -92,7 +95,10 @@ class JobApplication(db.Model):
             "positionID": self.positionID,
             "name": self.name,
             "email": self.email,
-            "experience": self.experience
+            "experience": self.experience,
+            "phone": self.phone,
+            "desired_start_date": self.desired_start_date.isoformat() if self.desired_start_date else None,
+            "availability": self.availability
         }
     
 
@@ -286,15 +292,33 @@ def submit_job():
     name = data.get("name")
     email = data.get("email")
     experience = data.get("experience")
+    phone = data.get("phone")
+    desired_start_date_str = data.get("desired_start_date")
+    availability = data.get("availability")
 
     if not (positionID and name and email and experience):
         return jsonify({"success": False, "error": "Missing required fields"}), 400
+
+    desired_start_date = None
+    if desired_start_date_str:
+        try:
+            desired_start_date = datetime.strptime(desired_start_date_str, "%Y-%m-%d").date()
+        except ValueError:
+            return jsonify({"success": False, "error": "Invalid date format"}), 400
 
     position = JobPosition.query.get(positionID)
     if not position:
         return jsonify({"success": False, "error": "Invalid position"}), 400
 
-    app_entry = JobApplication(positionID=positionID, name=name, email=email, experience=experience)
+    app_entry = JobApplication(
+        positionID=positionID,
+        name=name,
+        email=email,
+        experience=experience,
+        phone=phone,
+        desired_start_date=desired_start_date,
+        availability=availability
+    )
     db.session.add(app_entry)
     try:
         db.session.commit()
