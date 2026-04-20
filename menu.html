@@ -32,7 +32,7 @@
 			<main>
 				<div id="heromugs"></div>
 
-				<h2>Boba & Teas at TeaZen</h2>
+				<h2>Menu at TeaZen</h2>
 				<p>
 					Indulge in our handcrafted boba drinks made with premium tea leaves
 					and fresh ingredients. Join our Bubble Club and get a 10% discount on
@@ -61,18 +61,17 @@
 					const response = await fetch("http://127.0.0.1:5000/menu-items");
 					const items = await response.json();
 
-					const drinksOnly = items.filter(item => item.category === "Boba & Tea");
-					const grouped = groupMenuItems(drinksOnly);
-
-					renderMenuTable(grouped);
-					} catch (error) {
-						console.error("Error loading menu items:", error);
-						document.getElementById("menu-table-body").innerHTML =
+					const byCategory = groupByCategory(items);
+					renderMenuTable(byCategory);
+				} catch (error) {
+					console.error("Error loading menu items:", error);
+					document.getElementById("menu-table-body").innerHTML =
 						'<tr><td colspan="2">Could not load menu items.</td></tr>';
-					}
+				}
 			}
-			function groupMenuItems(items) {
-				const grouped = {};
+
+			function groupByCategory(items) {
+				const categoryMap = {};
 
 				items.forEach(item => {
 					let baseName = item.name;
@@ -83,40 +82,41 @@
 						sizeLabel = "Large";
 					}
 
-					if (!grouped[baseName]) {
-						grouped[baseName] = {
+					const cat = item.category;
+					if (!categoryMap[cat]) categoryMap[cat] = {};
+
+					if (!categoryMap[cat][baseName]) {
+						categoryMap[cat][baseName] = {
 							name: baseName,
 							description: item.description || "",
 							prices: []
 						};
 					}
 
-					grouped[baseName].prices.push({
-						label: sizeLabel,
-						price: item.price
-					});
+					categoryMap[cat][baseName].prices.push({ label: sizeLabel, price: item.price });
 				});
 
-			return Object.values(grouped);
+				return categoryMap;
 			}
 
-			function renderMenuTable(menuItems) {
+			function renderMenuTable(byCategory) {
 				const tbody = document.getElementById("menu-table-body");
 
-				tbody.innerHTML = menuItems.map(item => {
-					const pricesText = item.prices
-					.map(price => `${price.label} $${price.price.toFixed(2)}`)
-					.join(" ");
+				tbody.innerHTML = Object.entries(byCategory).map(([category, items]) => {
+					const rows = Object.values(items).map(item => {
+						const pricesText = item.prices
+							.map(p => `${p.label} $${p.price.toFixed(2)}`)
+							.join(" &nbsp;|&nbsp; ");
+						return `
+							<tr>
+								<th>${item.name}</th>
+								<td>${item.description}<br />${pricesText}</td>
+							</tr>`;
+					}).join("");
 
 					return `
-						<tr>
-							<th>${item.name}</th>
-							<td>
-								${item.description}
-								<br />${pricesText}
-							</td>
-						</tr>
-					`;
+						<tr><td colspan="2"><strong>${category}</strong></td></tr>
+						${rows}`;
 				}).join("");
 			}
 
