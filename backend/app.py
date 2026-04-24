@@ -106,19 +106,15 @@ class Order(db.Model):
     __tablename__ = "orders"
 
     orderID = db.Column(db.Integer, primary_key=True)
-    customerID = db.Column(db.Integer, nullable=False)
     orderDate = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     status = db.Column(db.String(30), nullable=False)
-    paymentMethod = db.Column(db.String(50), nullable=False)
     totalAmount = db.Column(db.Numeric(8, 2), nullable=False)
 
     def to_dict(self):
         return {
             "orderID": self.orderID,
-            "customerID": self.customerID,
             "orderDate": self.orderDate.isoformat() if self.orderDate else None,
             "status": self.status,
-            "paymentMethod": self.paymentMethod,
             "totalAmount": float(self.totalAmount)
         }
     
@@ -364,19 +360,15 @@ def submit_order():
     data = request.get_json() or {}
     logger.info("Received submit-order data: %s", data)
 
-    customerID = data.get("customerID")
-    paymentMethod = data.get("paymentMethod")
     totalAmount = data.get("totalAmount")
     items = data.get("items", [])
 
-    if not customerID or not paymentMethod or totalAmount is None or not items:
+    if totalAmount is None or not items:
         return jsonify({"success": False, "error": "Missing required order fields"}), 400
 
     try:
         new_order = Order(
-            customerID=int(customerID),
             status="Pending",
-            paymentMethod=paymentMethod,
             totalAmount=float(totalAmount)
         )
         db.session.add(new_order)
