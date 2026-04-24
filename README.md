@@ -9,9 +9,11 @@ teazen-boba-shop/
 ├── index.html              # Homepage with hero banner & intro sections
 ├── menu.html               # Full TeaZen drink menu with product images
 ├── music.html              # Live events page featuring audio + artist thumbnails
-├── jobs.html               # Jobs / hiring page with hero image
+├── jobs.html               # Jobs / hiring page with application form
 ├── gear.html               # Merch store page (shirts, banners, accessories)
 ├── teazen.css              # Global styling, layout, typography, responsiveness
+├── app.py                  # Flask backend (API routes)
+├── teazen_db.sql           # Database export (tables + sample data)
 ├── README.md
 │
 ├── images/                 # All image assets used across the site
@@ -39,6 +41,7 @@ teazen-boba-shop/
 
 ## How to Use
 
+## Frontend (Static Pages)
 ### Option 1: Open Directly in Browser
 
 Simply double-click `index.html` to open the website in your default browser.
@@ -81,6 +84,40 @@ Then open http://localhost:8000 in your browser
 ## No Dependencies Required
 
 This is a pure HTML/CSS website with no build tools or package managers needed. Just open and run!
+
+## Database Requirements
+
+- MySQL Server
+- MySQL Workbench
+
+Note: If you don't have MySQL installed, download it here:
+https://dev.mysql.com/downloads/ 
+
+## Database Setup
+
+Ensure your MySQL server is running before importing the database.
+
+1. Open MySQL Workbench
+2. Go to Server → Data Import
+3. Select Import from Self-Contained File
+4. Choose `teazen_db.sql`
+5. Click Start Import
+
+Note: This database file includes all tables and sample data required for the project.
+
+## Backend Setup (Flask)
+
+To enable features such as orders, job applications, and menu data, run the backend:
+
+1. Open terminal in your project folder
+2. Run:
+```bash
+python app.py
+```
+3. Open in browser:
+`http://127.0.0.1:5000`
+
+Note: Ensure your MySQL server is running before starting the backend.
 
 ## Contact
 
