@@ -81,12 +81,16 @@ class JobPosition(db.Model):
     __tablename__ = "jobpositions"
 
     positionID = db.Column(db.Integer, primary_key=True)
-    positionTitle = db.Column(db.String(120), nullable=False)
+    positionTitle = db.Column(db.String(99), nullable=False)
+    description = db.Column(db.String(300), nullable=True)
+    status = db.Column(db.String(45), nullable=False, default="Open")
 
     def to_dict(self):
         return {
             "positionID": self.positionID,
-            "positionTitle": self.positionTitle
+            "positionTitle": self.positionTitle,
+            "description": self.description,
+            "status": self.status
         }
 
 
@@ -101,7 +105,10 @@ class JobApplication(db.Model):
     )
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(150), nullable=False)
-    experience = db.Column(db.String(300), nullable=False)
+    experience = db.Column(db.String(300), nullable=True)
+    phone = db.Column(db.String(15), nullable=True)
+    desired_start_date = db.Column(db.Date, nullable=True)
+    availability = db.Column(db.Enum("full-time", "part-time", "flexible"), nullable=True)
 
     def to_dict(self):
         return {
@@ -109,7 +116,10 @@ class JobApplication(db.Model):
             "positionID": self.positionID,
             "name": self.name,
             "email": self.email,
-            "experience": self.experience
+            "experience": self.experience,
+            "phone": self.phone,
+            "desired_start_date": self.desired_start_date.isoformat() if self.desired_start_date else None,
+            "availability": self.availability
         }
 
 
@@ -117,19 +127,15 @@ class Order(db.Model):
     __tablename__ = "orders"
 
     orderID = db.Column(db.Integer, primary_key=True)
-    customerID = db.Column(db.Integer, nullable=False)
     orderDate = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    status = db.Column(db.String(30), nullable=False)
-    paymentMethod = db.Column(db.String(50), nullable=False)
+    status = db.Column(db.String(30), nullable=False, default="pending")
     totalAmount = db.Column(db.Numeric(8, 2), nullable=False)
 
     def to_dict(self):
         return {
             "orderID": self.orderID,
-            "customerID": self.customerID,
             "orderDate": self.orderDate.isoformat() if self.orderDate else None,
             "status": self.status,
-            "paymentMethod": self.paymentMethod,
             "totalAmount": float(self.totalAmount)
         }
 
@@ -178,22 +184,27 @@ class Event(db.Model):
     __tablename__ = "events"
 
     eventID = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    date = db.Column(db.Date, nullable=False)
-    time = db.Column(db.String(20), nullable=False)
-    host = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.String(500), nullable=False)
-    category = db.Column(db.String(50), nullable=False)
+    eventTitle = db.Column(db.String(100), nullable=False)
+    eventDescription = db.Column(db.String(255), nullable=True)
+    eventDate = db.Column(db.Date, nullable=False)
+    startTime = db.Column(db.Time, nullable=True)
+    endTime = db.Column(db.Time, nullable=True)
+    location = db.Column(db.String(100), nullable=True)
+    organizer = db.Column(db.String(100), nullable=True)
+    eventStatus = db.Column(db.String(20), nullable=True)
 
     def to_dict(self):
+        # Map DB columns to the field names the frontend expects
         return {
             "eventID": self.eventID,
-            "title": self.title,
-            "date": self.date.isoformat() if self.date else None,
-            "time": self.time,
-            "host": self.host,
-            "description": self.description,
-            "category": self.category
+            "title": self.eventTitle,
+            "description": self.eventDescription,
+            "date": self.eventDate.isoformat() if self.eventDate else None,
+            "time": str(self.startTime) if self.startTime else None,
+            "endTime": str(self.endTime) if self.endTime else None,
+            "host": self.organizer,
+            "location": self.location,
+            "eventStatus": self.eventStatus,
         }
 
 
@@ -201,9 +212,9 @@ def seed_positions():
     try:
         if JobPosition.query.count() == 0:
             defaults = [
-                JobPosition(positionTitle="Barista"),
-                JobPosition(positionTitle="Cashier"),
-                JobPosition(positionTitle="Shift Supervisor"),
+                JobPosition(positionTitle="Barista", description="Prepare and serve boba drinks, maintain cleanliness, and provide excellent customer service.", status="Open"),
+                JobPosition(positionTitle="Cashier", description="Handle customer orders, process payments, and assist with front-of-house operations.", status="Open"),
+                JobPosition(positionTitle="Shift Lead", description="Supervise staff, manage shifts, handle customer issues, and ensure smooth store operations.", status="Open"),
             ]
             db.session.add_all(defaults)
             db.session.commit()
@@ -372,15 +383,26 @@ def submit_job():
     name = data.get("name")
     email = data.get("email")
     experience = data.get("experience")
+    phone = data.get("phone")
+    desired_start_date = data.get("startDate") or data.get("desired_start_date") or None
+    availability = data.get("availability") or None
 
-    if not (positionID and name and email and experience):
+    if not (positionID and name and email):
         return jsonify({"success": False, "error": "Missing required fields"}), 400
 
     position = JobPosition.query.get(positionID)
     if not position:
         return jsonify({"success": False, "error": "Invalid position"}), 400
 
-    app_entry = JobApplication(positionID=positionID, name=name, email=email, experience=experience)
+    app_entry = JobApplication(
+        positionID=positionID,
+        name=name,
+        email=email,
+        experience=experience,
+        phone=phone,
+        desired_start_date=desired_start_date,
+        availability=availability
+    )
     db.session.add(app_entry)
     try:
         db.session.commit()
@@ -398,19 +420,15 @@ def submit_order():
     data = request.get_json() or {}
     logger.info("Received submit-order data: %s", data)
 
-    customerID = data.get("customerID")
-    paymentMethod = data.get("paymentMethod")
     totalAmount = data.get("totalAmount")
     items = data.get("items", [])
 
-    if not customerID or not paymentMethod or totalAmount is None or not items:
+    if totalAmount is None or not items:
         return jsonify({"success": False, "error": "Missing required order fields"}), 400
 
     try:
         new_order = Order(
-            customerID=int(customerID),
             status="Pending",
-            paymentMethod=paymentMethod,
             totalAmount=float(totalAmount)
         )
         db.session.add(new_order)
@@ -460,16 +478,27 @@ def submit_event():
 
     title = data.get("title")
     date = data.get("date")
-    time = data.get("time")
-    host = data.get("host")
+    start_time = data.get("time")
+    organizer = data.get("host")
     description = data.get("description")
-    category = data.get("category")
+    location = data.get("location")
+    end_time = data.get("endTime")
+    event_status = data.get("eventStatus", "Scheduled")
 
-    if not (title and date and time and host and description and category):
+    if not (title and date):
         return jsonify({"success": False, "error": "Missing required fields"}), 400
 
     try:
-        event = Event(title=title, date=date, time=time, host=host, description=description, category=category)
+        event = Event(
+            eventTitle=title,
+            eventDate=date,
+            startTime=start_time,
+            endTime=end_time,
+            organizer=organizer,
+            eventDescription=description,
+            location=location,
+            eventStatus=event_status
+        )
         db.session.add(event)
         db.session.commit()
         logger.info("Inserted event id=%s", event.eventID)
