@@ -1,128 +1,199 @@
-# TeaZen Boba Bar Website
+# TeaZen Boba Bar
 
-A modern, responsive website for TeaZen Boba Bar - Find Your Zen, One Bubble at a Time.
+A modern, responsive website for TeaZen Boba Bar — *Find Your Zen, One Bubble at a Time.*
+
+The site is fully connected to a MySQL database for live menu, orders, events, and job applications, and includes an AI assistant powered by a locally running Ollama model.
+
+---
 
 ## Project Structure
 
 ```
 teazen-boba-shop/
-├── index.html              # Homepage with hero banner & intro sections
-├── menu.html               # Full TeaZen drink menu with product images
-├── music.html              # Live events page featuring audio + artist thumbnails
-├── jobs.html               # Jobs / hiring page with application form
-├── gear.html               # Merch store page (shirts, banners, accessories)
-├── teazen.css              # Global styling, layout, typography, responsiveness
-├── app.py                  # Flask backend (API routes)
-├── teazen_db.sql           # Database export (tables + sample data)
-├── README.md
 │
-├── images/                 # All image assets used across the site
-│   ├── Boba_logo.png                       # Primary full-size Teazen logo
-│   ├── boba_logo_small.png                 # Small navbar/footer logo
-│   ├── bubble-tea.png                      # Bubble tea product icon (menu/branding)
-│   ├── bubble.webp                         # Decorative bubble graphic for accents
-│   ├── boba_homehero_1.avif                # Homepage main hero image
-│   ├── boba_home_banner.jpg                # Secondary homepage banner
-│   ├── acoustic-guitar.webp                # Acoustic event hero image (music page)
-│   ├── acoustic-guitar_thumb.webp          # Acoustic event thumbnail (music page)
-│   ├── boba_merch.avif                     # Merch page main hero banner
-│   ├── boba_merch_2.webp                   # Additional merch promotional image
-│   ├── boba_merch_banner.webp              # Wide merch promotional banner
-│   ├── boba_shirt_merch.webp               # Main T-shirt product image
-│   ├── boba_jobs.jpg                       # Jobs page hero image
-│   └── boba_tea_large.jpg                  # Large drink product photo (menu)
+├── index.html              # Homepage — hero banner, intro, AI chatbot widget
+├── menu.html               # Menu page — drinks, snacks, merch fetched from DB
+├── order.html              # Order page — cart, checkout, AI cart summary
+├── events.html             # Events calendar — loaded from DB
+├── jobs.html               # Jobs page — open positions from DB, application form
 │
-└── audios/                 # Audio samples used on the Music/Events page
-    ├── greg.mp3                              # Acoustic artist track (MP3)
-    ├── greg.ogg                              # Acoustic artist track (OGG)
-    ├── kpop-demon-hunters-golden.mp3         # K-Pop Night preview (MP3)
-    └── kpop-demon-hunters-golden.ogg         # K-Pop Night preview (OGG)
+├── scripts/
+│   ├── events.js           # Calendar rendering, DB event fetch
+│   ├── jobs.js             # Job positions fetch, application form submission
+│   └── order.js            # Cart logic, checkout, AI order summary
+│
+├── styles/
+│   ├── teazen.css          # Global layout, typography, responsiveness, chatbot UI
+│   ├── events.css          # Events calendar styles
+│   ├── jobs.css            # Job application form styles
+│   ├── menu.css            # Menu page styles
+│   ├── order.css           # Order page styles
+│   └── index.css           # Homepage styles
+│
+├── backend/
+│   ├── app.py              # Flask backend — all API routes
+│   ├── menu_data.json      # AI knowledge source for menu items
+│   ├── prompt.txt          # AI system prompt for TeaZen assistant behavior
+│   └── teazen_db.sql       # Full database export (tables + sample data)
+│
+├── images/                 # All image assets
+└── audios/                 # Audio samples for events
 ```
 
-## How to Use
+---
 
-## Frontend (Static Pages)
-### Option 1: Open Directly in Browser
+## Prerequisites
 
-Simply double-click `index.html` to open the website in your default browser.
+| Tool | Purpose | Download |
+|---|---|---|
+| MySQL Server 8.0+ | Database | https://dev.mysql.com/downloads/ |
+| MySQL Workbench | DB import/management | Included with MySQL installer |
+| Python 3.9+ | Run the Flask backend | https://www.python.org/downloads/ |
+| Ollama | Run the AI model locally | https://ollama.com/download |
 
-### Option 2: Use Live Server (Recommended for Development)
+---
 
-If you have VS Code:
+## Full Setup Guide
 
-1. Install the "Live Server" extension
-2. Right-click on `index.html`
-3. Select "Open with Live Server"
+### 1. Database Setup
 
-### Option 3: Simple HTTP Server
+Ensure your MySQL server is running before importing.
 
-Using Python (if installed):
+1. Open **MySQL Workbench**
+2. Go to **Server → Data Import**
+3. Select **Import from Self-Contained File**
+4. Choose `backend/teazen_db.sql`
+5. Under **Default Target Schema**, create or select a schema named `boba_shop_db`
+6. Click **Start Import**
+
+This imports all tables and sample data:
+- `menuitem` — drinks, snacks, merch
+- `orders` + `orderdetails` — customer orders
+- `events` — calendar events
+- `jobpositions` + `jobapplications` — hiring
+
+---
+
+### 2. Python Environment Setup
+
+Open a terminal in the `backend/` folder:
 
 ```bash
-python -m http.server 8000
+cd backend
+pip install flask flask-cors flask-sqlalchemy pymysql requests python-dotenv
 ```
 
-Then open http://localhost:8000 in your browser
+---
 
-## Color Scheme
+### 3. Environment Variables
 
-- **Deep Jade Green** (#2d5016) - Headers & accents
-- **Soft Cream** (#f5f3e8) - Main background
-- **Warm Terracotta** (#d1a35e) - Links & highlights
-- **Charcoal** (#2b2d2e) - Navigation & text
-- **Soft Sage** (#b8c5a8) - Borders & subtle accents
+Create a file called `.env` inside the `backend/` folder:
 
-## Features
+```
+DB_PASSWORD=your_mysql_root_password
+OLLAMA_URL=http://localhost:11434/api/generate
+OLLAMA_MODEL=your_model_name
+```
 
-- Fully responsive design (mobile, tablet, desktop)
-- Modern boba tea shop theme
-- Events & entertainment page
-- Online merchandise shop
-- Job application form
-- Menu with pricing and toppings
+- `DB_PASSWORD` — your MySQL root password (leave blank if none)
+- `OLLAMA_URL` — default Ollama endpoint, no change needed unless running remotely
+- `OLLAMA_MODEL` — the name of the Ollama model you pulled (see step 4)
 
-## No Dependencies Required
+---
 
-This is a pure HTML/CSS website with no build tools or package managers needed. Just open and run!
+### 4. Ollama AI Setup
 
-## Database Requirements
+1. Download and install Ollama from https://ollama.com/download
+2. Pull a model (example):
+```bash
+ollama pull llama3
+```
+3. Set `OLLAMA_MODEL=llama3` in your `.env` (match whatever model you pulled)
+4. Ollama runs automatically in the background after installation
 
-- MySQL Server
-- MySQL Workbench
+The AI assistant uses `menu_data.json` and `prompt.txt` as its knowledge source — it does not query the database directly. To update what the AI knows, edit those two files.
 
-Note: If you don't have MySQL installed, download it here:
-https://dev.mysql.com/downloads/ 
+---
 
-## Database Setup
+### 5. Run the Backend
 
-Ensure your MySQL server is running before importing the database.
+From the `backend/` folder:
 
-1. Open MySQL Workbench
-2. Go to Server → Data Import
-3. Select Import from Self-Contained File
-4. Choose `teazen_db.sql`
-5. Click Start Import
-
-Note: This database file includes all tables and sample data required for the project.
-
-## Backend Setup (Flask)
-
-To enable features such as orders, job applications, and menu data, run the backend:
-
-1. Open terminal in your project folder
-2. Run:
 ```bash
 python app.py
 ```
-3. Open in browser:
-`http://127.0.0.1:5000`
 
-Note: Ensure your MySQL server is running before starting the backend.
+The backend will:
+- Connect to MySQL
+- Create any missing tables automatically
+- Seed default job positions if the table is empty
+- Start serving on `http://127.0.0.1:5000`
+
+> Make sure MySQL is running before starting the backend.
+
+---
+
+### 6. Open the Website
+
+Open `index.html` directly in your browser, or use VS Code Live Server:
+
+1. Install the **Live Server** extension in VS Code
+2. Right-click `index.html` → **Open with Live Server**
+
+> The frontend expects the Flask backend running at `http://127.0.0.1:5000`. Without it, the menu, orders, events, and jobs pages will not load data.
+
+---
+
+## Features
+
+### Database-Connected Pages
+
+| Page | What it reads | What it writes |
+|---|---|---|
+| `menu.html` | Menu items grouped by category | — |
+| `order.html` | Menu items for the cart | Orders + order details on checkout |
+| `events.html` | Events displayed on calendar | — |
+| `jobs.html` | Open job positions | Job applications |
+
+### AI-Powered Features
+
+| Feature | Page | How it works |
+|---|---|---|
+| TeaZen Chatbot | `index.html` | Ask questions about the menu, events, jobs, allergens |
+| AI Cart Summary | `order.html` | Sends cart to AI for a friendly order summary |
+
+The AI uses `menu_data.json` (menu knowledge) and `prompt.txt` (behavior rules) — not the live database. Update those files to change what the AI knows.
+
+---
+
+## API Routes
+
+| Method | Route | Description |
+|---|---|---|
+| GET | `/menu-items` | All menu items |
+| GET | `/events` | All events ordered by date |
+| POST | `/submit-event` | Create a new event |
+| GET | `/job-positions` | All job positions |
+| GET | `/applications` | All submitted job applications |
+| POST | `/submit-job` | Submit a job application |
+| POST | `/submit-order` | Submit a customer order |
+| POST | `/api/chat` | AI chatbot message |
+| POST | `/api/order-ai` | AI cart summary |
+
+---
+
+## Color Scheme
+
+| Name | Hex | Used For |
+|---|---|---|
+| Deep Jade Green | `#2d5016` | Headers, buttons, accents |
+| Soft Cream | `#f5f3e8` | Main background |
+| Warm Terracotta | `#d1a35e` | Links, highlights |
+| Charcoal | `#2b2d2e` | Navigation, body text |
+| Soft Sage | `#b8c5a8` | Borders, subtle accents |
+
+---
 
 ## Contact
 
 Email: info@teazenboba.com
-
----
-
-**Note:** This project was converted from JavaJam Coffee Bar to TeaZen Boba Bar, maintaining the original responsive structure while completely reimagining the content and design for a modern boba tea shop.
