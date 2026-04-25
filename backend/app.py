@@ -194,15 +194,14 @@ class Event(db.Model):
     eventStatus = db.Column(db.String(20), nullable=True)
 
     def to_dict(self):
-        # Map DB columns to the field names the frontend expects
         return {
             "eventID": self.eventID,
-            "title": self.eventTitle,
-            "description": self.eventDescription,
-            "date": self.eventDate.isoformat() if self.eventDate else None,
-            "time": str(self.startTime) if self.startTime else None,
+            "eventTitle": self.eventTitle,
+            "eventDescription": self.eventDescription,
+            "eventDate": self.eventDate.isoformat() if self.eventDate else None,
+            "startTime": str(self.startTime) if self.startTime else None,
             "endTime": str(self.endTime) if self.endTime else None,
-            "host": self.organizer,
+            "organizer": self.organizer,
             "location": self.location,
             "eventStatus": self.eventStatus,
         }
@@ -467,7 +466,7 @@ def get_menu_items():
 
 @app.route("/events", methods=["GET"])
 def get_events():
-    events = Event.query.order_by(Event.date.asc()).all()
+    events = Event.query.order_by(Event.eventDate.asc()).all()
     return jsonify([e.to_dict() for e in events])
 
 
