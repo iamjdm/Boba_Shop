@@ -216,3 +216,6 @@ document.getElementById("next-month").addEventListener("click", () => {
 document.getElementById("close-detail").addEventListener("click", () => {
 	document.getElementById("event-detail").classList.add("hidden");
 });
+
+// Initial render
+document.addEventListener("DOMContentLoaded", renderCalendar);

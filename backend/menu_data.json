@@ -1,0 +1,151 @@
+{
+  "drinks": [
+    {
+      "name": "Classic Milk Tea",
+      "description": "Traditional black tea with creamy milk and chewy tapioca pearls.",
+      "prices": {
+        "regular": 5.5,
+        "large": 6.5
+      },
+      "allergy_info": [
+        "contains dairy"
+      ],
+      "caffeine": "contains caffeine",
+      "sweetness": "moderately sweet",
+      "texture": "creamy with chewy tapioca pearls"
+    },
+    {
+      "name": "Taro Bliss",
+      "description": "Sweet taro root blended with milk and your choice of toppings.",
+      "prices": {
+        "regular": 6.0,
+        "large": 7.0
+      },
+      "allergy_info": [
+        "contains dairy"
+      ],
+      "caffeine": "caffeine-free unless customized with tea",
+      "sweetness": "sweet",
+      "texture": "smooth and creamy"
+    },
+    {
+      "name": "Matcha Zen",
+      "description": "Premium Japanese matcha whisked with oat milk and honey boba.",
+      "prices": {
+        "regular": 6.75,
+        "large": 7.75
+      },
+      "allergy_info": [
+        "contains oat milk"
+      ],
+      "caffeine": "contains caffeine",
+      "sweetness": "lightly sweet",
+      "texture": "smooth with chewy honey boba"
+    },
+    {
+      "name": "Strawberry Cloud",
+      "description": "Fresh strawberries blended with jasmine tea, topped with sweet cheese foam.",
+      "prices": {
+        "regular": 6.5,
+        "large": 7.5
+      },
+      "allergy_info": [
+        "contains dairy in cheese foam"
+      ],
+      "caffeine": "contains caffeine from jasmine tea",
+      "sweetness": "sweet and fruity",
+      "texture": "smooth and creamy topping"
+    },
+    {
+      "name": "Brown Sugar Tiger",
+      "description": "House-made brown sugar syrup swirled with fresh milk and chewy pearls.",
+      "prices": {
+        "regular": 6.25,
+        "large": 7.25
+      },
+      "allergy_info": [
+        "contains dairy"
+      ],
+      "caffeine": "typically low caffeine or none if no tea base is used",
+      "sweetness": "sweet",
+      "texture": "creamy with chewy pearls"
+    }
+  ],
+  "snacks": [
+    {
+      "name": "Mochi Trio",
+      "description": "Three pieces of handmade mochi in rotating seasonal flavors.",
+      "price": 5.0,
+      "allergy_info": [
+        "may contain dairy depending on flavor",
+        "may contain nuts depending on flavor"
+      ]
+    },
+    {
+      "name": "Taiyaki",
+      "description": "Fish-shaped waffle pastry filled with red bean, Nutella, or custard.",
+      "price_options": {
+        "1 pc": 3.5,
+        "3 pcs": 9.0
+      },
+      "allergy_info": [
+        "contains wheat",
+        "contains dairy",
+        "may contain nuts depending on filling"
+      ]
+    },
+    {
+      "name": "Poké Bowl",
+      "description": "Fresh tuna or tofu over seasoned rice with avocado, edamame, and sesame.",
+      "price": 12.95,
+      "allergy_info": [
+        "contains sesame",
+        "may contain soy"
+      ]
+    },
+    {
+      "name": "Summer Rolls",
+      "description": "Two rice paper rolls with shrimp or tofu, fresh herbs, and rice noodles.",
+      "price": 7.5,
+      "allergy_info": [
+        "may contain shellfish if shrimp is selected",
+        "may contain soy depending on ingredients"
+      ]
+    }
+  ],
+  "merch": [
+    {
+      "name": "TeaZen Zen Vibes Tee",
+      "description": "100% organic cotton. Sizes S to XL. Wear in-store for 10% off your drink.",
+      "price": 18.95
+    },
+    {
+      "name": "TeaZen Boba Tumbler",
+      "description": "20oz tumbler with wide boba straw. Keeps drinks cold for hours. Bring it in for 10% off.",
+      "price": 14.95
+    }
+  ],
+  "events": [
+    {
+      "name": "K-Pop Night",
+      "description": "TeaZen hosts K-Pop Night for customers who want a fun music and hangout experience."
+    },
+    {
+      "name": "Acoustic Night",
+      "description": "A relaxed live music event for customers who want a calm TeaZen atmosphere."
+    }
+  ],
+  "jobs": {
+    "hiring": true,
+    "description": "TeaZen may accept job applications through the jobs page. Users can ask about open positions and applying."
+  },
+  "loyalty_program": {
+    "name": "Bubble Club",
+    "description": "Bubble Club is TeaZen's loyalty program. Customers can ask for general information about the program and rewards."
+  },
+  "general_rules": {
+    "database_connection_required": false,
+    "payment_processing_required": false,
+    "chatbot_role": "guidance only"
+  }
+}

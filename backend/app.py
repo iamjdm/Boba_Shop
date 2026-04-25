@@ -1,17 +1,21 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+import requests
 import json
 import os
 import re
 import logging
 from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
 CORS(app)
 
-#MySQL connection
+# MySQL connection
 db_password = os.getenv("DB_PASSWORD", "")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = f"mysql+pymysql://root:{db_password}@localhost/boba_shop_db"
@@ -22,6 +26,17 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 db = SQLAlchemy(app)
+
+# Ollama config
+OLLAMA_URL = os.getenv("OLLAMA_URL")
+MODEL_NAME = os.getenv("OLLAMA_MODEL")
+
+with open("menu_data.json", "r", encoding="utf-8") as f:
+    menu_data = json.load(f)
+
+with open("prompt.txt", "r", encoding="utf-8") as f:
+    system_prompt = f.read().strip()
+
 
 def load_training_data():
     possible_paths = [
@@ -48,6 +63,7 @@ def load_training_data():
 
     return data
 
+
 def tokenize(text):
     text = text.lower()
     words = re.findall(r"\b\w+\b", text)
@@ -57,8 +73,9 @@ def tokenize(text):
         "for", "are", "with", "can", "how", "much", "any", "we", "have"
     }
     return [word for word in words if word not in stop_words]
- 
-# Models and job endpoints
+
+
+# ===== DB MODELS =====
 
 class JobPosition(db.Model):
     __tablename__ = "jobpositions"
@@ -94,7 +111,7 @@ class JobApplication(db.Model):
             "email": self.email,
             "experience": self.experience
         }
-    
+
 
 class Order(db.Model):
     __tablename__ = "orders"
@@ -115,7 +132,7 @@ class Order(db.Model):
             "paymentMethod": self.paymentMethod,
             "totalAmount": float(self.totalAmount)
         }
-    
+
 
 class OrderDetail(db.Model):
     __tablename__ = "orderdetails"
@@ -127,7 +144,6 @@ class OrderDetail(db.Model):
     item_price = db.Column(db.Numeric(8, 2), nullable=False)
     specialRequest = db.Column(db.String(255), nullable=True)
 
-
     def to_dict(self):
         return {
             "orderDetailID": self.orderDetailID,
@@ -137,7 +153,8 @@ class OrderDetail(db.Model):
             "item_price": float(self.item_price),
             "specialRequest": self.specialRequest
         }
-    
+
+
 class MenuItem(db.Model):
     __tablename__ = "menuitem"
 
@@ -155,6 +172,7 @@ class MenuItem(db.Model):
             "description": self.description,
             "price": float(self.price)
         }
+
 
 class Event(db.Model):
     __tablename__ = "events"
@@ -178,6 +196,7 @@ class Event(db.Model):
             "category": self.category
         }
 
+
 def seed_positions():
     try:
         if JobPosition.query.count() == 0:
@@ -192,96 +211,141 @@ def seed_positions():
         pass
 
 
+# ===== ROUTES =====
+
 @app.route("/")
 def home():
-    return "TeaZen Flask backend is running!"
+    return "TeaZen Flask backend is running with Ollama"
+
 
 @app.route("/api/chat", methods=["POST"])
 def chat():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     user_message = data.get("message", "").strip()
 
+    print("User asked:", user_message)
+
     if not user_message:
-        return jsonify({"reply": "Please type a question."})
+        return jsonify({"reply": "Please type a question."}), 400
 
-    lower_message = user_message.lower()
+    prompt = f"""
+{system_prompt}
 
-    # Friendly greeting responses
-    if lower_message in ["hi", "hello", "hey", "hey there", "hi there"]:
-        return jsonify({
-            "reply": (
-                "Hi! Welcome to TeaZen Boba Bar 🍵\n\n"
-                "Here's what's on our menu:\n"
-                "• Signature Boba Teas\n"
-                "• Premium Milk Teas\n"
-                "• Mochi, Taiyaki & Asian Pastries\n"
-                "• Fresh Poké Bowls & Summer Rolls\n\n"
-                "You can also ask me about ingredients, caffeine, toppings, events, or jobs.\n\n"
-                "TeaZen Assistant"
-            )
-        })
+TeaZen menu data:
+{json.dumps(menu_data, indent=2)}
 
-    if "menu" in lower_message:
-        return jsonify({
-            "reply": (
-                "Of course! Here's what we currently offer at TeaZen 🍹\n\n"
-                "• Signature Boba Teas\n"
-                "• Premium Milk Teas\n"
-                "• Mochi, Taiyaki & Asian Pastries\n"
-                "• Fresh Poké Bowls & Summer Rolls\n\n"
-                "If you want, you can ask me about a specific drink, toppings, or caffeine content.\n\n"
-                "TeaZen Assistant"
-            )
-        })
+Customer question:
+{user_message}
 
-    training_data = load_training_data()
+Assistant reply:
+""".strip()
 
-    if isinstance(training_data, dict) and "error" in training_data:
-        return jsonify({"reply": training_data["error"]})
+    try:
+        print("Sending request to Ollama...")
 
-    user_tokens = set(tokenize(user_message))
-    best_reply = None
-    best_score = 0
-
-    for example in training_data:
-        messages = example.get("messages", [])
-        example_user = ""
-        example_assistant = ""
-
-        for message in messages:
-            if message.get("role") == "user" and not example_user:
-                example_user = message.get("content", "")
-            elif message.get("role") == "assistant" and not example_assistant:
-                example_assistant = message.get("content", "")
-
-        example_tokens = set(tokenize(example_user))
-        score = len(user_tokens.intersection(example_tokens))
-
-        if user_message.lower() == example_user.lower():
-            score += 100
-
-        if score > best_score and example_assistant:
-            best_score = score
-            best_reply = example_assistant
-
-    min_score = 1 if len(user_tokens) <= 2 else 2
-    if best_score >= min_score:
-        return jsonify({
-            "reply": f"{best_reply}\n\nTeaZen Assistant"
-        })
-
-    return jsonify({
-        "reply": (
-            "I'm still learning 🤖\n\n"
-            "Try asking about:\n"
-            "• Drinks\n"
-            "• Toppings\n"
-            "• Caffeine\n"
-            "• Events\n"
-            "• Jobs\n\n"
-            "TeaZen Assistant"
+        response = requests.post(
+            OLLAMA_URL,
+            json={
+                "model": MODEL_NAME,
+                "prompt": prompt,
+                "stream": False
+            },
+            timeout=120
         )
-    })
+
+        response.raise_for_status()
+        result = response.json()
+        reply = result.get("response", "").strip()
+
+        print("Ollama reply:", reply)
+
+        if not reply:
+            reply = "Sorry, I couldn't answer that right now."
+
+        return jsonify({"reply": reply})
+
+    except requests.exceptions.ConnectionError:
+        print("Error: Could not connect to Ollama.")
+        return jsonify({
+            "reply": "Error: Could not connect to Ollama. Make sure Ollama is installed and running."
+        }), 503
+
+    except requests.exceptions.Timeout:
+        print("Error: Ollama timed out.")
+        return jsonify({
+            "reply": "Error: Ollama took too long to respond."
+        }), 504
+
+    except Exception as e:
+        print("Unexpected error:", str(e))
+        return jsonify({
+            "reply": "Error connecting to local AI model."
+        }), 500
+
+
+@app.route("/api/order-ai", methods=["POST"])
+def order_ai():
+    try:
+        data = request.get_json(silent=True) or {}
+
+        prompt = f"""
+{system_prompt}
+
+A customer cart payload was sent from the TeaZen order page.
+Summarize the cart clearly and politely.
+
+Order payload:
+{json.dumps(data, indent=2)}
+
+Rules:
+- Do not process payment
+- Do not claim the order was actually submitted
+- Do not say the order is complete
+- Just explain what is in the cart
+- Keep it short and neat
+""".strip()
+
+        print("Sending order payload to Ollama...")
+
+        response = requests.post(
+            OLLAMA_URL,
+            json={
+                "model": MODEL_NAME,
+                "prompt": prompt,
+                "stream": False
+            },
+            timeout=120
+        )
+
+        response.raise_for_status()
+        result = response.json()
+        reply = result.get("response", "").strip()
+
+        print("Ollama order reply:", reply)
+
+        if not reply:
+            reply = "The order payload was received successfully."
+
+        return jsonify({"reply": reply}), 200
+
+    except requests.exceptions.ConnectionError:
+        print("Error: Could not connect to Ollama for order payload.")
+        return jsonify({
+            "reply": "Error: Could not connect to Ollama. Make sure Ollama is installed and running."
+        }), 503
+
+    except requests.exceptions.Timeout:
+        print("Error: Ollama timed out for order payload.")
+        return jsonify({
+            "reply": "Error: Ollama took too long to respond."
+        }), 504
+
+    except Exception as e:
+        print("Error in /api/order-ai:", str(e))
+        return jsonify({
+            "reply": "Failed to process AI order payload."
+        }), 500
+
 
 @app.route("/job-positions", methods=["GET"])
 def get_job_positions():
@@ -327,6 +391,7 @@ def submit_job():
 
     logger.info("Inserted application id=%s", app_entry.applicationID)
     return jsonify({"success": True, "message": "Application submitted", "id": app_entry.applicationID})
+
 
 @app.route("/submit-order", methods=["POST"])
 def submit_order():
@@ -375,15 +440,18 @@ def submit_order():
         db.session.rollback()
         return jsonify({"success": False, "error": "Database error"}), 500
 
+
 @app.route("/menu-items", methods=["GET"])
 def get_menu_items():
     items = MenuItem.query.order_by(MenuItem.menuItemID.asc()).all()
     return jsonify([item.to_dict() for item in items])
 
+
 @app.route("/events", methods=["GET"])
 def get_events():
     events = Event.query.order_by(Event.date.asc()).all()
     return jsonify([e.to_dict() for e in events])
+
 
 @app.route("/submit-event", methods=["POST"])
 def submit_event():
@@ -411,9 +479,9 @@ def submit_event():
         db.session.rollback()
         return jsonify({"success": False, "error": "Database error"}), 500
 
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
         seed_positions()
     app.run(debug=True, host="0.0.0.0", port=5000)
-    app.run(debug=True)
