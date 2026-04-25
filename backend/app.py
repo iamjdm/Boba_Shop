@@ -207,6 +207,25 @@ class Event(db.Model):
         }
 
 
+class EventAttendee(db.Model):
+    __tablename__ = "event_attendees"
+
+    attendeeID = db.Column(db.Integer, primary_key=True)
+    eventID = db.Column(db.Integer, db.ForeignKey("events.eventID"), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(150), nullable=False)
+    rsvpDate = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            "attendeeID": self.attendeeID,
+            "eventID": self.eventID,
+            "name": self.name,
+            "email": self.email,
+            "rsvpDate": self.rsvpDate.isoformat() if self.rsvpDate else None
+        }
+
+
 def seed_positions():
     try:
         if JobPosition.query.count() == 0:
@@ -468,6 +487,38 @@ def get_menu_items():
 def get_events():
     events = Event.query.order_by(Event.eventDate.asc()).all()
     return jsonify([e.to_dict() for e in events])
+
+
+@app.route("/api/rsvp", methods=["POST"])
+def rsvp():
+    data = request.get_json() or {}
+    event_id = data.get("eventID")
+    name = data.get("name", "").strip()
+    email = data.get("email", "").strip()
+
+    if not (event_id and name and email):
+        return jsonify({"success": False, "error": "Missing required fields"}), 400
+
+    if "@" not in email:
+        return jsonify({"success": False, "error": "Invalid email address"}), 400
+
+    event = Event.query.get(event_id)
+    if not event:
+        return jsonify({"success": False, "error": "Event not found"}), 404
+
+    attendee = EventAttendee(eventID=event_id, name=name, email=email)
+    db.session.add(attendee)
+    try:
+        db.session.commit()
+        logger.info("RSVP confirmed: event=%s name=%s", event_id, name)
+        return jsonify({
+            "success": True,
+            "message": f"You're registered for {event.eventTitle}! See you there."
+        })
+    except Exception:
+        logger.exception("DB commit failed for RSVP")
+        db.session.rollback()
+        return jsonify({"success": False, "error": "Database error"}), 500
 
 
 @app.route("/submit-event", methods=["POST"])

@@ -142,11 +142,53 @@ function showDetail(event, dateStr) {
 		${event.location ? `<p class="event-host">📍 ${event.location}</p>` : ""}
 		${event.eventDescription ? `<p>${event.eventDescription}</p>` : ""}
 		${event.eventStatus ? `<p><em>Status: ${event.eventStatus}</em></p>` : ""}
+		<div class="rsvp-form" id="rsvp-form-${event.eventID}">
+			<h4>RSVP for this event</h4>
+			<input type="text" id="rsvp-name" placeholder="Your name" />
+			<input type="email" id="rsvp-email" placeholder="Your email" />
+			<button class="rsvp-btn" onclick="submitRSVP(${event.eventID})">RSVP</button>
+			<p class="rsvp-message" id="rsvp-message"></p>
+		</div>
 	`;
 
 	const panel = document.getElementById("event-detail");
 	panel.classList.remove("hidden");
 	panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+async function submitRSVP(eventID) {
+	const name = document.getElementById("rsvp-name").value.trim();
+	const email = document.getElementById("rsvp-email").value.trim();
+	const messageEl = document.getElementById("rsvp-message");
+
+	if (!name || !email) {
+		messageEl.style.color = "red";
+		messageEl.textContent = "Please enter your name and email.";
+		return;
+	}
+
+	try {
+		const response = await fetch("http://127.0.0.1:5000/api/rsvp", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ eventID, name, email }),
+		});
+
+		const data = await response.json();
+		messageEl.style.color = response.ok ? "green" : "red";
+		messageEl.textContent = response.ok
+			? "✓ " + data.message
+			: "✗ " + (data.error || "Could not complete RSVP.");
+
+		if (response.ok) {
+			document.getElementById("rsvp-name").value = "";
+			document.getElementById("rsvp-email").value = "";
+		}
+	} catch (error) {
+		messageEl.style.color = "red";
+		messageEl.textContent = "✗ Error connecting to server.";
+		console.error("RSVP error:", error);
+	}
 }
 
 document.getElementById("prev-month").addEventListener("click", () => {

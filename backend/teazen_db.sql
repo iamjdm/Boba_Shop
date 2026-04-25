@@ -287,4 +287,20 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
+--
+-- Table structure for table `event_attendees`
+--
+
+DROP TABLE IF EXISTS `event_attendees`;
+CREATE TABLE `event_attendees` (
+  `attendeeID` int NOT NULL AUTO_INCREMENT,
+  `eventID` int NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(150) NOT NULL,
+  `rsvpDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`attendeeID`),
+  KEY `fk_attendees_event_idx` (`eventID`),
+  CONSTRAINT `fk_attendees_event` FOREIGN KEY (`eventID`) REFERENCES `events` (`eventID`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 -- Dump completed on 2026-04-24 14:31:30

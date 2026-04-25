@@ -364,3 +364,60 @@
 		font-size: 1.3em;
 	}
 }
+
+/* ===== RSVP FORM ===== */
+
+.rsvp-form {
+	margin-top: 1.2em;
+	padding-top: 1em;
+	border-top: 1px solid #b8c5a8;
+	display: flex;
+	flex-direction: column;
+	gap: 0.6em;
+}
+
+.rsvp-form h4 {
+	margin: 0 0 0.3em;
+	color: #2d5016;
+	font-size: 1em;
+}
+
+.rsvp-form input {
+	padding: 0.6em 0.8em;
+	border: 1px solid #b8c5a8;
+	border-radius: 4px;
+	font-family: inherit;
+	font-size: 0.95em;
+	background-color: #ffffff;
+	color: #2b2d2e;
+}
+
+.rsvp-form input:focus {
+	outline: none;
+	border-color: #2d5016;
+	box-shadow: 0 0 4px rgba(45, 80, 22, 0.3);
+}
+
+.rsvp-btn {
+	align-self: flex-start;
+	background-color: #2d5016;
+	color: #f5f3e8;
+	border: none;
+	padding: 0.6em 1.6em;
+	border-radius: 4px;
+	font-size: 0.95em;
+	font-weight: bold;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+.rsvp-btn:hover {
+	background-color: #1a3009;
+}
+
+.rsvp-message {
+	margin: 0;
+	font-size: 0.9em;
+	font-weight: bold;
+	min-height: 1.2em;
+}
