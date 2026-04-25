@@ -4,6 +4,10 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="chat-api-url" content="http://127.0.0.1:5000/api/chat" />
+		<meta
+			name="order-ai-api-url"
+			content="http://127.0.0.1:5000/api/order-ai"
+		/>
 		<title>TeaZen Boba Bar — Order</title>
 		<link rel="stylesheet" href="styles/teazen.css" />
 		<link rel="stylesheet" href="styles/order.css" />
@@ -143,10 +147,13 @@
 				</p>
 				<pre id="lm-payload-code"></pre>
 				<p class="lm-hint">
-					Wire this to your local API via <code>sendToLM()</code> in the script.
+					Send this payload to your local AI route for order summarization.
 				</p>
 				<div class="lm-modal-actions">
 					<button class="lm-copy-btn" onclick="copyPayload()">Copy JSON</button>
+					<button class="lm-copy-btn" onclick="sendToLM(buildOrderPayload())">
+						Send to AI
+					</button>
 					<button class="lm-close-btn" onclick="closeLMModal()">Close</button>
 				</div>
 			</div>

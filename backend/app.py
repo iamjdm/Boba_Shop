@@ -90,6 +90,70 @@ Assistant reply:
         }), 500
 
 
+@app.route("/api/order-ai", methods=["POST"])
+def order_ai():
+    try:
+        data = request.get_json(silent=True) or {}
+
+        prompt = f"""
+{system_prompt}
+
+A customer cart payload was sent from the TeaZen order page.
+Summarize the cart clearly and politely.
+
+Order payload:
+{json.dumps(data, indent=2)}
+
+Rules:
+- Do not process payment
+- Do not claim the order was actually submitted
+- Do not say the order is complete
+- Just explain what is in the cart
+- Keep it short and neat
+""".strip()
+
+        print("Sending order payload to Ollama...")
+
+        response = requests.post(
+            OLLAMA_URL,
+            json={
+                "model": MODEL_NAME,
+                "prompt": prompt,
+                "stream": False
+            },
+            timeout=120
+        )
+
+        response.raise_for_status()
+        result = response.json()
+        reply = result.get("response", "").strip()
+
+        print("Ollama order reply:", reply)
+
+        if not reply:
+            reply = "The order payload was received successfully."
+
+        return jsonify({"reply": reply}), 200
+
+    except requests.exceptions.ConnectionError:
+        print("Error: Could not connect to Ollama for order payload.")
+        return jsonify({
+            "reply": "Error: Could not connect to Ollama. Make sure Ollama is installed and running."
+        }), 503
+
+    except requests.exceptions.Timeout:
+        print("Error: Ollama timed out for order payload.")
+        return jsonify({
+            "reply": "Error: Ollama took too long to respond."
+        }), 504
+
+    except Exception as e:
+        print("Error in /api/order-ai:", str(e))
+        return jsonify({
+            "reply": "Failed to process AI order payload."
+        }), 500
+
+
 @app.route("/api/apply", methods=["POST"])
 def submit_application():
     try:

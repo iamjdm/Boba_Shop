@@ -6,6 +6,10 @@
 const CHAT_API_URL =
 	document.querySelector('meta[name="chat-api-url"]')?.content || "/api/chat";
 
+const ORDER_AI_API_URL =
+	document.querySelector('meta[name="order-ai-api-url"]')?.content ||
+	"/api/order-ai";
+
 const PRODUCTS = {
 	drinks: [
 		{
@@ -184,9 +188,10 @@ function selectSize(pid, idx) {
 		.querySelectorAll(`.size-btn[data-pid="${pid}"]`)
 		.forEach((btn, i) => btn.classList.toggle("selected", i === idx));
 	const p = allProducts().find((x) => x.id === pid);
-	if (p)
+	if (p) {
 		document.getElementById(`price-${pid}`).textContent =
 			`$${p.sizes[idx].price.toFixed(2)}`;
+	}
 }
 
 function changeQty(pid, delta) {
@@ -197,12 +202,14 @@ function changeQty(pid, delta) {
 function addToCart(pid, category) {
 	const p = allProducts().find((x) => x.id === pid);
 	if (!p) return;
+
 	const sizeIdx = selectedSizes[pid] ?? 0;
 	const size = p.sizes[sizeIdx];
 	const qty = selectedQtys[pid] || 1;
 	const custom = document.getElementById(`custom-${pid}`)?.value?.trim() || "";
 	const key = `${pid}::${sizeIdx}::${custom}`;
 	const existing = cart.find((i) => i._key === key);
+
 	if (existing) {
 		existing.quantity += qty;
 	} else {
@@ -219,9 +226,11 @@ function addToCart(pid, category) {
 			tags: p.tags,
 		});
 	}
+
 	updateCartUI();
 	flashAddBtn(pid);
 	showToast(`Added ${qty}× ${p.name} (${size.label})`);
+
 	selectedQtys[pid] = 1;
 	document.getElementById(`qty-${pid}`).textContent = 1;
 }
@@ -229,8 +238,10 @@ function addToCart(pid, category) {
 function flashAddBtn(pid) {
 	const btn = document.getElementById(`addbtn-${pid}`);
 	if (!btn) return;
+
 	btn.classList.add("added");
 	btn.textContent = "✓ Added!";
+
 	setTimeout(() => {
 		btn.classList.remove("added");
 		btn.textContent = "Add to Cart";
@@ -241,6 +252,7 @@ function setChatPosition(cartOpen) {
 	const bubble = document.getElementById("chat-bubble");
 	const panel = document.getElementById("chat-panel-float");
 	const offset = cartOpen ? `calc(${CART_WIDTH}px + 1.5em)` : "1.5em";
+
 	if (bubble) bubble.style.right = offset;
 	if (panel) panel.style.right = offset;
 }
@@ -248,10 +260,12 @@ function setChatPosition(cartOpen) {
 function updateCartUI() {
 	const totalItems = cart.reduce((s, i) => s + i.quantity, 0);
 	const totalPrice = cart.reduce((s, i) => s + i.unitPrice * i.quantity, 0);
+
 	const setEl = (id, val) => {
 		const el = document.getElementById(id);
 		if (el) el.textContent = val;
 	};
+
 	setEl("cart-count", totalItems);
 	setEl("cart-total", `$${totalPrice.toFixed(2)}`);
 	setEl("topbar-total", `$${totalPrice.toFixed(2)}`);
@@ -266,6 +280,7 @@ function updateCartUI() {
 
 	const cartPanel = document.getElementById("cart-panel");
 	const productsCol = document.getElementById("products-col");
+
 	if (hasItems) {
 		positionCartPanel();
 		cartPanel.classList.add("cart-visible");
@@ -283,6 +298,7 @@ function updateCartUI() {
 			'<p class="cart-empty">Your cart is empty.<br>Add something delicious! 🧋</p>';
 		return;
 	}
+
 	cartEl.innerHTML =
 		`<p class="cart-panel-title">Your items</p>` +
 		cart
@@ -312,6 +328,7 @@ function positionCartPanel() {
 	const cartPanel = document.getElementById("cart-panel");
 	const orderTopbar = document.getElementById("order-topbar");
 	if (!cartPanel || !orderTopbar) return;
+
 	const topbarBottom = orderTopbar.getBoundingClientRect().bottom;
 	cartPanel.style.top = topbarBottom + "px";
 	cartPanel.style.height = window.innerHeight - topbarBottom + "px";
@@ -324,6 +341,7 @@ window.addEventListener(
 	},
 	{ passive: true },
 );
+
 window.addEventListener("resize", () => {
 	if (cart.length > 0) {
 		positionCartPanel();
@@ -337,6 +355,7 @@ function removeItem(idx) {
 	cart.splice(idx, 1);
 	updateCartUI();
 }
+
 function cartChangeQty(idx, delta) {
 	cart[idx].quantity = Math.max(1, cart[idx].quantity + delta);
 	updateCartUI();
@@ -346,6 +365,7 @@ function openMobileCart() {
 	document.getElementById("cart-overlay").classList.add("open");
 	setChatPosition(true);
 }
+
 function closeMobileCart() {
 	document.getElementById("cart-overlay").classList.remove("open");
 	setChatPosition(cart.length > 0);
@@ -366,10 +386,12 @@ function showToast(msg) {
 
 function checkout() {
 	if (!cart.length) return;
+
 	const payload = buildOrderPayload();
 	alert(
 		`Order placed! 🎉\n\nTotal: $${payload.subtotal}\nWe'll have it ready soon!`,
 	);
+
 	cart = [];
 	updateCartUI();
 	closeMobileCart();
@@ -378,6 +400,7 @@ function checkout() {
 function buildOrderPayload() {
 	const notes = document.getElementById("order-notes").value.trim();
 	const subtotal = cart.reduce((s, i) => s + i.unitPrice * i.quantity, 0);
+
 	return {
 		timestamp: new Date().toISOString(),
 		location: "TeaZen Boba Bar — 12010 Garret Bay Road, Ellison Bay, WI 54210",
@@ -434,13 +457,37 @@ async function sendChatMessage() {
 			thinkingMsg.textContent =
 				data.reply || "Sorry, I couldn't answer that right now.";
 			messages.scrollTop = messages.scrollHeight;
-		}, 1000);
+		}, 300);
 	} catch (e) {
 		setTimeout(() => {
 			thinkingMsg.textContent = "Couldn't connect to TeaZen assistant.";
 			messages.scrollTop = messages.scrollHeight;
-		}, 1000);
+		}, 300);
 		console.error(e);
+	}
+}
+
+async function sendToLM(payload) {
+	try {
+		const response = await fetch(ORDER_AI_API_URL, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(payload),
+		});
+
+		const data = await response.json();
+
+		if (data.reply) {
+			showToast("Payload sent to AI!");
+			alert(data.reply);
+		} else {
+			showToast("Payload sent.");
+		}
+	} catch (error) {
+		console.error(error);
+		showToast("Could not send payload to local API.");
 	}
 }
 
@@ -452,9 +499,11 @@ function showLMPayload() {
 	);
 	document.getElementById("lm-modal").classList.add("open");
 }
+
 function closeLMModal() {
 	document.getElementById("lm-modal").classList.remove("open");
 }
+
 function copyPayload() {
 	navigator.clipboard
 		.writeText(document.getElementById("lm-payload-code").textContent)
@@ -472,6 +521,7 @@ document.querySelectorAll(".tab-btn").forEach((btn) => {
 		document
 			.querySelectorAll(".category-panel")
 			.forEach((p) => p.classList.remove("active"));
+
 		btn.classList.add("active");
 		document.getElementById(`tab-${btn.dataset.tab}`).classList.add("active");
 	});
