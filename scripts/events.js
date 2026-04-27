@@ -205,4 +205,40 @@ document.getElementById("close-detail").addEventListener("click", () => {
 	document.getElementById("event-detail").classList.add("hidden");
 });
 
+document.getElementById("eventForm").addEventListener("submit", async (e) => {
+	e.preventDefault();
+	const msgEl = document.getElementById("eventMessage");
+	msgEl.style.display = "none";
+
+	const payload = {
+		title: document.getElementById("event-title").value.trim(),
+		date: document.getElementById("event-date").value,
+		time: document.getElementById("event-time").value,
+		host: document.getElementById("event-host").value.trim(),
+		description: document.getElementById("event-description").value.trim(),
+	};
+
+	try {
+		const response = await fetch("http://127.0.0.1:5000/submit-event", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(payload),
+		});
+		const data = await response.json();
+		msgEl.style.display = "block";
+		msgEl.style.color = response.ok ? "green" : "red";
+		msgEl.textContent = response.ok
+			? "Event submitted successfully!"
+			: data.error || "Could not submit event.";
+		if (response.ok) {
+			e.target.reset();
+			loadEvents();
+		}
+	} catch {
+		msgEl.style.display = "block";
+		msgEl.style.color = "red";
+		msgEl.textContent = "Error connecting to server.";
+	}
+});
+
 document.addEventListener("DOMContentLoaded", loadEvents);
