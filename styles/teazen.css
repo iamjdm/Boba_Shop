@@ -337,3 +337,8 @@ tr:nth-child(odd) {
 		flex-direction: column;
 	}
 }
+
+.hidden {
+	display: none !important;
+}
+

@@ -3,6 +3,13 @@
  * Handles product display, cart management, and checkout functionality
  */
 
+const CHAT_API_URL =
+	document.querySelector('meta[name="chat-api-url"]')?.content || "/api/chat";
+
+const ORDER_AI_API_URL =
+	document.querySelector('meta[name="order-ai-api-url"]')?.content ||
+	"/api/order-ai";
+
 const PRODUCTS = {
 	drinks: [
 		{
@@ -10,8 +17,8 @@ const PRODUCTS = {
 			name: "Classic Milk Tea",
 			desc: "Traditional black tea with creamy milk and chewy tapioca pearls.",
 			sizes: [
-				{ label: "Regular", price: 5.5 },
-				{ label: "Large", price: 6.5 },
+				{ label: "Regular", price: 5.5, menuItemID: 1 },
+				{ label: "Large", price: 6.5, menuItemID: 2 },
 			],
 			emoji: "🧋",
 			tags: ["milk tea", "classic"],
@@ -21,8 +28,8 @@ const PRODUCTS = {
 			name: "Taro Bliss",
 			desc: "Sweet taro root blended with milk and your choice of toppings.",
 			sizes: [
-				{ label: "Regular", price: 6.0 },
-				{ label: "Large", price: 7.0 },
+				{ label: "Regular", price: 6.0, menuItemID: 3 },
+				{ label: "Large", price: 7.0, menuItemID: 4 },
 			],
 			emoji: "🫐",
 			tags: ["taro", "milk tea"],
@@ -32,8 +39,8 @@ const PRODUCTS = {
 			name: "Matcha Zen",
 			desc: "Premium Japanese matcha with oat milk and honey boba.",
 			sizes: [
-				{ label: "Regular", price: 6.75 },
-				{ label: "Large", price: 7.75 },
+				{ label: "Regular", price: 6.75, menuItemID: 5 },
+				{ label: "Large", price: 7.75, menuItemID: 6 },
 			],
 			emoji: "🍵",
 			tags: ["matcha", "green tea"],
@@ -43,8 +50,8 @@ const PRODUCTS = {
 			name: "Strawberry Cloud",
 			desc: "Fresh strawberries blended with jasmine tea, topped with sweet cheese foam.",
 			sizes: [
-				{ label: "Regular", price: 6.5 },
-				{ label: "Large", price: 7.5 },
+				{ label: "Regular", price: 6.5, menuItemID: 7 },
+				{ label: "Large", price: 7.5, menuItemID: 8 },
 			],
 			emoji: "🍓",
 			tags: ["fruit", "jasmine"],
@@ -54,8 +61,8 @@ const PRODUCTS = {
 			name: "Brown Sugar Tiger",
 			desc: "House-made brown sugar syrup swirled with fresh milk and chewy pearls.",
 			sizes: [
-				{ label: "Regular", price: 6.25 },
-				{ label: "Large", price: 7.25 },
+				{ label: "Regular", price: 6.25, menuItemID: 9 },
+				{ label: "Large", price: 7.25, menuItemID: 10 },
 			],
 			emoji: "🐯",
 			tags: ["brown sugar", "milk tea"],
@@ -66,7 +73,7 @@ const PRODUCTS = {
 			id: "mochi-set",
 			name: "Mochi Trio",
 			desc: "Three pieces of handmade mochi in rotating seasonal flavors.",
-			sizes: [{ label: "3 pcs", price: 5.0 }],
+			sizes: [{ label: "3 pcs", price: 5.0, menuItemID: 11 }],
 			emoji: "🍡",
 			tags: ["mochi", "dessert"],
 		},
@@ -75,8 +82,8 @@ const PRODUCTS = {
 			name: "Taiyaki",
 			desc: "Fish-shaped waffle pastry filled with red bean, Nutella, or custard.",
 			sizes: [
-				{ label: "1 pc", price: 3.5 },
-				{ label: "3 pcs", price: 9.0 },
+				{ label: "1 pc", price: 3.5, menuItemID: 12 },
+				{ label: "3 pcs", price: 9.0, menuItemID: 13 },
 			],
 			emoji: "🐟",
 			tags: ["pastry", "sweet"],
@@ -85,7 +92,7 @@ const PRODUCTS = {
 			id: "poke-bowl",
 			name: "Poké Bowl",
 			desc: "Fresh tuna or tofu over seasoned rice with avocado, edamame, and sesame.",
-			sizes: [{ label: "Regular", price: 12.95 }],
+			sizes: [{ label: "Regular", price: 12.95, menuItemID: 14 }],
 			emoji: "🥗",
 			tags: ["poke", "savory"],
 		},
@@ -93,7 +100,7 @@ const PRODUCTS = {
 			id: "summer-rolls",
 			name: "Summer Rolls",
 			desc: "Two rice paper rolls with shrimp or tofu, fresh herbs, and rice noodles.",
-			sizes: [{ label: "2 pcs", price: 7.5 }],
+			sizes: [{ label: "2 pcs", price: 7.5, menuItemID: 15 }],
 			emoji: "🌿",
 			tags: ["rolls", "fresh"],
 		},
@@ -104,10 +111,10 @@ const PRODUCTS = {
 			name: "TeaZen Zen Vibes Tee",
 			desc: "100% organic cotton. S–XL. Wear in-store for 10% off your drink!",
 			sizes: [
-				{ label: "S", price: 18.95 },
-				{ label: "M", price: 18.95 },
-				{ label: "L", price: 18.95 },
-				{ label: "XL", price: 18.95 },
+				{ label: "S", price: 18.95, menuItemID: 16 },
+				{ label: "M", price: 18.95, menuItemID: 17 },
+				{ label: "L", price: 18.95, menuItemID: 18 },
+				{ label: "XL", price: 18.95, menuItemID: 19 },
 			],
 			emoji: "👕",
 			tags: ["shirt", "apparel"],
@@ -116,7 +123,7 @@ const PRODUCTS = {
 			id: "boba-tumbler",
 			name: "TeaZen Boba Tumbler",
 			desc: "20oz tumbler with wide boba straw. Keeps drinks cold for hours. Bring in for 10% off!",
-			sizes: [{ label: "20oz", price: 14.95 }],
+			sizes: [{ label: "20oz", price: 14.95, menuItemID: 20 }],
 			emoji: "🥤",
 			tags: ["tumbler", "drinkware"],
 		},
@@ -181,9 +188,10 @@ function selectSize(pid, idx) {
 		.querySelectorAll(`.size-btn[data-pid="${pid}"]`)
 		.forEach((btn, i) => btn.classList.toggle("selected", i === idx));
 	const p = allProducts().find((x) => x.id === pid);
-	if (p)
+	if (p) {
 		document.getElementById(`price-${pid}`).textContent =
 			`$${p.sizes[idx].price.toFixed(2)}`;
+	}
 }
 
 function changeQty(pid, delta) {
@@ -194,18 +202,21 @@ function changeQty(pid, delta) {
 function addToCart(pid, category) {
 	const p = allProducts().find((x) => x.id === pid);
 	if (!p) return;
+
 	const sizeIdx = selectedSizes[pid] ?? 0;
 	const size = p.sizes[sizeIdx];
 	const qty = selectedQtys[pid] || 1;
 	const custom = document.getElementById(`custom-${pid}`)?.value?.trim() || "";
 	const key = `${pid}::${sizeIdx}::${custom}`;
 	const existing = cart.find((i) => i._key === key);
+
 	if (existing) {
 		existing.quantity += qty;
 	} else {
 		cart.push({
 			_key: key,
 			id: pid,
+			menuItemID: size.menuItemID,
 			category,
 			name: p.name,
 			emoji: p.emoji,
@@ -216,9 +227,11 @@ function addToCart(pid, category) {
 			tags: p.tags,
 		});
 	}
+
 	updateCartUI();
 	flashAddBtn(pid);
 	showToast(`Added ${qty}× ${p.name} (${size.label})`);
+
 	selectedQtys[pid] = 1;
 	document.getElementById(`qty-${pid}`).textContent = 1;
 }
@@ -226,8 +239,10 @@ function addToCart(pid, category) {
 function flashAddBtn(pid) {
 	const btn = document.getElementById(`addbtn-${pid}`);
 	if (!btn) return;
+
 	btn.classList.add("added");
 	btn.textContent = "✓ Added!";
+
 	setTimeout(() => {
 		btn.classList.remove("added");
 		btn.textContent = "Add to Cart";
@@ -238,6 +253,7 @@ function setChatPosition(cartOpen) {
 	const bubble = document.getElementById("chat-bubble");
 	const panel = document.getElementById("chat-panel-float");
 	const offset = cartOpen ? `calc(${CART_WIDTH}px + 1.5em)` : "1.5em";
+
 	if (bubble) bubble.style.right = offset;
 	if (panel) panel.style.right = offset;
 }
@@ -245,10 +261,12 @@ function setChatPosition(cartOpen) {
 function updateCartUI() {
 	const totalItems = cart.reduce((s, i) => s + i.quantity, 0);
 	const totalPrice = cart.reduce((s, i) => s + i.unitPrice * i.quantity, 0);
+
 	const setEl = (id, val) => {
 		const el = document.getElementById(id);
 		if (el) el.textContent = val;
 	};
+
 	setEl("cart-count", totalItems);
 	setEl("cart-total", `$${totalPrice.toFixed(2)}`);
 	setEl("topbar-total", `$${totalPrice.toFixed(2)}`);
@@ -263,6 +281,7 @@ function updateCartUI() {
 
 	const cartPanel = document.getElementById("cart-panel");
 	const productsCol = document.getElementById("products-col");
+
 	if (hasItems) {
 		positionCartPanel();
 		cartPanel.classList.add("cart-visible");
@@ -280,6 +299,7 @@ function updateCartUI() {
 			'<p class="cart-empty">Your cart is empty.<br>Add something delicious! 🧋</p>';
 		return;
 	}
+
 	cartEl.innerHTML =
 		`<p class="cart-panel-title">Your items</p>` +
 		cart
@@ -309,6 +329,7 @@ function positionCartPanel() {
 	const cartPanel = document.getElementById("cart-panel");
 	const orderTopbar = document.getElementById("order-topbar");
 	if (!cartPanel || !orderTopbar) return;
+
 	const topbarBottom = orderTopbar.getBoundingClientRect().bottom;
 	cartPanel.style.top = topbarBottom + "px";
 	cartPanel.style.height = window.innerHeight - topbarBottom + "px";
@@ -321,6 +342,7 @@ window.addEventListener(
 	},
 	{ passive: true },
 );
+
 window.addEventListener("resize", () => {
 	if (cart.length > 0) {
 		positionCartPanel();
@@ -334,6 +356,7 @@ function removeItem(idx) {
 	cart.splice(idx, 1);
 	updateCartUI();
 }
+
 function cartChangeQty(idx, delta) {
 	cart[idx].quantity = Math.max(1, cart[idx].quantity + delta);
 	updateCartUI();
@@ -343,6 +366,7 @@ function openMobileCart() {
 	document.getElementById("cart-overlay").classList.add("open");
 	setChatPosition(true);
 }
+
 function closeMobileCart() {
 	document.getElementById("cart-overlay").classList.remove("open");
 	setChatPosition(cart.length > 0);
@@ -361,20 +385,59 @@ function showToast(msg) {
 	toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
 }
 
-function checkout() {
+async function checkout() {
 	if (!cart.length) return;
-	const payload = buildOrderPayload();
-	alert(
-		`Order placed! 🎉\n\nTotal: $${payload.subtotal}\nWe'll have it ready soon!`,
-	);
-	cart = [];
-	updateCartUI();
-	closeMobileCart();
+
+	const subtotal = cart.reduce((s, i) => s + i.unitPrice * i.quantity, 0);
+
+	const orderNotes = document.getElementById("order-notes").value.trim();
+
+	const orderData = {
+		customerID: 1,
+		paymentMethod: "Card",
+		totalAmount: parseFloat(subtotal.toFixed(2)),
+		items: cart.map((item) => {
+			const parts = [item.customRequest, orderNotes].filter(Boolean);
+			return {
+				menuItemID: item.menuItemID,
+				quantity: item.quantity,
+				item_price: parseFloat(item.unitPrice.toFixed(2)),
+				specialRequest: parts.join(" | "),
+			};
+		}),
+	};
+
+	try {
+		const response = await fetch("http://127.0.0.1:5000/submit-order", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(orderData)
+		});
+
+		const result = await response.json();
+
+		if (result.success) {
+			alert(`Order placed! 🎉\n\nOrder ID: ${result.orderID}\nTotal: $${orderData.totalAmount}`);
+			cart = [];
+			updateCartUI();
+			closeMobileCart();
+			document.getElementById("order-notes").value = "";
+			document.querySelectorAll(".custom-request").forEach((el) => (el.value = ""));
+		} else {
+			alert("Error: " + result.error);
+		}
+	} catch (error) {
+		console.error("Checkout error:", error);
+		alert("Something went wrong while submitting the order.");
+	}
 }
 
 function buildOrderPayload() {
 	const notes = document.getElementById("order-notes").value.trim();
 	const subtotal = cart.reduce((s, i) => s + i.unitPrice * i.quantity, 0);
+
 	return {
 		timestamp: new Date().toISOString(),
 		location: "TeaZen Boba Bar — 12010 Garret Bay Road, Ellison Bay, WI 54210",
@@ -398,6 +461,9 @@ function buildOrderPayload() {
 async function sendChatMessage() {
 	const input = document.getElementById("chat-input");
 	const messages = document.getElementById("chat-messages");
+
+	if (!input || !messages) return;
+
 	const text = input.value.trim();
 	if (!text) return;
 
@@ -405,27 +471,61 @@ async function sendChatMessage() {
 	userMsg.className = "chat-msg chat-msg-user";
 	userMsg.textContent = text;
 	messages.appendChild(userMsg);
+
 	input.value = "";
 	messages.scrollTop = messages.scrollHeight;
 
+	const thinkingMsg = document.createElement("div");
+	thinkingMsg.className = "chat-msg chat-msg-bot";
+	thinkingMsg.textContent = "Thinking...";
+	messages.appendChild(thinkingMsg);
+	messages.scrollTop = messages.scrollHeight;
+
 	try {
-		const response = await fetch("http://127.0.0.1:5000/api/chat", {
+		const response = await fetch(CHAT_API_URL, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ message: text }),
 		});
+
 		const data = await response.json();
-		const botMsg = document.createElement("div");
-		botMsg.className = "chat-msg chat-msg-bot";
-		botMsg.textContent = data.reply;
-		messages.appendChild(botMsg);
+
+		setTimeout(() => {
+			thinkingMsg.textContent =
+				data.reply || "Sorry, I couldn't answer that right now.";
+			messages.scrollTop = messages.scrollHeight;
+		}, 300);
 	} catch (e) {
-		const errMsg = document.createElement("div");
-		errMsg.className = "chat-msg chat-msg-bot";
-		errMsg.textContent = "Couldn't connect to TeaZen assistant.";
-		messages.appendChild(errMsg);
+		setTimeout(() => {
+			thinkingMsg.textContent = "Couldn't connect to TeaZen assistant.";
+			messages.scrollTop = messages.scrollHeight;
+		}, 300);
+		console.error(e);
 	}
-	messages.scrollTop = messages.scrollHeight;
+}
+
+async function sendToLM(payload) {
+	try {
+		const response = await fetch(ORDER_AI_API_URL, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(payload),
+		});
+
+		const data = await response.json();
+
+		if (data.reply) {
+			showToast("Payload sent to AI!");
+			alert(data.reply);
+		} else {
+			showToast("Payload sent.");
+		}
+	} catch (error) {
+		console.error(error);
+		showToast("Could not send payload to local API.");
+	}
 }
 
 function showLMPayload() {
@@ -436,9 +536,11 @@ function showLMPayload() {
 	);
 	document.getElementById("lm-modal").classList.add("open");
 }
+
 function closeLMModal() {
 	document.getElementById("lm-modal").classList.remove("open");
 }
+
 function copyPayload() {
 	navigator.clipboard
 		.writeText(document.getElementById("lm-payload-code").textContent)
@@ -456,6 +558,7 @@ document.querySelectorAll(".tab-btn").forEach((btn) => {
 		document
 			.querySelectorAll(".category-panel")
 			.forEach((p) => p.classList.remove("active"));
+
 		btn.classList.add("active");
 		document.getElementById(`tab-${btn.dataset.tab}`).classList.add("active");
 	});

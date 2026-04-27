@@ -1,11 +1,42 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
+import requests
 import json
 import os
 import re
+import logging
+from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
+
 CORS(app)
+
+# MySQL connection
+db_password = os.getenv("DB_PASSWORD", "")
+
+app.config["SQLALCHEMY_DATABASE_URI"] = f"mysql+pymysql://root:{db_password}@localhost/boba_shop_db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SQLALCHEMY_ECHO"] = True
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+db = SQLAlchemy(app)
+
+# Ollama config
+OLLAMA_URL = os.getenv("OLLAMA_URL")
+MODEL_NAME = os.getenv("OLLAMA_MODEL")
+
+with open("menu_data.json", "r", encoding="utf-8") as f:
+    menu_data = json.load(f)
+
+with open("prompt.txt", "r", encoding="utf-8") as f:
+    system_prompt = f.read().strip()
+
 
 def load_training_data():
     possible_paths = [
@@ -32,6 +63,7 @@ def load_training_data():
 
     return data
 
+
 def tokenize(text):
     text = text.lower()
     words = re.findall(r"\b\w+\b", text)
@@ -42,131 +74,493 @@ def tokenize(text):
     }
     return [word for word in words if word not in stop_words]
 
+
+# ===== DB MODELS =====
+
+class JobPosition(db.Model):
+    __tablename__ = "jobpositions"
+
+    positionID = db.Column(db.Integer, primary_key=True)
+    positionTitle = db.Column(db.String(99), nullable=False)
+    description = db.Column(db.String(300), nullable=True)
+    status = db.Column(db.String(45), nullable=False, default="Open")
+
+    def to_dict(self):
+        return {
+            "positionID": self.positionID,
+            "positionTitle": self.positionTitle,
+            "description": self.description,
+            "status": self.status
+        }
+
+
+class JobApplication(db.Model):
+    __tablename__ = "jobapplications"
+
+    applicationID = db.Column(db.Integer, primary_key=True)
+    positionID = db.Column(
+        db.Integer,
+        db.ForeignKey("jobpositions.positionID"),
+        nullable=False
+    )
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(150), nullable=False)
+    experience = db.Column(db.String(300), nullable=True)
+    phone = db.Column(db.String(15), nullable=True)
+    desired_start_date = db.Column(db.Date, nullable=True)
+    availability = db.Column(db.Enum("full-time", "part-time", "flexible"), nullable=True)
+
+    def to_dict(self):
+        return {
+            "applicationID": self.applicationID,
+            "positionID": self.positionID,
+            "name": self.name,
+            "email": self.email,
+            "experience": self.experience,
+            "phone": self.phone,
+            "desired_start_date": self.desired_start_date.isoformat() if self.desired_start_date else None,
+            "availability": self.availability
+        }
+
+
+class Order(db.Model):
+    __tablename__ = "orders"
+
+    orderID = db.Column(db.Integer, primary_key=True)
+    orderDate = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    status = db.Column(db.String(30), nullable=False, default="pending")
+    totalAmount = db.Column(db.Numeric(8, 2), nullable=False)
+
+    def to_dict(self):
+        return {
+            "orderID": self.orderID,
+            "orderDate": self.orderDate.isoformat() if self.orderDate else None,
+            "status": self.status,
+            "totalAmount": float(self.totalAmount)
+        }
+
+
+class OrderDetail(db.Model):
+    __tablename__ = "orderdetails"
+
+    orderDetailID = db.Column(db.Integer, primary_key=True)
+    orderID = db.Column(db.Integer, db.ForeignKey("orders.orderID"), nullable=False)
+    menuItemID = db.Column(db.Integer, nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    item_price = db.Column(db.Numeric(8, 2), nullable=False)
+    specialRequest = db.Column(db.String(255), nullable=True)
+
+    def to_dict(self):
+        return {
+            "orderDetailID": self.orderDetailID,
+            "orderID": self.orderID,
+            "menuItemID": self.menuItemID,
+            "quantity": self.quantity,
+            "item_price": float(self.item_price),
+            "specialRequest": self.specialRequest
+        }
+
+
+class MenuItem(db.Model):
+    __tablename__ = "menuitem"
+
+    menuItemID = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    category = db.Column(db.String(45), nullable=False)
+    description = db.Column(db.String(250), nullable=True)
+    price = db.Column(db.Numeric(8, 2), nullable=False)
+
+    def to_dict(self):
+        return {
+            "menuItemID": self.menuItemID,
+            "name": self.name,
+            "category": self.category,
+            "description": self.description,
+            "price": float(self.price)
+        }
+
+
+class Event(db.Model):
+    __tablename__ = "events"
+
+    eventID = db.Column(db.Integer, primary_key=True)
+    eventTitle = db.Column(db.String(100), nullable=False)
+    eventDescription = db.Column(db.String(255), nullable=True)
+    eventDate = db.Column(db.Date, nullable=False)
+    startTime = db.Column(db.Time, nullable=True)
+    endTime = db.Column(db.Time, nullable=True)
+    location = db.Column(db.String(100), nullable=True)
+    organizer = db.Column(db.String(100), nullable=True)
+    eventStatus = db.Column(db.String(20), nullable=True)
+
+    def to_dict(self):
+        return {
+            "eventID": self.eventID,
+            "eventTitle": self.eventTitle,
+            "eventDescription": self.eventDescription,
+            "eventDate": self.eventDate.isoformat() if self.eventDate else None,
+            "startTime": str(self.startTime) if self.startTime else None,
+            "endTime": str(self.endTime) if self.endTime else None,
+            "organizer": self.organizer,
+            "location": self.location,
+            "eventStatus": self.eventStatus,
+        }
+
+
+class EventAttendee(db.Model):
+    __tablename__ = "event_attendees"
+
+    attendeeID = db.Column(db.Integer, primary_key=True)
+    eventID = db.Column(db.Integer, db.ForeignKey("events.eventID"), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(150), nullable=False)
+    rsvpDate = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            "attendeeID": self.attendeeID,
+            "eventID": self.eventID,
+            "name": self.name,
+            "email": self.email,
+            "rsvpDate": self.rsvpDate.isoformat() if self.rsvpDate else None
+        }
+
+
+def seed_positions():
+    try:
+        if JobPosition.query.count() == 0:
+            defaults = [
+                JobPosition(positionTitle="Barista", description="Prepare and serve boba drinks, maintain cleanliness, and provide excellent customer service.", status="Open"),
+                JobPosition(positionTitle="Cashier", description="Handle customer orders, process payments, and assist with front-of-house operations.", status="Open"),
+                JobPosition(positionTitle="Shift Lead", description="Supervise staff, manage shifts, handle customer issues, and ensure smooth store operations.", status="Open"),
+            ]
+            db.session.add_all(defaults)
+            db.session.commit()
+    except Exception:
+        pass
+
+
+# ===== ROUTES =====
+
 @app.route("/")
 def home():
-    return "TeaZen Flask backend is running!"
+    return "TeaZen Flask backend is running with Ollama"
+
 
 @app.route("/api/chat", methods=["POST"])
 def chat():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     user_message = data.get("message", "").strip()
 
+    print("User asked:", user_message)
+
     if not user_message:
-        return jsonify({"reply": "Please type a question."})
+        return jsonify({"reply": "Please type a question."}), 400
 
-    lower_message = user_message.lower()
+    prompt = f"""
+{system_prompt}
 
-    # Friendly greeting responses
-    if lower_message in ["hi", "hello", "hey", "hey there", "hi there"]:
-        return jsonify({
-            "reply": (
-                "Hi! Welcome to TeaZen Boba Bar 🍵\n\n"
-                "Here's what's on our menu:\n"
-                "• Signature Boba Teas\n"
-                "• Premium Milk Teas\n"
-                "• Mochi, Taiyaki & Asian Pastries\n"
-                "• Fresh Poké Bowls & Summer Rolls\n\n"
-                "You can also ask me about ingredients, caffeine, toppings, events, or jobs.\n\n"
-                "TeaZen Assistant"
-            )
-        })
+TeaZen menu data:
+{json.dumps(menu_data, indent=2)}
 
-    if "menu" in lower_message:
-        return jsonify({
-            "reply": (
-                "Of course! Here's what we currently offer at TeaZen 🍹\n\n"
-                "• Signature Boba Teas\n"
-                "• Premium Milk Teas\n"
-                "• Mochi, Taiyaki & Asian Pastries\n"
-                "• Fresh Poké Bowls & Summer Rolls\n\n"
-                "If you want, you can ask me about a specific drink, toppings, or caffeine content.\n\n"
-                "TeaZen Assistant"
-            )
-        })
+Customer question:
+{user_message}
 
-    training_data = load_training_data()
+Assistant reply:
+""".strip()
 
-    if isinstance(training_data, dict) and "error" in training_data:
-        return jsonify({"reply": training_data["error"]})
-
-    user_tokens = set(tokenize(user_message))
-    best_reply = None
-    best_score = 0
-
-    for example in training_data:
-        messages = example.get("messages", [])
-        example_user = ""
-        example_assistant = ""
-
-        for message in messages:
-            if message.get("role") == "user" and not example_user:
-                example_user = message.get("content", "")
-            elif message.get("role") == "assistant" and not example_assistant:
-                example_assistant = message.get("content", "")
-
-        example_tokens = set(tokenize(example_user))
-        score = len(user_tokens.intersection(example_tokens))
-
-        if user_message.lower() == example_user.lower():
-            score += 100
-
-        if score > best_score and example_assistant:
-            best_score = score
-            best_reply = example_assistant
-
-    min_score = 1 if len(user_tokens) <= 2 else 2
-    if best_score >= min_score:
-        return jsonify({
-            "reply": f"{best_reply}\n\nTeaZen Assistant"
-        })
-
-    return jsonify({
-        "reply": (
-            "I'm still learning 🤖\n\n"
-            "Try asking about:\n"
-            "• Drinks\n"
-            "• Toppings\n"
-            "• Caffeine\n"
-            "• Events\n"
-            "• Jobs\n\n"
-            "TeaZen Assistant"
-        )
-    })
-
-@app.route("/api/apply", methods=["POST"])
-def submit_application():
-    """
-    Handle job application submissions.
-    Data from the form is received here and can be stored in MySQL.
-    """
     try:
-        data = request.get_json()
+        print("Sending request to Ollama...")
 
-        # Validate required fields
-        required_fields = ["name", "email", "phone", "position", "startDate", "experience", "availability"]
-        for field in required_fields:
-            if not data.get(field):
-                return jsonify({"error": f"Missing required field: {field}"}), 400
+        response = requests.post(
+            OLLAMA_URL,
+            json={
+                "model": MODEL_NAME,
+                "prompt": prompt,
+                "stream": False
+            },
+            timeout=120
+        )
 
-        # Basic email validation
-        if "@" not in data.get("email", ""):
-            return jsonify({"error": "Invalid email format"}), 400
+        response.raise_for_status()
+        result = response.json()
+        reply = result.get("response", "").strip()
 
-        # TODO: Database person - Insert this data into MySQL table
-        # Example structure:
-        # INSERT INTO job_applications (name, email, phone, position, start_date, experience, availability, submitted_at)
-        # VALUES (data['name'], data['email'], data['phone'], data['position'], data['startDate'], data['experience'], data['availability'], NOW())
+        print("Ollama reply:", reply)
 
-        print(f"New job application: {data}")  # Debug log
+        if not reply:
+            reply = "Sorry, I couldn't answer that right now."
 
+        return jsonify({"reply": reply})
+
+    except requests.exceptions.ConnectionError:
+        print("Error: Could not connect to Ollama.")
         return jsonify({
-            "success": True,
-            "message": "Application received successfully!"
-        }), 200
+            "reply": "Error: Could not connect to Ollama. Make sure Ollama is installed and running."
+        }), 503
+
+    except requests.exceptions.Timeout:
+        print("Error: Ollama timed out.")
+        return jsonify({
+            "reply": "Error: Ollama took too long to respond."
+        }), 504
 
     except Exception as e:
-        print(f"Error processing application: {str(e)}")
-        return jsonify({"error": "Failed to process application"}), 500
+        print("Unexpected error:", str(e))
+        return jsonify({
+            "reply": "Error connecting to local AI model."
+        }), 500
+
+
+@app.route("/api/order-ai", methods=["POST"])
+def order_ai():
+    try:
+        data = request.get_json(silent=True) or {}
+
+        prompt = f"""
+{system_prompt}
+
+A customer cart payload was sent from the TeaZen order page.
+Summarize the cart clearly and politely.
+
+Order payload:
+{json.dumps(data, indent=2)}
+
+Rules:
+- Do not process payment
+- Do not claim the order was actually submitted
+- Do not say the order is complete
+- Just explain what is in the cart
+- Keep it short and neat
+""".strip()
+
+        print("Sending order payload to Ollama...")
+
+        response = requests.post(
+            OLLAMA_URL,
+            json={
+                "model": MODEL_NAME,
+                "prompt": prompt,
+                "stream": False
+            },
+            timeout=120
+        )
+
+        response.raise_for_status()
+        result = response.json()
+        reply = result.get("response", "").strip()
+
+        print("Ollama order reply:", reply)
+
+        if not reply:
+            reply = "The order payload was received successfully."
+
+        return jsonify({"reply": reply}), 200
+
+    except requests.exceptions.ConnectionError:
+        print("Error: Could not connect to Ollama for order payload.")
+        return jsonify({
+            "reply": "Error: Could not connect to Ollama. Make sure Ollama is installed and running."
+        }), 503
+
+    except requests.exceptions.Timeout:
+        print("Error: Ollama timed out for order payload.")
+        return jsonify({
+            "reply": "Error: Ollama took too long to respond."
+        }), 504
+
+    except Exception as e:
+        print("Error in /api/order-ai:", str(e))
+        return jsonify({
+            "reply": "Failed to process AI order payload."
+        }), 500
+
+
+@app.route("/job-positions", methods=["GET"])
+def get_job_positions():
+    positions = JobPosition.query.all()
+    return jsonify([p.to_dict() for p in positions])
+
+
+@app.route("/applications", methods=["GET"])
+def list_applications():
+    apps = JobApplication.query.order_by(JobApplication.applicationID.desc()).all()
+    return jsonify([a.to_dict() for a in apps])
+
+
+@app.route("/submit-job", methods=["POST"])
+def submit_job():
+    data = request.get_json() or {}
+    logger.info("Received submit-job data: %s", data)
+
+    try:
+        positionID = int(data.get("positionID"))
+    except Exception:
+        return jsonify({"success": False, "error": "Invalid positionID"}), 400
+
+    name = data.get("name")
+    email = data.get("email")
+    experience = data.get("experience")
+    phone = data.get("phone")
+    desired_start_date = data.get("startDate") or data.get("desired_start_date") or None
+    availability = data.get("availability") or None
+
+    if not (positionID and name and email):
+        return jsonify({"success": False, "error": "Missing required fields"}), 400
+
+    position = JobPosition.query.get(positionID)
+    if not position:
+        return jsonify({"success": False, "error": "Invalid position"}), 400
+
+    app_entry = JobApplication(
+        positionID=positionID,
+        name=name,
+        email=email,
+        experience=experience,
+        phone=phone,
+        desired_start_date=desired_start_date,
+        availability=availability
+    )
+    db.session.add(app_entry)
+    try:
+        db.session.commit()
+    except Exception as e:
+        logger.exception("DB commit failed for job application")
+        db.session.rollback()
+        return jsonify({"success": False, "error": "Database error"}), 500
+
+    logger.info("Inserted application id=%s", app_entry.applicationID)
+    return jsonify({"success": True, "message": "Application submitted", "id": app_entry.applicationID})
+
+
+@app.route("/submit-order", methods=["POST"])
+def submit_order():
+    data = request.get_json() or {}
+    logger.info("Received submit-order data: %s", data)
+
+    totalAmount = data.get("totalAmount")
+    items = data.get("items", [])
+
+    if totalAmount is None or not items:
+        return jsonify({"success": False, "error": "Missing required order fields"}), 400
+
+    try:
+        new_order = Order(
+            status="Pending",
+            totalAmount=float(totalAmount)
+        )
+        db.session.add(new_order)
+        db.session.flush()
+
+        for item in items:
+            detail = OrderDetail(
+                orderID=new_order.orderID,
+                menuItemID=int(item["menuItemID"]),
+                quantity=int(item["quantity"]),
+                item_price=float(item["item_price"]),
+                specialRequest=item.get("specialRequest", "")
+            )
+            db.session.add(detail)
+
+        db.session.commit()
+
+        logger.info("Inserted order id=%s", new_order.orderID)
+        return jsonify({
+            "success": True,
+            "message": "Order submitted successfully",
+            "orderID": new_order.orderID
+        })
+
+    except Exception:
+        logger.exception("DB commit failed for order")
+        db.session.rollback()
+        return jsonify({"success": False, "error": "Database error"}), 500
+
+
+@app.route("/menu-items", methods=["GET"])
+def get_menu_items():
+    items = MenuItem.query.order_by(MenuItem.menuItemID.asc()).all()
+    return jsonify([item.to_dict() for item in items])
+
+
+@app.route("/events", methods=["GET"])
+def get_events():
+    events = Event.query.order_by(Event.eventDate.asc()).all()
+    return jsonify([e.to_dict() for e in events])
+
+
+@app.route("/api/rsvp", methods=["POST"])
+def rsvp():
+    data = request.get_json() or {}
+    event_id = data.get("eventID")
+    name = data.get("name", "").strip()
+    email = data.get("email", "").strip()
+
+    if not (event_id and name and email):
+        return jsonify({"success": False, "error": "Missing required fields"}), 400
+
+    if "@" not in email:
+        return jsonify({"success": False, "error": "Invalid email address"}), 400
+
+    event = Event.query.get(event_id)
+    if not event:
+        return jsonify({"success": False, "error": "Event not found"}), 404
+
+    attendee = EventAttendee(eventID=event_id, name=name, email=email)
+    db.session.add(attendee)
+    try:
+        db.session.commit()
+        logger.info("RSVP confirmed: event=%s name=%s", event_id, name)
+        return jsonify({
+            "success": True,
+            "message": f"You're registered for {event.eventTitle}! See you there."
+        })
+    except Exception:
+        logger.exception("DB commit failed for RSVP")
+        db.session.rollback()
+        return jsonify({"success": False, "error": "Database error"}), 500
+
+
+@app.route("/submit-event", methods=["POST"])
+def submit_event():
+    data = request.get_json() or {}
+    logger.info("Received submit-event data: %s", data)
+
+    title = data.get("title")
+    date = data.get("date")
+    start_time = data.get("time")
+    organizer = data.get("host")
+    description = data.get("description")
+    location = data.get("location")
+    end_time = data.get("endTime")
+    event_status = data.get("eventStatus", "Scheduled")
+
+    if not (title and date):
+        return jsonify({"success": False, "error": "Missing required fields"}), 400
+
+    try:
+        event = Event(
+            eventTitle=title,
+            eventDate=date,
+            startTime=start_time,
+            endTime=end_time,
+            organizer=organizer,
+            eventDescription=description,
+            location=location,
+            eventStatus=event_status
+        )
+        db.session.add(event)
+        db.session.commit()
+        logger.info("Inserted event id=%s", event.eventID)
+        return jsonify({"success": True, "message": "Event created", "eventID": event.eventID})
+    except Exception:
+        logger.exception("DB commit failed for event")
+        db.session.rollback()
+        return jsonify({"success": False, "error": "Database error"}), 500
+
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    with app.app_context():
+        db.create_all()
+        seed_positions()
+    app.run(debug=True, host="0.0.0.0", port=5000)

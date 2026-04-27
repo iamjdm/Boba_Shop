@@ -42,49 +42,7 @@
 				<!-- menu items -->
 				<div id="flow">
 					<table>
-						<tbody>
-							<tr>
-								<th>Classic Milk Tea</th>
-								<td>
-									Traditional black tea with creamy milk and chewy tapioca
-									pearls.
-									<br />Regular $5.50 Large $6.50
-								</td>
-							</tr>
-							<tr>
-								<th>Taro Bliss</th>
-								<td>
-									Sweet taro root blended with milk and your choice of toppings.
-									<br />Regular $6.00 Large $7.00
-								</td>
-							</tr>
-							<tr>
-								<th>Matcha Zen</th>
-								<td>
-									Premium Japanese matcha whisked to perfection with oat milk
-									and honey boba.
-									<br />
-									Regular $6.75 Large $7.75
-								</td>
-							</tr>
-							<tr>
-								<th>Strawberry Cloud</th>
-								<td>
-									Fresh strawberries blended with jasmine tea, topped with sweet
-									cheese foam.
-									<br />
-									Regular $6.50 Large $7.50
-								</td>
-							</tr>
-							<tr>
-								<th>Brown Sugar Tiger</th>
-								<td>
-									House-made brown sugar syrup swirled with fresh milk and chewy
-									pearls.
-									<br />
-									Regular $6.25 Large $7.25
-								</td>
-							</tr>
+						<tbody id="menu-table-body">
 						</tbody>
 					</table>
 				</div>
@@ -96,5 +54,74 @@
 				<a href="mailto:info@teazenboba.com">info@teazenboba.com</a>
 			</footer>
 		</div>
+
+		<script>
+			async function loadMenuItems() {
+				try {
+					const response = await fetch("http://127.0.0.1:5000/menu-items");
+					const items = await response.json();
+
+					const drinksOnly = items.filter(item => item.category === "Boba & Tea");
+					const grouped = groupMenuItems(drinksOnly);
+
+					renderMenuTable(grouped);
+					} catch (error) {
+						console.error("Error loading menu items:", error);
+						document.getElementById("menu-table-body").innerHTML =
+						'<tr><td colspan="2">Could not load menu items.</td></tr>';
+					}
+			}
+			function groupMenuItems(items) {
+				const grouped = {};
+
+				items.forEach(item => {
+					let baseName = item.name;
+					let sizeLabel = "Regular";
+
+					if (item.name.includes(" (Large)")) {
+						baseName = item.name.replace(" (Large)", "");
+						sizeLabel = "Large";
+					}
+
+					if (!grouped[baseName]) {
+						grouped[baseName] = {
+							name: baseName,
+							description: item.description || "",
+							prices: []
+						};
+					}
+
+					grouped[baseName].prices.push({
+						label: sizeLabel,
+						price: item.price
+					});
+				});
+
+			return Object.values(grouped);
+			}
+
+			function renderMenuTable(menuItems) {
+				const tbody = document.getElementById("menu-table-body");
+
+				tbody.innerHTML = menuItems.map(item => {
+					const pricesText = item.prices
+					.map(price => `${price.label} $${price.price.toFixed(2)}`)
+					.join(" ");
+
+					return `
+						<tr>
+							<th>${item.name}</th>
+							<td>
+								${item.description}
+								<br />${pricesText}
+							</td>
+						</tr>
+					`;
+				}).join("");
+			}
+
+			loadMenuItems();
+		</script>
+
 	</body>
 </html>
