@@ -6,7 +6,7 @@
 // Load available job positions from backend
 async function loadJobPositions() {
 	try {
-		const response = await fetch("http://127.0.0.1:5000/job-positions");
+		const response = await fetch(`${API_BASE}/job-positions`);
 		const positions = await response.json();
 		
 		const select = document.getElementById("position");
@@ -39,7 +39,7 @@ document
 		const messageEl = document.getElementById("formMessage");
 
 		try {
-			const response = await fetch("http://127.0.0.1:5000/submit-job", {
+			const response = await fetch(`${API_BASE}/submit-job`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

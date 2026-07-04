@@ -3,12 +3,8 @@
  * Handles product display, cart management, and checkout functionality
  */
 
-const CHAT_API_URL =
-	document.querySelector('meta[name="chat-api-url"]')?.content || "/api/chat";
-
-const ORDER_AI_API_URL =
-	document.querySelector('meta[name="order-ai-api-url"]')?.content ||
-	"/api/order-ai";
+const CHAT_API_URL = `${API_BASE}/api/chat`;
+const ORDER_AI_API_URL = `${API_BASE}/api/order-ai`;
 
 const PRODUCTS = {
 	drinks: [
@@ -408,7 +404,7 @@ async function checkout() {
 	};
 
 	try {
-		const response = await fetch("http://127.0.0.1:5000/submit-order", {
+		const response = await fetch(`${API_BASE}/submit-order`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"

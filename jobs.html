@@ -49,6 +49,7 @@
 								id="name"
 								name="name"
 								placeholder="Enter your full name"
+								maxlength="100"
 								required
 							/>
 						</div>
@@ -60,6 +61,7 @@
 								id="email"
 								name="email"
 								placeholder="your.email@example.com"
+								maxlength="150"
 								required
 							/>
 						</div>
@@ -71,6 +73,7 @@
 								id="phone"
 								name="phone"
 								placeholder="(123) 456-7890"
+								maxlength="15"
 								required
 							/>
 						</div>
@@ -93,6 +96,7 @@
 								id="experience"
 								name="experience"
 								rows="4"
+								maxlength="300"
 								placeholder="Share any relevant work experience, skills, or why you're excited about TeaZen..."
 								required
 							></textarea>
@@ -102,9 +106,9 @@
 							<label for="availability">Availability:</label>
 							<select id="availability" name="availability" required>
 								<option value="">-- Select Availability --</option>
-								<option value="Full-time">Full-time</option>
-								<option value="Part-time">Part-time</option>
-								<option value="Flexible">Flexible</option>
+								<option value="full-time">Full-time</option>
+								<option value="part-time">Part-time</option>
+								<option value="flexible">Flexible</option>
 							</select>
 						</div>
 
@@ -119,10 +123,12 @@
 			<!-- footer -->
 			<footer>
 				Copyright &copy; TeaZen Boba Bar<br />
-				<a href="mailto:info@teazenboba.com">info@teazenboba.com</a>
+				<a href="mailto:info@teazenboba.com">info@teazenboba.com</a><br />
+				<a href="privacy.html">Privacy Policy</a>
 			</footer>
 		</div>
 
+		<script src="config.js"></script>
 		<script src="scripts/jobs.js"></script>
 	</body>
 </html>

@@ -51,72 +51,52 @@
 			<!-- footer -->
 			<footer>
 				Copyright &copy; TeaZen Boba Bar<br />
-				<a href="mailto:info@teazenboba.com">info@teazenboba.com</a>
+				<a href="mailto:info@teazenboba.com">info@teazenboba.com</a><br />
+				<a href="privacy.html">Privacy Policy</a>
 			</footer>
 		</div>
 
+		<script src="config.js"></script>
 		<script>
 			async function loadMenuItems() {
 				try {
-					const response = await fetch("http://127.0.0.1:5000/menu-items");
+					const response = await fetch(`${API_BASE}/menu-items`);
 					const items = await response.json();
-
 					const drinksOnly = items.filter(item => item.category === "Boba & Tea");
-					const grouped = groupMenuItems(drinksOnly);
-
-					renderMenuTable(grouped);
-					} catch (error) {
-						console.error("Error loading menu items:", error);
-						document.getElementById("menu-table-body").innerHTML =
+					renderMenuTable(groupMenuItems(drinksOnly));
+				} catch (error) {
+					console.error("Error loading menu items:", error);
+					document.getElementById("menu-table-body").innerHTML =
 						'<tr><td colspan="2">Could not load menu items.</td></tr>';
-					}
+				}
 			}
+
 			function groupMenuItems(items) {
 				const grouped = {};
-
 				items.forEach(item => {
 					let baseName = item.name;
 					let sizeLabel = "Regular";
-
 					if (item.name.includes(" (Large)")) {
 						baseName = item.name.replace(" (Large)", "");
 						sizeLabel = "Large";
 					}
-
 					if (!grouped[baseName]) {
-						grouped[baseName] = {
-							name: baseName,
-							description: item.description || "",
-							prices: []
-						};
+						grouped[baseName] = { name: baseName, description: item.description || "", prices: [] };
 					}
-
-					grouped[baseName].prices.push({
-						label: sizeLabel,
-						price: item.price
-					});
+					grouped[baseName].prices.push({ label: sizeLabel, price: item.price });
 				});
+				return Object.values(grouped);
+			}
 
-			return Object.values(grouped);
+			function esc(s) {
+				return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 			}
 
 			function renderMenuTable(menuItems) {
 				const tbody = document.getElementById("menu-table-body");
-
 				tbody.innerHTML = menuItems.map(item => {
-					const pricesText = item.prices
-					.map(price => `${price.label} $${price.price.toFixed(2)}`)
-					.join(" ");
-
-					return `
-						<tr>
-							<th>${item.name}</th>
-							<td>
-								${item.description}
-								<br />${pricesText}
-							</td>
-						</tr>
-					`;
+					const pricesText = item.prices.map(p => `${esc(p.label)} $${p.price.toFixed(2)}`).join(" ");
+					return `<tr><th>${esc(item.name)}</th><td>${esc(item.description)}<br />${pricesText}</td></tr>`;
 				}).join("");
 			}
 

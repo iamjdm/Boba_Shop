@@ -38,7 +38,7 @@ currentDate.setDate(1);
 
 async function loadEvents() {
 	try {
-		const response = await fetch("http://127.0.0.1:5000/events");
+		const response = await fetch(`${API_BASE}/events`);
 		const events = await response.json();
 
 		eventMap = {};
@@ -122,6 +122,10 @@ function addDayElement(container, day, dateObj, isOtherMonth) {
 	container.appendChild(dayEl);
 }
 
+function setText(el, value) {
+	el.textContent = value ?? "";
+}
+
 function showDetail(event, dateStr) {
 	const date = new Date(dateStr + "T00:00:00");
 	const formatted = date.toLocaleDateString("en-US", {
@@ -135,21 +139,56 @@ function showDetail(event, dateStr) {
 		? `${formatTime(event.startTime)}${event.endTime ? " – " + formatTime(event.endTime) : ""}`
 		: "";
 
-	document.getElementById("event-detail-content").innerHTML = `
-		<h3>${event.eventTitle}</h3>
-		<p class="event-date">${formatted}${timeRange ? " &mdash; " + timeRange : ""}</p>
-		${event.organizer ? `<p class="event-host">Hosted by ${event.organizer}</p>` : ""}
-		${event.location ? `<p class="event-host">📍 ${event.location}</p>` : ""}
-		${event.eventDescription ? `<p>${event.eventDescription}</p>` : ""}
-		${event.eventStatus ? `<p><em>Status: ${event.eventStatus}</em></p>` : ""}
-		<div class="rsvp-form" id="rsvp-form-${event.eventID}">
-			<h4>RSVP for this event</h4>
-			<input type="text" id="rsvp-name" placeholder="Your name" />
-			<input type="email" id="rsvp-email" placeholder="Your email" />
-			<button class="rsvp-btn" onclick="submitRSVP(${event.eventID})">RSVP</button>
-			<p class="rsvp-message" id="rsvp-message"></p>
-		</div>
-	`;
+	const container = document.getElementById("event-detail-content");
+	container.innerHTML = "";
+
+	const title = document.createElement("h3");
+	setText(title, event.eventTitle);
+	container.appendChild(title);
+
+	const dateLine = document.createElement("p");
+	dateLine.className = "event-date";
+	setText(dateLine, formatted + (timeRange ? " — " + timeRange : ""));
+	container.appendChild(dateLine);
+
+	if (event.organizer) {
+		const host = document.createElement("p");
+		host.className = "event-host";
+		setText(host, "Hosted by " + event.organizer);
+		container.appendChild(host);
+	}
+
+	if (event.location) {
+		const loc = document.createElement("p");
+		loc.className = "event-host";
+		setText(loc, "📍 " + event.location);
+		container.appendChild(loc);
+	}
+
+	if (event.eventDescription) {
+		const desc = document.createElement("p");
+		setText(desc, event.eventDescription);
+		container.appendChild(desc);
+	}
+
+	if (event.eventStatus) {
+		const status = document.createElement("p");
+		const em = document.createElement("em");
+		setText(em, "Status: " + event.eventStatus);
+		status.appendChild(em);
+		container.appendChild(status);
+	}
+
+	const rsvpDiv = document.createElement("div");
+	rsvpDiv.className = "rsvp-form";
+	rsvpDiv.id = "rsvp-form-" + event.eventID;
+	rsvpDiv.innerHTML =
+		`<h4>RSVP for this event</h4>` +
+		`<input type="text" id="rsvp-name" placeholder="Your name" />` +
+		`<input type="email" id="rsvp-email" placeholder="Your email" />` +
+		`<button class="rsvp-btn" onclick="submitRSVP(${Number(event.eventID)})">RSVP</button>` +
+		`<p class="rsvp-message" id="rsvp-message"></p>`;
+	container.appendChild(rsvpDiv);
 
 	const panel = document.getElementById("event-detail");
 	panel.classList.remove("hidden");
@@ -168,7 +207,7 @@ async function submitRSVP(eventID) {
 	}
 
 	try {
-		const response = await fetch("http://127.0.0.1:5000/api/rsvp", {
+		const response = await fetch(`${API_BASE}/api/rsvp`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({ eventID, name, email }),
@@ -212,14 +251,15 @@ document.getElementById("eventForm").addEventListener("submit", async (e) => {
 
 	const payload = {
 		title: document.getElementById("event-title").value.trim(),
-		date: document.getElementById("event-date").value,
-		time: document.getElementById("event-time").value,
-		host: document.getElementById("event-host").value.trim(),
-		description: document.getElementById("event-description").value.trim(),
+		date: document.getElementById("event-date").value || null,
+		time: document.getElementById("event-time").value || null,
+		host: document.getElementById("event-host").value.trim() || null,
+		category: document.getElementById("event-category").value || null,
+		description: document.getElementById("event-description").value.trim() || null,
 	};
 
 	try {
-		const response = await fetch("http://127.0.0.1:5000/submit-event", {
+		const response = await fetch(`${API_BASE}/request-event`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify(payload),
@@ -228,11 +268,10 @@ document.getElementById("eventForm").addEventListener("submit", async (e) => {
 		msgEl.style.display = "block";
 		msgEl.style.color = response.ok ? "green" : "red";
 		msgEl.textContent = response.ok
-			? "Event submitted successfully!"
-			: data.error || "Could not submit event.";
+			? data.message
+			: data.error || "Could not submit request.";
 		if (response.ok) {
 			e.target.reset();
-			loadEvents();
 		}
 	} catch {
 		msgEl.style.display = "block";
