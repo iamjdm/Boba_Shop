@@ -63,11 +63,12 @@
 					<div id="event-detail-content"></div>
 				</div>
 
-				<!-- event submission form -->
-				<h3>Submit Your Event</h3>
+				<!-- event request form -->
+				<h3>Request an Event</h3>
+				<p>Have an idea for an event at TeaZen? Submit a request below and we'll review it!</p>
 				<form id="eventForm">
 					<fieldset>
-						<legend>Add a New Event</legend>
+						<legend>Event Request</legend>
 
 						<div class="form-group">
 							<label for="event-title">Event Title:</label>
@@ -76,44 +77,43 @@
 								id="event-title"
 								name="title"
 								placeholder="e.g., Trivia Night"
+								maxlength="100"
 								required
 							/>
 						</div>
 
 						<div class="form-group">
-							<label for="event-date">Date:</label>
+							<label for="event-date">Preferred Date:</label>
 							<input
 								type="date"
 								id="event-date"
 								name="date"
-								required
 							/>
 						</div>
 
 						<div class="form-group">
-							<label for="event-time">Time:</label>
+							<label for="event-time">Preferred Time:</label>
 							<input
 								type="time"
 								id="event-time"
 								name="time"
-								required
 							/>
 						</div>
 
 						<div class="form-group">
-							<label for="event-host">Host Name:</label>
+							<label for="event-host">Host / Performer Name:</label>
 							<input
 								type="text"
 								id="event-host"
 								name="host"
 								placeholder="e.g., DJ Alex"
-								required
+								maxlength="100"
 							/>
 						</div>
 
 						<div class="form-group">
 							<label for="event-category">Category:</label>
-							<select id="event-category" name="category" required>
+							<select id="event-category" name="category">
 								<option value="">-- Select Category --</option>
 								<option value="kpop">K-Pop Night</option>
 								<option value="acoustic">Acoustic Chill</option>
@@ -128,12 +128,12 @@
 								id="event-description"
 								name="description"
 								rows="4"
-								placeholder="Describe your event..."
-								required
+								maxlength="500"
+								placeholder="Tell us about your event idea..."
 							></textarea>
 						</div>
 
-						<button type="submit" class="submit-btn">Submit Event</button>
+						<button type="submit" class="submit-btn">Submit Request</button>
 						<p id="eventMessage" style="display: none"></p>
 					</fieldset>
 				</form>
@@ -199,10 +199,12 @@
 			<!-- footer -->
 			<footer>
 				Copyright &copy; TeaZen Boba Bar<br />
-				<a href="mailto:info@teazenboba.com">info@teazenboba.com</a>
+				<a href="mailto:info@teazenboba.com">info@teazenboba.com</a><br />
+				<a href="privacy.html">Privacy Policy</a>
 			</footer>
 		</div>
 
+		<script src="config.js"></script>
 		<script src="scripts/events.js"></script>
 	</body>
 </html>

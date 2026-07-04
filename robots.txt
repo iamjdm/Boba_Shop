@@ -1,0 +1,21 @@
+User-agent: *
+
+# Block all backend API and admin endpoints
+Disallow: /api/
+Disallow: /applications
+Disallow: /event-requests
+Disallow: /submit-job
+Disallow: /submit-event
+Disallow: /submit-order
+Disallow: /request-event
+Disallow: /job-positions
+Disallow: /menu-items
+Disallow: /events
+
+# Allow public pages
+Allow: /index.html
+Allow: /menu.html
+Allow: /events.html
+Allow: /jobs.html
+Allow: /order.html
+Allow: /privacy.html

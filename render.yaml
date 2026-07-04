@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: teazen-boba-bar
+    runtime: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: gunicorn --chdir backend --bind 0.0.0.0:$PORT app:app
+    envVars:
+      - key: FLASK_DEBUG
+        value: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_KEY
+        generateValue: true
+      - key: GROQ_API_KEY
+        sync: false          # paste your key manually in the Render dashboard
+      - key: CORS_ORIGINS
+        sync: false          # set to https://teazen-boba-bar.onrender.com after first deploy
+      - key: DATABASE_URL
+        fromDatabase:
+          name: teazen-db
+          property: connectionString
+
+databases:
+  - name: teazen-db
+    databaseName: boba_shop_db
+    plan: free
