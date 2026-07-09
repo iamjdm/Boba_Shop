@@ -727,11 +727,12 @@ def list_event_requests():
     return jsonify([r.to_dict() for r in reqs])
 
 
+with app.app_context():
+    db.create_all()
+    seed_positions()
+    seed_events()
+    seed_menu_items()
+
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
-        seed_positions()
-        seed_events()
-        seed_menu_items()
     debug = os.getenv("FLASK_DEBUG", "false").lower() == "true"
     app.run(debug=debug, host="0.0.0.0", port=5000)
