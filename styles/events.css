@@ -365,6 +365,21 @@
 	}
 }
 
+/* ===== EVENTS CONTENT CONTAINER ===== */
+
+.events-content {
+	padding: 0 1em;
+	box-sizing: border-box;
+}
+
+@media (width >= 1024px) {
+	.events-content {
+		max-width: 900px;
+		margin: 0 auto;
+		padding: 0 2em;
+	}
+}
+
 /* ===== RSVP FORM ===== */
 
 .rsvp-form {
