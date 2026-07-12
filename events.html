@@ -42,7 +42,7 @@
 				<div id="calendar-wrap">
 					<div id="calendar-header">
 						<button id="prev-month" aria-label="Previous month">&lt;</button>
-						<h3 id="calendar-title">March 2026</h3>
+						<h3 id="calendar-title"></h3>
 						<button id="next-month" aria-label="Next month">&gt;</button>
 					</div>
 					<div id="calendar" class="custom-calendar">
@@ -63,138 +63,115 @@
 					<div id="event-detail-content"></div>
 				</div>
 
-				<!-- event request form -->
+				<!-- event cards + request form -->
 				<div class="events-content">
-				<h3>Request an Event</h3>
-				<p>Have an idea for an event at TeaZen? Submit a request below and we'll review it!</p>
-				<form id="eventForm">
-					<fieldset>
-						<legend>Event Request</legend>
 
-						<div class="form-group">
-							<label for="event-title">Event Title:</label>
-							<input
-								type="text"
-								id="event-title"
-								name="title"
-								placeholder="e.g., Trivia Night"
-								maxlength="100"
-								required
-							/>
+					<!-- event cards -->
+					<div class="event-cards">
+
+						<div class="event-card kpop">
+							<div class="event-card-header">
+								<span class="event-card-title">💃 K-Pop Night</span>
+								<span class="event-card-schedule">Bi-weekly Fridays &middot; 8:00 PM</span>
+							</div>
+							<div class="event-card-body">
+								<a href="./images/k-pop_logo_transparent.png">
+									<img src="./images/k-pop_logo_transparent_thumb.png" alt="K-Pop Night at TeaZen" class="event-card-img" />
+								</a>
+								<p>Jasmine Chen brings the energy of K-Pop to TeaZen! Get ready for an evening of dancing, singing, and celebrating K-Pop culture with themed drinks and games.</p>
+							</div>
+							<div class="event-card-footer">
+								<audio id="audio-kpop" preload="none" aria-label="K-Pop Night preview track">
+									<source src="./audios/kpop-demon-hunters-golden.mp3" type="audio/mpeg" />
+									<source src="./audios/kpop-demon-hunters-golden.ogg" type="audio/ogg" />
+								</audio>
+								<div class="card-actions">
+									<button class="audio-btn" data-audio="audio-kpop" aria-label="Play K-Pop Night preview track">
+										<svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+										<svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+										<span class="audio-btn-label">Preview</span>
+									</button>
+									<button class="rsvp-card-btn" data-event-title="K-Pop Night">RSVP</button>
+								</div>
+							</div>
 						</div>
 
-						<div class="form-group">
-							<label for="event-date">Preferred Date:</label>
-							<input
-								type="date"
-								id="event-date"
-								name="date"
-							/>
+						<div class="event-card acoustic">
+							<div class="event-card-header">
+								<span class="event-card-title">🎸 Acoustic Chill Night</span>
+								<span class="event-card-schedule">Alternate Fridays &middot; 8:00 PM</span>
+							</div>
+							<div class="event-card-body">
+								<a href="./images/acoustic-guitar.webp">
+									<img src="./images/acoustic-guitar_thumb.webp" alt="Acoustic Chill Night at TeaZen" class="event-card-img" />
+								</a>
+								<p>Atlas Grey brings soothing acoustic melodies to create the perfect zen atmosphere. Relax with live music, warm lighting, and your favorite boba drink.</p>
+							</div>
+							<div class="event-card-footer">
+								<audio id="audio-acoustic" preload="none" aria-label="Acoustic Chill Night preview track">
+									<source src="./audios/greg.mp3" type="audio/mpeg" />
+									<source src="./audios/greg.ogg" type="audio/ogg" />
+								</audio>
+								<div class="card-actions">
+									<button class="audio-btn" data-audio="audio-acoustic" aria-label="Play Acoustic Chill Night preview track">
+										<svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+										<svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+										<span class="audio-btn-label">Preview</span>
+									</button>
+									<button class="rsvp-card-btn" data-event-title="Acoustic Chill Night">RSVP</button>
+								</div>
+							</div>
 						</div>
 
-						<div class="form-group">
-							<label for="event-time">Preferred Time:</label>
-							<input
-								type="time"
-								id="event-time"
-								name="time"
-							/>
+					</div><!-- /.event-cards -->
+
+					<!-- request form card -->
+					<div class="event-request-card">
+						<div class="event-request-card-header">
+							<h3>Pitch Your Event Idea</h3>
+							<p>We add new events monthly — have something in mind? Submit a suggestion and we'll be in touch. <span class="required-note">* Required</span></p>
 						</div>
+						<form id="eventForm" class="request-grid">
+							<div class="form-group span-full">
+								<label for="event-title">Event Title <span class="required-star">*</span></label>
+								<input type="text" id="event-title" name="title" placeholder="e.g., Trivia Night, Comedy Open Mic…" maxlength="100" required />
+							</div>
+							<div class="form-group">
+								<label for="event-date">Preferred Date</label>
+								<input type="date" id="event-date" name="date" />
+							</div>
+							<div class="form-group">
+								<label for="event-time">Preferred Time</label>
+								<input type="time" id="event-time" name="time" />
+							</div>
+							<div class="form-group">
+								<label for="event-host">Host / Performer</label>
+								<input type="text" id="event-host" name="host" placeholder="e.g., DJ Alex" maxlength="100" />
+							</div>
+							<div class="form-group">
+								<label for="event-category">Event Type</label>
+								<select id="event-category" name="category">
+									<option value="">-- Select a type --</option>
+									<option value="music">Live Music</option>
+									<option value="kpop">K-Pop Night</option>
+									<option value="acoustic">Acoustic / Chill</option>
+									<option value="trivia">Trivia Night</option>
+									<option value="comedy">Comedy</option>
+									<option value="art">Art / Creative</option>
+									<option value="gaming">Gaming</option>
+									<option value="other">Other</option>
+								</select>
+							</div>
+							<div class="form-group span-full">
+								<label for="event-description">Description</label>
+								<textarea id="event-description" name="description" rows="4" maxlength="500" placeholder="Tell us about your idea — what makes it a great fit for TeaZen?"></textarea>
+								<span class="char-counter" id="desc-counter">0 / 500</span>
+							</div>
+							<button type="submit" class="submit-btn span-full">Submit Suggestion</button>
+							<p id="eventMessage" class="span-full event-message" role="alert" style="display: none"></p>
+						</form>
+					</div><!-- /.event-request-card -->
 
-						<div class="form-group">
-							<label for="event-host">Host / Performer Name:</label>
-							<input
-								type="text"
-								id="event-host"
-								name="host"
-								placeholder="e.g., DJ Alex"
-								maxlength="100"
-							/>
-						</div>
-
-						<div class="form-group">
-							<label for="event-category">Category:</label>
-							<select id="event-category" name="category">
-								<option value="">-- Select Category --</option>
-								<option value="kpop">K-Pop Night</option>
-								<option value="acoustic">Acoustic Chill</option>
-								<option value="trivia">Trivia</option>
-								<option value="other">Other</option>
-							</select>
-						</div>
-
-						<div class="form-group">
-							<label for="event-description">Description:</label>
-							<textarea
-								id="event-description"
-								name="description"
-								rows="4"
-								maxlength="500"
-								placeholder="Tell us about your event idea..."
-							></textarea>
-						</div>
-
-						<button type="submit" class="submit-btn">Submit Request</button>
-						<p id="eventMessage" style="display: none"></p>
-					</fieldset>
-				</form>
-
-				<!-- event info sections -->
-				<h4 style="margin-top:2em">K-Pop Night (Bi-weekly Fridays, 8:00 PM)</h4>
-				<div class="details" id="kpop-section">
-					<a href="./images/k-pop_logo_transparent.png">
-						<img
-							src="./images/k-pop_logo_transparent_thumb.png"
-							alt="K-Pop Night at TeaZen"
-						/>
-					</a>
-					<p>
-						Jasmine Chen brings the energy of K-Pop to TeaZen! Get ready for an
-						evening of dancing, singing, and celebrating K-Pop culture with
-						themed drinks and games.
-					</p>
-
-					<audio controls>
-						<source
-							src="./audios/kpop-demon-hunters-golden.mp3"
-							type="audio/mpeg"
-						/>
-						<source
-							src="./audios/kpop-demon-hunters-golden.ogg"
-							type="audio/ogg"
-						/>
-						<p>
-							Your browser does not support the audio element.
-							<a href="./audios/kpop-demon-hunters-golden.mp3">
-								Download audio sample
-							</a>
-						</p>
-					</audio>
-				</div>
-
-				<h4>Acoustic Chill Night (Alternate Fridays, 8:00 PM)</h4>
-				<div class="details" id="acoustic-section">
-					<a href="./images/acoustic-guitar.webp">
-						<img
-							src="./images/acoustic-guitar_thumb.webp"
-							alt="Acoustic Chill Night at TeaZen"
-						/>
-					</a>
-					<p>
-						Atlas Grey brings soothing acoustic melodies to create the perfect
-						zen atmosphere. Relax with live music, warm lighting, and your
-						favorite boba drink.
-					</p>
-
-					<audio controls>
-						<source src="./audios/greg.mp3" type="audio/mpeg" />
-						<source src="./audios/greg.ogg" type="audio/ogg" />
-						<p>
-							Your browser does not support the audio element.
-							<a href="./audios/greg.mp3">Download audio sample</a>
-						</p>
-					</audio>
-				</div>
 				</div><!-- /.events-content -->
 			</main>
 
