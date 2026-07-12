@@ -228,15 +228,12 @@
 @media (width >= 1024px) {
 	#calendar-wrap {
 		padding: 1.5em 2em 0;
-		max-width: 900px;
+		max-width: 1100px;
 		margin: 0 auto;
 	}
 
 	#calendar-header {
 		padding: 0;
-		max-width: 900px;
-		margin-left: auto;
-		margin-right: auto;
 		margin-bottom: 1.5em;
 	}
 
@@ -356,13 +353,371 @@
 @media (width >= 1024px) {
 	.event-detail {
 		margin: 1.5em auto 0;
-		max-width: 900px;
+		max-width: 1100px;
 		padding: 1.5em 2em;
 	}
 
 	.event-detail h3 {
 		font-size: 1.3em;
 	}
+}
+
+/* ===== EVENTS CONTENT CONTAINER ===== */
+
+.events-content {
+	padding: 0 1em;
+	box-sizing: border-box;
+}
+
+@media (width >= 1024px) {
+	.events-content {
+		max-width: 1100px;
+		margin: 0 auto;
+		padding: 0 2em;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0 2.5em;
+		align-items: start;
+	}
+
+	.event-cards {
+		margin-top: 2em;
+	}
+}
+
+/* ===== EVENT CARDS ===== */
+
+.event-cards {
+	display: flex;
+	flex-direction: column;
+	gap: 1.25em;
+	margin: 2em 0 0;
+}
+
+.event-card {
+	background: #fff;
+	border-radius: 10px;
+	border: 1px solid #d4e0c8;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+	overflow: hidden;
+	padding: 0 !important;
+}
+
+.event-card-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.4em;
+	padding: 0.9em 1.25em !important;
+}
+
+.event-card.kpop .event-card-header { background: #c0427a; }
+.event-card.acoustic .event-card-header { background: #2d6e2d; }
+
+.event-card-title {
+	color: #fff;
+	font-size: 1.1em;
+	font-weight: bold;
+	letter-spacing: 0.02em;
+}
+
+.event-card-schedule {
+	color: rgba(255, 255, 255, 0.88);
+	font-size: 0.85em;
+}
+
+.event-card-body {
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+	padding: 1.25em !important;
+}
+
+.event-card-body p {
+	margin: 0;
+	padding: 0 !important;
+	line-height: 1.6;
+	color: #3a3a3a;
+}
+
+.event-card-img {
+	width: 100%;
+	max-width: 160px;
+	height: 140px;
+	object-fit: cover;
+	border-radius: 6px;
+	flex-shrink: 0;
+	display: block;
+}
+
+.event-card-footer {
+	padding: 0 1.25em 1.25em !important;
+}
+
+@media (width >= 600px) {
+	.event-card-body {
+		flex-direction: row;
+		align-items: flex-start;
+	}
+
+	.event-card-img {
+		width: 140px;
+	}
+}
+
+/* ===== EVENT REQUEST FORM CARD ===== */
+
+.event-request-card {
+	background: #f5f3e8;
+	border: 1px solid #d4e0c8;
+	border-radius: 10px;
+	padding: 1.5em !important;
+	margin: 2em 0 2em;
+}
+
+.event-request-card-header {
+	padding: 0 !important;
+}
+
+.event-request-card-header h3 {
+	margin: 0 0 0.2em;
+	padding: 0 !important;
+	color: #2d5016;
+	font-size: 1.2em;
+}
+
+.event-request-card-header p {
+	margin: 0 0 1.25em;
+	padding: 0 !important;
+	color: #555;
+	font-size: 0.95em;
+}
+
+.event-request-card form {
+	padding: 0 !important;
+}
+
+.event-request-card .form-group {
+	margin-bottom: 0;
+	padding: 0 !important;
+}
+
+.event-request-card label {
+	font-size: 0.85em;
+	font-weight: 600;
+	color: #2d5016;
+}
+
+.required-star {
+	color: #c0427a;
+	margin-left: 0.15em;
+}
+
+.required-note {
+	color: #888;
+	font-size: 0.85em;
+	font-style: italic;
+}
+
+.char-counter {
+	display: block;
+	text-align: right;
+	font-size: 0.78em;
+	color: #888;
+	margin-top: 0.25em;
+}
+
+.event-message {
+	padding: 0.7em 1em !important;
+	border-radius: 6px;
+	font-size: 0.9em;
+	font-weight: 500;
+	margin-top: 0.25em;
+}
+
+.event-message.success {
+	background: #e6f4ea;
+	color: #1a6b2a;
+	border: 1px solid #a8d5b2;
+}
+
+.event-message.error {
+	background: #fdecea;
+	color: #b71c1c;
+	border: 1px solid #f5b7b1;
+}
+
+.event-request-card input,
+.event-request-card select,
+.event-request-card textarea {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 0.65em 0.85em;
+	border: 1px solid #b8c5a8;
+	border-radius: 6px;
+	font-family: inherit;
+	font-size: 0.95em;
+	background: #fff;
+	color: #2b2d2e;
+	transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.event-request-card input:focus,
+.event-request-card select:focus,
+.event-request-card textarea:focus {
+	outline: none;
+	border-color: #2d5016;
+	box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.12);
+}
+
+.event-request-card textarea {
+	resize: vertical;
+}
+
+
+form.request-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	column-gap: 2.5em;
+	row-gap: 0.3em;
+	padding: 0 !important;
+}
+
+form.request-grid .span-full {
+	grid-column: 1 / -1;
+}
+
+/* Subgrid: each 2-col form-group spans 2 row tracks (label + input).
+   The parent's row-gap (0.3em) becomes the label-to-input gap via subgrid. */
+.event-request-card .form-group:not(.span-full) {
+	display: grid;
+	grid-template-rows: subgrid;
+	grid-row: span 2;
+	margin-bottom: 0.55em;
+}
+
+/* Span-full groups (title, description) stay as flex columns */
+.event-request-card .form-group.span-full {
+	display: flex;
+	flex-direction: column;
+	gap: 0.3em;
+	margin-top: 0.2em;
+}
+
+@media (width < 500px) {
+	form.request-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.event-request-card .form-group:not(.span-full) {
+		grid-row: span 1;
+		display: flex;
+		flex-direction: column;
+		gap: 0.3em;
+	}
+}
+
+.event-request-card .submit-btn {
+	background: #2d5016;
+	color: #f5f3e8;
+	border: none;
+	padding: 0.75em 2em;
+	border-radius: 6px;
+	font-size: 0.95em;
+	font-weight: bold;
+	cursor: pointer;
+	transition: background 0.2s;
+	margin-top: 0.25em;
+	max-width: 220px;
+	justify-self: start;
+}
+
+.event-request-card .submit-btn:hover {
+	background: #1a3009;
+}
+
+/* ===== CALENDAR SKELETON LOADER ===== */
+
+@keyframes skeleton-shimmer {
+	0%   { background-position: -400px 0; }
+	100% { background-position: 400px 0; }
+}
+
+.calendar-day-skeleton {
+	min-height: 100px;
+	background: linear-gradient(90deg, #f0f0f0 25%, #e4e4e4 50%, #f0f0f0 75%);
+	background-size: 800px 100%;
+	animation: skeleton-shimmer 1.4s infinite linear;
+}
+
+@media (width < 600px) {
+	.calendar-day-skeleton { min-height: 70px; }
+}
+
+@media (width >= 1024px) {
+	.calendar-day-skeleton { min-height: 110px; }
+}
+
+/* ===== CUSTOM AUDIO PLAYER ===== */
+
+.card-actions {
+	display: flex;
+	align-items: center;
+	gap: 0.75em;
+	flex-wrap: wrap;
+}
+
+.audio-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5em;
+	background: #fff;
+	border: 1.5px solid currentColor;
+	border-radius: 6px;
+	padding: 0.45em 0.9em;
+	font-size: 0.85em;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.2s, color 0.2s;
+}
+
+.event-card.kpop .audio-btn   { color: #c0427a; }
+.event-card.acoustic .audio-btn { color: #2d6e2d; }
+
+.event-card.kpop .audio-btn:hover   { background: #c0427a; color: #fff; }
+.event-card.acoustic .audio-btn:hover { background: #2d6e2d; color: #fff; }
+
+.audio-btn svg {
+	width: 14px;
+	height: 14px;
+	fill: currentColor;
+	flex-shrink: 0;
+}
+
+.audio-btn .icon-pause {
+	display: none;
+}
+
+.audio-btn.playing .icon-play  { display: none; }
+.audio-btn.playing .icon-pause { display: block; }
+
+/* ===== RSVP CARD BUTTON ===== */
+
+.rsvp-card-btn {
+	background: #2d5016;
+	color: #f5f3e8;
+	border: none;
+	border-radius: 6px;
+	padding: 0.45em 1.1em;
+	font-size: 0.85em;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.2s;
+}
+
+.rsvp-card-btn:hover {
+	background: #1a3009;
 }
 
 /* ===== RSVP FORM ===== */
@@ -418,6 +773,9 @@
 .rsvp-message {
 	margin: 0;
 	font-size: 0.9em;
-	font-weight: bold;
+	font-weight: 500;
 	min-height: 1.2em;
 }
+
+.rsvp-message.success { color: #1a6b2a; }
+.rsvp-message.error   { color: #b71c1c; }

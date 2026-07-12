@@ -36,7 +36,18 @@ let eventMap = {};
 let currentDate = new Date();
 currentDate.setDate(1);
 
+function showCalendarSkeleton() {
+	const calendarDays = document.getElementById("calendar-days");
+	calendarDays.innerHTML = "";
+	for (let i = 0; i < 35; i++) {
+		const cell = document.createElement("div");
+		cell.classList.add("calendar-day-skeleton");
+		calendarDays.appendChild(cell);
+	}
+}
+
 async function loadEvents() {
+	showCalendarSkeleton();
 	try {
 		const response = await fetch(`${API_BASE}/events`);
 		const events = await response.json();
@@ -112,8 +123,16 @@ function addDayElement(container, day, dateObj, isOtherMonth) {
 			eventEl.style.backgroundColor = getColorForTitle(event.eventTitle);
 			eventEl.style.color = "#fff";
 			eventEl.textContent = event.eventTitle;
-			eventEl.style.cursor = "pointer";
+			eventEl.setAttribute("role", "button");
+			eventEl.setAttribute("tabindex", "0");
+			eventEl.setAttribute("aria-label", `${event.eventTitle} on ${dateStr}`);
 			eventEl.addEventListener("click", () => showDetail(event, dateStr));
+			eventEl.addEventListener("keydown", (e) => {
+				if (e.key === "Enter" || e.key === " ") {
+					e.preventDefault();
+					showDetail(event, dateStr);
+				}
+			});
 			eventsDiv.appendChild(eventEl);
 		});
 	}
@@ -182,12 +201,32 @@ function showDetail(event, dateStr) {
 	const rsvpDiv = document.createElement("div");
 	rsvpDiv.className = "rsvp-form";
 	rsvpDiv.id = "rsvp-form-" + event.eventID;
-	rsvpDiv.innerHTML =
-		`<h4>RSVP for this event</h4>` +
-		`<input type="text" id="rsvp-name" placeholder="Your name" />` +
-		`<input type="email" id="rsvp-email" placeholder="Your email" />` +
-		`<button class="rsvp-btn" onclick="submitRSVP(${Number(event.eventID)})">RSVP</button>` +
-		`<p class="rsvp-message" id="rsvp-message"></p>`;
+
+	const rsvpHeading = document.createElement("h4");
+	rsvpHeading.textContent = "RSVP for this event";
+
+	const nameInput = document.createElement("input");
+	nameInput.type = "text";
+	nameInput.id = "rsvp-name";
+	nameInput.placeholder = "Your name";
+
+	const emailInput = document.createElement("input");
+	emailInput.type = "email";
+	emailInput.id = "rsvp-email";
+	emailInput.placeholder = "Your email";
+
+	const rsvpBtn = document.createElement("button");
+	rsvpBtn.className = "rsvp-btn";
+	rsvpBtn.textContent = "RSVP";
+
+	const rsvpMsg = document.createElement("p");
+	rsvpMsg.className = "rsvp-message";
+	rsvpMsg.id = "rsvp-message";
+	rsvpMsg.setAttribute("role", "alert");
+
+	rsvpBtn.addEventListener("click", () => submitRSVP(Number(event.eventID)));
+
+	rsvpDiv.append(rsvpHeading, nameInput, emailInput, rsvpBtn, rsvpMsg);
 	container.appendChild(rsvpDiv);
 
 	const panel = document.getElementById("event-detail");
@@ -214,7 +253,7 @@ async function submitRSVP(eventID) {
 		});
 
 		const data = await response.json();
-		messageEl.style.color = response.ok ? "green" : "red";
+		messageEl.className = response.ok ? "rsvp-message success" : "rsvp-message error";
 		messageEl.textContent = response.ok
 			? "✓ " + data.message
 			: "✗ " + (data.error || "Could not complete RSVP.");
@@ -224,7 +263,7 @@ async function submitRSVP(eventID) {
 			document.getElementById("rsvp-email").value = "";
 		}
 	} catch (error) {
-		messageEl.style.color = "red";
+		messageEl.className = "rsvp-message error";
 		messageEl.textContent = "✗ Error connecting to server.";
 		console.error("RSVP error:", error);
 	}
@@ -244,10 +283,30 @@ document.getElementById("close-detail").addEventListener("click", () => {
 	document.getElementById("event-detail").classList.add("hidden");
 });
 
+// Character counter for description textarea
+const descTextarea = document.getElementById("event-description");
+const descCounter = document.getElementById("desc-counter");
+if (descTextarea && descCounter) {
+	descTextarea.addEventListener("input", () => {
+		const remaining = descTextarea.value.length;
+		descCounter.textContent = `${remaining} / 500`;
+		descCounter.style.color = remaining >= 480 ? "#c0427a" : "#888";
+	});
+}
+
+// Min date — prevent selecting past dates
+const dateInput = document.getElementById("event-date");
+if (dateInput) dateInput.min = new Date().toISOString().split("T")[0];
+
 document.getElementById("eventForm").addEventListener("submit", async (e) => {
 	e.preventDefault();
 	const msgEl = document.getElementById("eventMessage");
+	const submitBtn = e.target.querySelector(".submit-btn");
+
 	msgEl.style.display = "none";
+	msgEl.className = "span-full event-message";
+	submitBtn.disabled = true;
+	submitBtn.textContent = "Submitting…";
 
 	const payload = {
 		title: document.getElementById("event-title").value.trim(),
@@ -266,18 +325,78 @@ document.getElementById("eventForm").addEventListener("submit", async (e) => {
 		});
 		const data = await response.json();
 		msgEl.style.display = "block";
-		msgEl.style.color = response.ok ? "green" : "red";
+		msgEl.classList.add(response.ok ? "success" : "error");
 		msgEl.textContent = response.ok
 			? data.message
 			: data.error || "Could not submit request.";
 		if (response.ok) {
 			e.target.reset();
+			if (descCounter) descCounter.textContent = "0 / 500";
 		}
 	} catch {
 		msgEl.style.display = "block";
-		msgEl.style.color = "red";
+		msgEl.classList.add("error");
 		msgEl.textContent = "Error connecting to server.";
+	} finally {
+		submitBtn.disabled = false;
+		submitBtn.textContent = "Submit Suggestion";
 	}
+});
+
+// Custom audio player
+document.querySelectorAll(".audio-btn").forEach((btn) => {
+	const audio = document.getElementById(btn.dataset.audio);
+	if (!audio) return;
+
+	btn.addEventListener("click", () => {
+		const isPlaying = !audio.paused;
+
+		// Pause all other tracks and reset their buttons
+		document.querySelectorAll(".audio-btn").forEach((b) => {
+			if (b === btn) return;
+			const a = document.getElementById(b.dataset.audio);
+			if (a) a.pause();
+			b.classList.remove("playing");
+			b.querySelector(".audio-btn-label").textContent = "Preview";
+			b.setAttribute("aria-label", b.getAttribute("aria-label").replace("Pause", "Play"));
+		});
+
+		if (isPlaying) {
+			audio.pause();
+			btn.classList.remove("playing");
+			btn.querySelector(".audio-btn-label").textContent = "Preview";
+			btn.setAttribute("aria-label", btn.getAttribute("aria-label").replace("Pause", "Play"));
+		} else {
+			audio.play();
+			btn.classList.add("playing");
+			btn.querySelector(".audio-btn-label").textContent = "Playing…";
+			btn.setAttribute("aria-label", btn.getAttribute("aria-label").replace("Play", "Pause"));
+		}
+	});
+
+	audio.addEventListener("ended", () => {
+		btn.classList.remove("playing");
+		btn.querySelector(".audio-btn-label").textContent = "Preview";
+	});
+});
+
+// RSVP buttons on event cards — find next occurrence and open detail panel
+document.querySelectorAll(".rsvp-card-btn").forEach((btn) => {
+	btn.addEventListener("click", () => {
+		const title = btn.dataset.eventTitle;
+		const today = new Date().toISOString().split("T")[0];
+		const upcoming = Object.keys(eventMap)
+			.filter((d) => d >= today && eventMap[d].some((e) => e.eventTitle === title))
+			.sort();
+
+		if (upcoming.length > 0) {
+			const dateStr = upcoming[0];
+			const event = eventMap[dateStr].find((e) => e.eventTitle === title);
+			showDetail(event, dateStr);
+		} else {
+			document.getElementById("calendar-wrap").scrollIntoView({ behavior: "smooth" });
+		}
+	});
 });
 
 document.addEventListener("DOMContentLoaded", loadEvents);
