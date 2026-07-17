@@ -37,20 +37,20 @@
 							Drinks, snacks, and merch — all in one place. Add special requests
 							per item!
 						</p>
-						<div class="order-tabs">
-							<button class="tab-btn active" data-tab="drinks">
+						<div class="order-tabs" role="tablist" aria-label="Menu categories">
+							<button class="tab-btn active" data-tab="drinks" role="tab" aria-selected="true" aria-controls="tab-drinks" id="tab-btn-drinks">
 								🧋 Boba & Tea
 							</button>
-							<button class="tab-btn" data-tab="snacks">🍡 Snacks</button>
-							<button class="tab-btn" data-tab="merch">👕 Merch</button>
+							<button class="tab-btn" data-tab="snacks" role="tab" aria-selected="false" aria-controls="tab-snacks" id="tab-btn-snacks">🍡 Snacks</button>
+							<button class="tab-btn" data-tab="merch" role="tab" aria-selected="false" aria-controls="tab-merch" id="tab-btn-merch">👕 Merch</button>
 						</div>
-						<div class="category-panel active" id="tab-drinks">
+						<div class="category-panel active" id="tab-drinks" role="tabpanel" aria-labelledby="tab-btn-drinks">
 							<div class="order-grid" id="drinks-grid"></div>
 						</div>
-						<div class="category-panel" id="tab-snacks">
+						<div class="category-panel" id="tab-snacks" role="tabpanel" aria-labelledby="tab-btn-snacks">
 							<div class="order-grid" id="snacks-grid"></div>
 						</div>
-						<div class="category-panel" id="tab-merch">
+						<div class="category-panel" id="tab-merch" role="tabpanel" aria-labelledby="tab-btn-merch">
 							<div class="order-grid" id="merch-grid"></div>
 						</div>
 					</div>
@@ -76,6 +76,7 @@
 								id="export-lm-btn"
 								onclick="showLMPayload()"
 								disabled
+								style="display:none"
 							>
 								🤖 Export for AI
 							</button>
@@ -131,6 +132,24 @@
 					onkeydown="if (event.key === 'Enter') sendChatMessage();"
 				/>
 				<button onclick="sendChatMessage()">Send</button>
+			</div>
+		</div>
+
+		<div id="order-confirm-modal">
+			<div class="confirm-modal-box">
+				<svg class="confirm-checkmark" viewBox="0 0 52 52" aria-hidden="true">
+					<circle class="confirm-checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+					<path class="confirm-checkmark-check" fill="none" d="M14 27 l7 7 l16-16"/>
+				</svg>
+				<h2 class="confirm-heading">Order Placed!</h2>
+				<p class="confirm-order-id">Order <strong>#<span id="confirm-order-num">—</span></strong></p>
+				<div class="confirm-items-list" id="confirm-items-list"></div>
+				<div class="confirm-total-row">
+					<span>Total</span>
+					<strong id="confirm-total-amount">—</strong>
+				</div>
+				<p class="confirm-eta">Ready in about <strong>15–20 minutes</strong></p>
+				<button class="confirm-new-btn" id="confirm-new-btn">Start New Order</button>
 			</div>
 		</div>
 

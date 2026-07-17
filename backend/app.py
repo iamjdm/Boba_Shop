@@ -331,13 +331,18 @@ def seed_menu_items():
                 if "large" in prices:
                     items.append(MenuItem(name=f"{drink['name']} (Large)", category="Boba & Tea", description=desc, price=prices["large"]))
             for snack in menu_data.get("snacks", []):
-                price = snack.get("price") or list(snack.get("price_options", {"1 pc": 3.50}).values())[0]
-                items.append(MenuItem(name=snack["name"], category="Snack", description=snack.get("description", ""), price=price))
+                desc = snack.get("description", "")
+                if "price" in snack:
+                    items.append(MenuItem(name=snack["name"], category="Snack", description=desc, price=snack["price"]))
+                elif "price_options" in snack:
+                    for label, price in snack["price_options"].items():
+                        items.append(MenuItem(name=f"{snack['name']} ({label})", category="Snack", description=desc, price=price))
             for merch in menu_data.get("merch", []):
                 items.append(MenuItem(name=merch["name"], category="Merch", description=merch.get("description", ""), price=merch.get("price", 0)))
             db.session.add_all(items)
             db.session.commit()
     except Exception:
+        logger.exception("seed_menu_items failed")
         pass
 
 

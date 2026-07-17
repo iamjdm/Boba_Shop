@@ -13,9 +13,11 @@ const PRODUCTS = {
 			name: "Classic Milk Tea",
 			desc: "Traditional black tea with creamy milk and chewy tapioca pearls.",
 			sizes: [
-				{ label: "Regular", price: 5.5, menuItemID: 1 },
-				{ label: "Large", price: 6.5, menuItemID: 2 },
+				{ label: "Regular", price: 5.5, menuItemName: "Classic Milk Tea" },
+				{ label: "Large", price: 6.5, menuItemName: "Classic Milk Tea (Large)" },
 			],
+			img: "images/products/classic_milk_tea.png",
+			imgPosition: "center 25%",
 			emoji: "🧋",
 			tags: ["milk tea", "classic"],
 		},
@@ -24,9 +26,11 @@ const PRODUCTS = {
 			name: "Taro Bliss",
 			desc: "Sweet taro root blended with milk and your choice of toppings.",
 			sizes: [
-				{ label: "Regular", price: 6.0, menuItemID: 3 },
-				{ label: "Large", price: 7.0, menuItemID: 4 },
+				{ label: "Regular", price: 6.0, menuItemName: "Taro Bliss" },
+				{ label: "Large", price: 7.0, menuItemName: "Taro Bliss (Large)" },
 			],
+			img: "images/products/TaroMilkTea1-1200-x-1600.jpg",
+			imgPosition: "center 25%",
 			emoji: "🫐",
 			tags: ["taro", "milk tea"],
 		},
@@ -35,9 +39,10 @@ const PRODUCTS = {
 			name: "Matcha Zen",
 			desc: "Premium Japanese matcha with oat milk and honey boba.",
 			sizes: [
-				{ label: "Regular", price: 6.75, menuItemID: 5 },
-				{ label: "Large", price: 7.75, menuItemID: 6 },
+				{ label: "Regular", price: 6.75, menuItemName: "Matcha Zen" },
+				{ label: "Large", price: 7.75, menuItemName: "Matcha Zen (Large)" },
 			],
+			img: "images/products/layered-matcha-bubble-tea-hero-rustic-close-up-scaled.png",
 			emoji: "🍵",
 			tags: ["matcha", "green tea"],
 		},
@@ -46,9 +51,11 @@ const PRODUCTS = {
 			name: "Strawberry Cloud",
 			desc: "Fresh strawberries blended with jasmine tea, topped with sweet cheese foam.",
 			sizes: [
-				{ label: "Regular", price: 6.5, menuItemID: 7 },
-				{ label: "Large", price: 7.5, menuItemID: 8 },
+				{ label: "Regular", price: 6.5, menuItemName: "Strawberry Cloud" },
+				{ label: "Large", price: 7.5, menuItemName: "Strawberry Cloud (Large)" },
 			],
+			img: "images/products/Strawberry3_boba.png",
+			imgPosition: "center 25%",
 			emoji: "🍓",
 			tags: ["fruit", "jasmine"],
 		},
@@ -57,9 +64,11 @@ const PRODUCTS = {
 			name: "Brown Sugar Tiger",
 			desc: "House-made brown sugar syrup swirled with fresh milk and chewy pearls.",
 			sizes: [
-				{ label: "Regular", price: 6.25, menuItemID: 9 },
-				{ label: "Large", price: 7.25, menuItemID: 10 },
+				{ label: "Regular", price: 6.25, menuItemName: "Brown Sugar Tiger" },
+				{ label: "Large", price: 7.25, menuItemName: "Brown Sugar Tiger (Large)" },
 			],
+			img: "images/products/Taiwanese-Brown-sugar-tiger-milk-tea.jpg",
+			imgPosition: "center 15%",
 			emoji: "🐯",
 			tags: ["brown sugar", "milk tea"],
 		},
@@ -69,7 +78,9 @@ const PRODUCTS = {
 			id: "mochi-set",
 			name: "Mochi Trio",
 			desc: "Three pieces of handmade mochi in rotating seasonal flavors.",
-			sizes: [{ label: "3 pcs", price: 5.0, menuItemID: 11 }],
+			sizes: [{ label: "3 pcs", price: 5.0, menuItemName: "Mochi Trio" }],
+			img: "images/products/istockphoto-471091941-612x612.jpg",
+			imgPosition: "center center",
 			emoji: "🍡",
 			tags: ["mochi", "dessert"],
 		},
@@ -78,9 +89,10 @@ const PRODUCTS = {
 			name: "Taiyaki",
 			desc: "Fish-shaped waffle pastry filled with red bean, Nutella, or custard.",
 			sizes: [
-				{ label: "1 pc", price: 3.5, menuItemID: 12 },
-				{ label: "3 pcs", price: 9.0, menuItemID: 13 },
+				{ label: "1 pc", price: 3.5, menuItemName: "Taiyaki (1 pc)" },
+				{ label: "3 pcs", price: 9.0, menuItemName: "Taiyaki (3 pcs)" },
 			],
+			img: "images/products/Crispy-Taiyaki-4937-I.jpg",
 			emoji: "🐟",
 			tags: ["pastry", "sweet"],
 		},
@@ -88,7 +100,8 @@ const PRODUCTS = {
 			id: "poke-bowl",
 			name: "Poké Bowl",
 			desc: "Fresh tuna or tofu over seasoned rice with avocado, edamame, and sesame.",
-			sizes: [{ label: "Regular", price: 12.95, menuItemID: 14 }],
+			sizes: [{ label: "Regular", price: 12.95, menuItemName: "Poké Bowl" }],
+			img: "images/products/Orange-Miso-Sesame-Tune-Poke-w-Sticky-Rice-008-900x650-1.jpg",
 			emoji: "🥗",
 			tags: ["poke", "savory"],
 		},
@@ -96,7 +109,8 @@ const PRODUCTS = {
 			id: "summer-rolls",
 			name: "Summer Rolls",
 			desc: "Two rice paper rolls with shrimp or tofu, fresh herbs, and rice noodles.",
-			sizes: [{ label: "2 pcs", price: 7.5, menuItemID: 15 }],
+			sizes: [{ label: "2 pcs", price: 7.5, menuItemName: "Summer Rolls" }],
+			img: "images/products/k_Photo_Recipes_2024-06-summer-rolls-reshoot_summer-rolls-303.jpg",
 			emoji: "🌿",
 			tags: ["rolls", "fresh"],
 		},
@@ -107,11 +121,12 @@ const PRODUCTS = {
 			name: "TeaZen Zen Vibes Tee",
 			desc: "100% organic cotton. S–XL. Wear in-store for 10% off your drink!",
 			sizes: [
-				{ label: "S", price: 18.95, menuItemID: 16 },
-				{ label: "M", price: 18.95, menuItemID: 17 },
-				{ label: "L", price: 18.95, menuItemID: 18 },
-				{ label: "XL", price: 18.95, menuItemID: 19 },
+				{ label: "S", price: 18.95, menuItemName: "TeaZen Zen Vibes Tee" },
+				{ label: "M", price: 18.95, menuItemName: "TeaZen Zen Vibes Tee" },
+				{ label: "L", price: 18.95, menuItemName: "TeaZen Zen Vibes Tee" },
+				{ label: "XL", price: 18.95, menuItemName: "TeaZen Zen Vibes Tee" },
 			],
+			img: "images/boba_shirt_merch.webp",
 			emoji: "👕",
 			tags: ["shirt", "apparel"],
 		},
@@ -119,7 +134,8 @@ const PRODUCTS = {
 			id: "boba-tumbler",
 			name: "TeaZen Boba Tumbler",
 			desc: "20oz tumbler with wide boba straw. Keeps drinks cold for hours. Bring in for 10% off!",
-			sizes: [{ label: "20oz", price: 14.95, menuItemID: 20 }],
+			sizes: [{ label: "20oz", price: 14.95, menuItemName: "TeaZen Boba Tumbler" }],
+			img: "images/boba_cup_merch.webp",
 			emoji: "🥤",
 			tags: ["tumbler", "drinkware"],
 		},
@@ -128,7 +144,38 @@ const PRODUCTS = {
 
 let cart = [],
 	selectedSizes = {},
-	selectedQtys = {};
+	selectedQtys = {},
+	menuItemMap = {}; // name → menuItemID, populated from /menu-items on load
+
+function saveCart() {
+	try {
+		localStorage.setItem("teazen_cart", JSON.stringify(cart));
+	} catch (e) {}
+}
+
+function loadCart() {
+	try {
+		const saved = localStorage.getItem("teazen_cart");
+		if (saved) {
+			const parsed = JSON.parse(saved);
+			if (Array.isArray(parsed)) cart = parsed;
+		}
+	} catch (e) {
+		cart = [];
+	}
+}
+
+async function loadMenuItems() {
+	try {
+		const res = await fetch(`${API_BASE}/menu-items`);
+		const items = await res.json();
+		items.forEach((item) => {
+			menuItemMap[item.name] = item.menuItemID;
+		});
+	} catch (e) {
+		console.error("Could not load menu items from server", e);
+	}
+}
 const CART_WIDTH = 290; // px — must match #cart-panel width in CSS
 
 function allProducts() {
@@ -157,9 +204,13 @@ function renderCard(p, category) {
 		p.sizes.length === 1
 			? `$${p.sizes[0].price.toFixed(2)}`
 			: `$${p.sizes[0].price.toFixed(2)} – $${p.sizes[p.sizes.length - 1].price.toFixed(2)}`;
+	const bgPosition = p.imgPosition || "top center";
+	const cardImage = p.img
+		? `<div class="card-image" style="background-image: url('${p.img}'); background-position: ${bgPosition}" role="img" aria-label="${p.name}"></div>`
+		: `<div class="card-image card-emoji">${p.emoji}</div>`;
 	return `
 		<div class="product-card">
-			<div class="card-image">${p.emoji}</div>
+			${cardImage}
 			<div class="card-body">
 				<div class="card-name">${p.name}</div>
 				<div class="card-desc">${p.desc}</div>
@@ -168,9 +219,9 @@ function renderCard(p, category) {
 				<textarea class="custom-request" id="custom-${p.id}" placeholder="Special request (e.g. no ice, extra syrup)..." rows="2"></textarea>
 				<div class="card-actions">
 					<div class="qty-control">
-						<button class="qty-btn" onclick="changeQty('${p.id}', -1)">−</button>
-						<span class="qty-num" id="qty-${p.id}">1</span>
-						<button class="qty-btn" onclick="changeQty('${p.id}', 1)">+</button>
+						<button class="qty-btn" aria-label="Decrease quantity" onclick="changeQty('${p.id}', -1)">−</button>
+						<span class="qty-num" id="qty-${p.id}" aria-live="polite">1</span>
+						<button class="qty-btn" aria-label="Increase quantity" onclick="changeQty('${p.id}', 1)">+</button>
 					</div>
 					<button class="add-btn" id="addbtn-${p.id}" onclick="addToCart('${p.id}', '${category}')">Add to Cart</button>
 				</div>
@@ -201,6 +252,13 @@ function addToCart(pid, category) {
 
 	const sizeIdx = selectedSizes[pid] ?? 0;
 	const size = p.sizes[sizeIdx];
+	const menuItemID = menuItemMap[size.menuItemName];
+
+	if (!menuItemID) {
+		showToast("This item isn't available right now.");
+		return;
+	}
+
 	const qty = selectedQtys[pid] || 1;
 	const custom = document.getElementById(`custom-${pid}`)?.value?.trim() || "";
 	const key = `${pid}::${sizeIdx}::${custom}`;
@@ -212,10 +270,12 @@ function addToCart(pid, category) {
 		cart.push({
 			_key: key,
 			id: pid,
-			menuItemID: size.menuItemID,
+			menuItemID,
 			category,
 			name: p.name,
 			emoji: p.emoji,
+			img: p.img || null,
+			imgPosition: p.imgPosition || "center top",
 			size: size.label,
 			unitPrice: size.price,
 			quantity: qty,
@@ -296,21 +356,26 @@ function updateCartUI() {
 		return;
 	}
 
+	saveCart();
+
 	cartEl.innerHTML =
 		`<p class="cart-panel-title">Your items</p>` +
 		cart
 			.map(
 				(item, idx) => `
 			<div class="cart-item">
-				<div class="cart-item-thumb">${item.emoji}</div>
+				${item.img
+					? `<div class="cart-item-thumb" style="background-image:url('${item.img}');background-size:cover;background-position:${item.imgPosition}" aria-hidden="true"></div>`
+					: `<div class="cart-item-thumb">${item.emoji}</div>`
+				}
 				<div class="cart-item-info">
 					<div class="cart-item-name">${item.name}</div>
 					<div class="cart-item-meta">${item.size} · $${item.unitPrice.toFixed(2)} ea</div>
 					${item.customRequest ? `<div class="cart-item-custom">📝 ${item.customRequest}</div>` : ""}
 					<div class="cart-item-controls">
-						<button class="cart-qty-btn" onclick="cartChangeQty(${idx}, -1)">−</button>
+						<button class="cart-qty-btn" aria-label="Decrease quantity" onclick="cartChangeQty(${idx}, -1)">−</button>
 						<span class="cart-qty-num">${item.quantity}</span>
-						<button class="cart-qty-btn" onclick="cartChangeQty(${idx}, 1)">+</button>
+						<button class="cart-qty-btn" aria-label="Increase quantity" onclick="cartChangeQty(${idx}, 1)">+</button>
 					</div>
 				</div>
 				<span class="cart-item-line">$${(item.unitPrice * item.quantity).toFixed(2)}</span>
@@ -384,8 +449,11 @@ function showToast(msg) {
 async function checkout() {
 	if (!cart.length) return;
 
-	const subtotal = cart.reduce((s, i) => s + i.unitPrice * i.quantity, 0);
+	const checkoutBtn = document.getElementById("checkout-btn");
+	checkoutBtn.disabled = true;
+	checkoutBtn.textContent = "Placing order…";
 
+	const subtotal = cart.reduce((s, i) => s + i.unitPrice * i.quantity, 0);
 	const orderNotes = document.getElementById("order-notes").value.trim();
 
 	const orderData = {
@@ -406,29 +474,65 @@ async function checkout() {
 	try {
 		const response = await fetch(`${API_BASE}/submit-order`, {
 			method: "POST",
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify(orderData)
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(orderData),
 		});
 
 		const result = await response.json();
 
 		if (result.success) {
-			alert(`Order placed! 🎉\n\nOrder ID: ${result.orderID}\nTotal: $${orderData.totalAmount}`);
+			const confirmedCart = [...cart];
 			cart = [];
 			updateCartUI();
 			closeMobileCart();
 			document.getElementById("order-notes").value = "";
 			document.querySelectorAll(".custom-request").forEach((el) => (el.value = ""));
+			showOrderConfirm(result.orderID, confirmedCart, orderData.totalAmount);
 		} else {
-			alert("Error: " + result.error);
+			showToast(result.error || "Could not place order. Please try again.");
 		}
 	} catch (error) {
 		console.error("Checkout error:", error);
-		alert("Something went wrong while submitting the order.");
+		showToast("Something went wrong. Please try again.");
+	} finally {
+		if (cart.length > 0) {
+			checkoutBtn.disabled = false;
+			checkoutBtn.textContent = "Place Order";
+		}
 	}
 }
+
+function showOrderConfirm(orderID, items, total) {
+	document.getElementById("confirm-order-num").textContent = orderID;
+	document.getElementById("confirm-total-amount").textContent = `$${total.toFixed(2)}`;
+
+	const listEl = document.getElementById("confirm-items-list");
+	listEl.innerHTML = items
+		.map(
+			(item) => `
+		<div class="confirm-item-row">
+			<span class="confirm-item-name">${item.emoji} ${item.name} <span style="color:#aaa">${item.size} ×${item.quantity}</span></span>
+			<span class="confirm-item-price">$${(item.unitPrice * item.quantity).toFixed(2)}</span>
+		</div>`,
+		)
+		.join("");
+
+	// Reset checkmark animation by cloning the SVG
+	const svg = document.querySelector(".confirm-checkmark");
+	const clone = svg.cloneNode(true);
+	svg.replaceWith(clone);
+
+	document.getElementById("order-confirm-modal").classList.add("open");
+}
+
+function closeOrderConfirm() {
+	document.getElementById("order-confirm-modal").classList.remove("open");
+}
+
+document.getElementById("confirm-new-btn").addEventListener("click", closeOrderConfirm);
+document.getElementById("order-confirm-modal").addEventListener("click", (e) => {
+	if (e.target === e.currentTarget) closeOrderConfirm();
+});
 
 function buildOrderPayload() {
 	const notes = document.getElementById("order-notes").value.trim();
@@ -548,18 +652,20 @@ function copyPayload() {
 
 document.querySelectorAll(".tab-btn").forEach((btn) => {
 	btn.addEventListener("click", () => {
-		document
-			.querySelectorAll(".tab-btn")
-			.forEach((b) => b.classList.remove("active"));
-		document
-			.querySelectorAll(".category-panel")
-			.forEach((p) => p.classList.remove("active"));
+		document.querySelectorAll(".tab-btn").forEach((b) => {
+			b.classList.remove("active");
+			b.setAttribute("aria-selected", "false");
+		});
+		document.querySelectorAll(".category-panel").forEach((p) => p.classList.remove("active"));
 
 		btn.classList.add("active");
+		btn.setAttribute("aria-selected", "true");
 		document.getElementById(`tab-${btn.dataset.tab}`).classList.add("active");
 	});
 });
 
+loadMenuItems();
+loadCart();
 renderProducts("drinks");
 renderProducts("snacks");
 renderProducts("merch");
